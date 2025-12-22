@@ -1,40 +1,52 @@
 package it.tennis_club.orm;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
- * Gestisce la connessione al database PostgreSQL.
+ * Gestisce la connessione al database PostgreSQL caricando i parametri
+ * da un file di configurazione esterno.
  */
 public class ConnectionManager {
     
-    // Configurazione database
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/tennis_club";
-    private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    private static final Properties properties = new Properties();
+
+    static {
+        try (InputStream input = ConnectionManager.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                System.err.println("Spiacente, non riesco a trovare db.properties. Assicurati che sia in src/main/resources/");
+            } else {
+                // Carica il file properties
+                properties.load(input);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
     
     /**
-     * Ottiene una nuova connessione al database.
-     * 
-     * @return Connection al database
-     * @throws SQLException se la connessione fallisce
+     * Ottiene una nuova connessione al database usando i parametri del file properties.
      */
     public static Connection getConnection() throws SQLException {
         try {
-            // Carica il driver PostgreSQL (opzionale per JDBC 4.0+)
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             throw new SQLException("Driver PostgreSQL non trovato", e);
         }
         
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return DriverManager.getConnection(
+            properties.getProperty("db.url"),
+            properties.getProperty("db.user"),
+            properties.getProperty("db.password")
+        );
     }
     
     /**
      * Chiude la connessione in modo sicuro.
-     * 
-     * @param connection la connessione da chiudere
      */
     public static void closeConnection(Connection connection) {
         if (connection != null) {
