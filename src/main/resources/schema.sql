@@ -2,7 +2,7 @@
 -- Definizione dello schema del database
 
 -- Tipo enumerato per il ruolo dell'utente
-CREATE TYPE ruolo_utente AS ENUM ('ADMIN', 'MAESTRO', 'SOCIO');
+CREATE TYPE ruolo_utente AS ENUM ('ADMIN', 'MAESTRO', 'SOCIO','ALLIEVO','MANUTENTORE');
 
 -- Tabella Utente
 CREATE TABLE utente (
@@ -18,7 +18,7 @@ CREATE TABLE utente (
 CREATE TABLE campo (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    tipo_superficie VARCHAR(50) NOT NULL, -- Es: Terra, Cemento
+    tipo_superficie VARCHAR(50) NOT NULL, -- Es: Terra, Erba, Cemento
     is_coperto BOOLEAN NOT NULL DEFAULT FALSE
 );
 
