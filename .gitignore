@@ -43,3 +43,6 @@ buildNumber.properties
 
 # Visual Studio Code
 .vscode/
+
+# Project files
+.db.properties
