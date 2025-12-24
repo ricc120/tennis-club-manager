@@ -45,4 +45,5 @@ buildNumber.properties
 .vscode/
 
 # Project files
-.db.properties
+db.properties
+src/main/resources/db.properties
