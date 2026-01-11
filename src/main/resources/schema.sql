@@ -30,3 +30,14 @@ CREATE TABLE prenotazione (
     id_campo INTEGER NOT NULL REFERENCES campo(id) ON DELETE CASCADE,
     id_socio INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE
 );
+
+-- Tabella Manutenzione
+CREATE TABLE manutenzione (
+    id SERIAL PRIMARY KEY,
+    id_campo INTEGER NOT NULL REFERENCES campo(id) ON DELETE CASCADE,
+    id_manutentore INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
+    data_inizio DATE NOT NULL,
+    data_fine DATE,
+    descrizione TEXT NOT NULL,
+    stato VARCHAR(50) NOT NULL DEFAULT 'IN_CORSO' -- IN_CORSO, COMPLETATA, ANNULLATA
+);
