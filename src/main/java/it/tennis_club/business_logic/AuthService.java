@@ -60,11 +60,13 @@ public class AuthService {
                 return null;
             }
 
-            // Qui potresti aggiungere altra logica di business, ad esempio:
-            // - Logging dell'accesso
-            // - Aggiornamento dell'ultimo accesso
-            // - Controllo se l'account è attivo/bloccato
-            // - Generazione di un token di sessione
+            // Crea una sessione per l'utente autenticato
+            SessionManager sessionManager = SessionManager.getInstance();
+            String sessionId = sessionManager.createSession(utente);
+
+            // Log dell'accesso (opzionale)
+            System.out.println("Sessione creata per utente: " + utente.getEmail() +
+                    " (Session ID: " + sessionId + ")");
 
             return utente;
 
@@ -100,20 +102,24 @@ public class AuthService {
 
     /**
      * Effettua il logout di un utente.
-     * Questo metodo può essere esteso per gestire la pulizia delle sessioni,
-     * invalidazione dei token, ecc.
+     * Invalida la sessione corrente e pulisce le informazioni di autenticazione.
      * 
      * @param utente l'utente che sta effettuando il logout
+     * @return true se il logout è stato effettuato con successo, false altrimenti
      */
-    public void logout(Utente utente) {
-        // Qui potresti aggiungere logica per:
-        // - Invalidare il token di sessione
-        // - Registrare il logout
-        // - Pulire eventuali cache
+    public boolean logout(Utente utente) {
+        if (utente == null) {
+            return false;
+        }
 
-        // Per ora è un metodo placeholder
-        if (utente != null) {
+        // Invalida la sessione corrente
+        SessionManager sessionManager = SessionManager.getInstance();
+        boolean success = sessionManager.logout();
+
+        if (success) {
             System.out.println("Logout effettuato per: " + utente.getEmail());
         }
+
+        return success;
     }
 }
