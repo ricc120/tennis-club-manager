@@ -41,3 +41,12 @@ CREATE TABLE manutenzione (
     descrizione TEXT NOT NULL,
     stato VARCHAR(50) NOT NULL DEFAULT 'IN_CORSO' -- IN_CORSO, COMPLETATA, ANNULLATA
 );
+
+-- Tabella Lezione
+CREATE TABLE lezione (
+    id SERIAL PRIMARY KEY,
+    id_prenotazione INTEGER NOT NULL UNIQUE REFERENCES prenotazione(id) ON DELETE CASCADE,
+    id_maestro INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
+    feedback TEXT, -- Può essere NULL finché il maestro non lo inserisce
+    descrizione TEXT
+);
