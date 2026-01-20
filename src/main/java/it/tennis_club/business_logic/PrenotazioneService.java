@@ -226,6 +226,30 @@ public class PrenotazioneService {
     }
 
     /**
+     * Recupera una prenotazione specifica tramite il suo ID.
+     * 
+     * @param idPrenotazione l'ID della prenotazione
+     * @return la prenotazione richiesta
+     * @throws PrenotazioneException se la prenotazione non esiste o si verifica un
+     *                               errore
+     */
+    public Prenotazione getPrenotazioneById(Integer idPrenotazione) throws PrenotazioneException {
+        if (idPrenotazione == null || idPrenotazione <= 0) {
+            throw new PrenotazioneException("L'ID della prenotazione non può essere null o negativo");
+        }
+
+        try {
+            Prenotazione prenotazione = prenotazioneDAO.getPrenotazioneById(idPrenotazione);
+            if (prenotazione == null) {
+                throw new PrenotazioneException("Prenotazione con ID " + idPrenotazione + " non trovata");
+            }
+            return prenotazione;
+        } catch (SQLException e) {
+            throw new PrenotazioneException("Errore durante il recupero della prenotazione: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Recupera tutte le prenotazioni.
      * 
      * @return lista di tutte le prenotazioni

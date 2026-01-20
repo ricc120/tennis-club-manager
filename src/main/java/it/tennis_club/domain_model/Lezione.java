@@ -17,11 +17,10 @@ public class Lezione {
     }
 
     // Costruttore completo
-    public Lezione(Integer id, Prenotazione prenotazione, Utente maestro, String feedback, String descrizione) {
+    public Lezione(Integer id, Prenotazione prenotazione, Utente maestro, String descrizione) {
         this.id = id;
         this.prenotazione = prenotazione;
         this.maestro = maestro;
-        this.feedback = feedback;
         this.descrizione = descrizione;
     }
 

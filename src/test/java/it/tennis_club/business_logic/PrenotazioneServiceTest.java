@@ -352,6 +352,38 @@ public class PrenotazioneServiceTest {
 
     @Test
     @Order(13)
+    @DisplayName("Test recupero prenotazione esistente")
+    public void testGetPrenotazioneByIdEsistente() throws PrenotazioneException {
+        // Arrange
+        Integer idEsistente = prenotazioneService.getAllPrenotazioni().get(0).getId();
+
+        // Act
+        Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(idEsistente);
+
+        // Assert
+        assertNotNull(prenotazione, "La prenotazione dovrebbe esistere");
+        assertEquals(idEsistente, prenotazione.getId(), "L'ID dovrebbe corrispondere");
+
+        System.out.println("✅ Prenotazione recuperata con successo");
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("Test recupero prenotazione inesistente")
+    public void testGetPrenotazioneByIdInesistente() {
+        // Arrange - ID che sicuramente non esiste
+        Integer idInesistente = 999999;
+
+        // Act & Assert
+        assertThrows(PrenotazioneException.class,
+                () -> prenotazioneService.getPrenotazioneById(idInesistente),
+                "Dovrebbe lanciare un'eccezione per ID inesistente");
+
+        System.out.println("✅ Eccezione correttamente lanciata per prenotazione inesistente");
+    }
+
+    @Test
+    @Order(15)
     @DisplayName("Test recupero tutte le prenotazioni")
     public void testGetAllPrenotazioni() throws PrenotazioneException {
         // Arrange - Crea almeno una prenotazione
