@@ -47,6 +47,16 @@ CREATE TABLE lezione (
     id SERIAL PRIMARY KEY,
     id_prenotazione INTEGER NOT NULL UNIQUE REFERENCES prenotazione(id) ON DELETE CASCADE,
     id_maestro INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
-    feedback TEXT, -- Può essere NULL finché il maestro non lo inserisce
     descrizione TEXT
+);
+
+-- Tabella Allievo Lezione
+CREATE TABLE allievo_lezione (
+    id SERIAL PRIMARY KEY,
+    id_lezione INTEGER NOT NULL REFERENCES lezione(id) ON DELETE CASCADE,
+    id_allievo INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
+    presente BOOLEAN DEFAULT TRUE,
+    feedback TEXT, -- Feedback specifico del maestro per questo allievo
+    data_iscrizione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_lezione, id_allievo)  -- Un allievo non può essere iscritto due volte alla stessa lezione
 );

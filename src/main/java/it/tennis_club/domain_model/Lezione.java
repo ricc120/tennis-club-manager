@@ -9,7 +9,6 @@ public class Lezione {
     private Integer id;
     private Prenotazione prenotazione;
     private Utente maestro;
-    private String feedback;
     private String descrizione;
 
     // Costruttore vuoto
@@ -49,14 +48,6 @@ public class Lezione {
         this.maestro = maestro;
     }
 
-    public String getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
-    }
-
     public String getDescrizione() {
         return descrizione;
     }
@@ -71,7 +62,6 @@ public class Lezione {
                 "id=" + id +
                 ", prenotazione=" + (prenotazione != null ? prenotazione.getId() : "null") +
                 ", maestro=" + (maestro != null ? maestro.getNome() + " " + maestro.getCognome() : "null") +
-                ", feedback='" + feedback + '\'' +
                 ", descrizione='" + descrizione + '\'' +
                 '}';
     }

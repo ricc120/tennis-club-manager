@@ -6,6 +6,7 @@ import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.domain_model.Utente.Ruolo;
 import it.tennis_club.orm.LezioneDAO;
+import it.tennis_club.orm.AllievoLezioneDAO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,6 +17,8 @@ public class AccademiaService {
 
     private final LezioneDAO lezioneDAO;
     private final PrenotazioneService prenotazioneService;
+    private final AllievoLezioneDAO allievoLezioneDAO;
+    private static final int MAX_ALLIEVI_PER_LEZIONE = 8;
 
     /**
      * Costruttore che inzializza il DAO
@@ -23,6 +26,7 @@ public class AccademiaService {
     public AccademiaService() {
         this.lezioneDAO = new LezioneDAO();
         this.prenotazioneService = new PrenotazioneService();
+        this.allievoLezioneDAO = new AllievoLezioneDAO();
     }
 
     /**
@@ -81,33 +85,6 @@ public class AccademiaService {
 
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante la creazione della lezione: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Inserisce o aggiorna il feedback per una lezione esistente.
-     * 
-     * @param idLezione l'ID della lezione
-     * @param feedback  il feedback da inserire
-     * @return true se l'aggiornamento è andato a buon fine
-     * @throws AccademiaException se la lezione non esiste o si verifica un errore
-     */
-    public boolean inserisciFeedback(Integer idLezione, String feedback) throws AccademiaException {
-
-        if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
-        }
-
-        try {
-            Lezione lezione = lezioneDAO.getLezioneById(idLezione);
-            if (lezione == null) {
-                throw new AccademiaException("Lezione con ID " + idLezione + " non trovata");
-            }
-            lezione.setFeedback(feedback);
-            return lezioneDAO.updateLezione(lezione);
-
-        } catch (SQLException e) {
-            throw new AccademiaException("Errore durante l'inserimento del feedback: " + e.getMessage(), e);
         }
     }
 
@@ -249,6 +226,166 @@ public class AccademiaService {
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante il recupero della lezione per la prenotazione "
                     + prenotazione.getId() + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Aggiunge un allievo a una lezione esistente.
+     * 
+     * @param idLezione l'ID della lezione
+     * @param allievo   l'allievo da aggiungere
+     * @throws AccademiaException se si verifica un errore o la lezione è piena
+     */
+    public void aggiungiAllievo(Integer idLezione, Utente allievo) throws AccademiaException {
+        // Validazione
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+        if (allievo == null) {
+            throw new AccademiaException("L'allievo non può essere null");
+        }
+        if (allievo.getRuolo() != Ruolo.ALLIEVO && allievo.getRuolo() != Ruolo.SOCIO) {
+            throw new AccademiaException("Solo gli allievi o i soci possono partecipare a una lezione");
+        }
+
+        try {
+            // Verifica che la lezione esista
+            Lezione lezione = lezioneDAO.getLezioneById(idLezione);
+            if (lezione == null) {
+                throw new AccademiaException("Lezione con ID " + idLezione + " non trovata");
+            }
+
+            // Verifica il numero massimo di allievi
+            int numeroAllievi = allievoLezioneDAO.contaAllievi(idLezione);
+            if (numeroAllievi >= MAX_ALLIEVI_PER_LEZIONE) {
+                throw new AccademiaException("La lezione ha raggiunto il numero massimo di allievi ("
+                        + MAX_ALLIEVI_PER_LEZIONE + ")");
+            }
+
+            // Aggiunge l'allievo
+            allievoLezioneDAO.aggiungiAllievoALezione(idLezione, allievo.getId());
+
+        } catch (SQLException e) {
+            if (e.getMessage().contains("duplicate key") || e.getMessage().contains("UNIQUE")) {
+                throw new AccademiaException("L'allievo è già iscritto a questa lezione");
+            }
+            throw new AccademiaException("Errore durante l'aggiunta dell'allievo: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Rimuove un allievo da una lezione.
+     */
+    public boolean rimuoviAllievo(Integer idLezione, Integer idAllievo) throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+        if (idAllievo == null || idAllievo <= 0) {
+            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+        }
+
+        try {
+            boolean rimosso = allievoLezioneDAO.rimuoviAllievoLezione(idLezione, idAllievo);
+            if (!rimosso) {
+                throw new AccademiaException("L'allievo non è iscritto a questa lezione");
+            }
+            return true;
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante la rimozione dell'allievo: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera tutti gli allievi di una lezione.
+     * Questo metodo è separato da getLezioneById per performance:
+     * puoi recuperare la lezione senza caricare gli allievi se non servono.
+     */
+    public List<Utente> getAllievi(Integer idLezione) throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+
+        try {
+            return allievoLezioneDAO.getAllieviByLezione(idLezione);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero degli allievi: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera tutte le lezioni di un allievo.
+     */
+    public List<Lezione> getLezioniAllievo(Utente allievo) throws AccademiaException {
+        if (allievo == null || allievo.getId() == null) {
+            throw new AccademiaException("L'allievo non può essere null");
+        }
+
+        try {
+            return allievoLezioneDAO.getLezioniByAllievo(allievo.getId());
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero delle lezioni: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Conta il numero di allievi in una lezione.
+     */
+    public int contaAllievi(Integer idLezione) throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+
+        try {
+            return allievoLezioneDAO.contaAllievi(idLezione);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il conteggio degli allievi: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Verifica se una lezione ha ancora posti disponibili.
+     */
+    public boolean haPostiDisponibili(Integer idLezione) throws AccademiaException {
+        return contaAllievi(idLezione) < MAX_ALLIEVI_PER_LEZIONE;
+    }
+
+    // ========== GESTIONE PRESENZE E NOTE ==========
+
+    /**
+     * Segna la presenza o assenza di un allievo a una lezione.
+     */
+    public boolean segnaPresenza(Integer idLezione, Integer idAllievo, boolean presente)
+            throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+        if (idAllievo == null || idAllievo <= 0) {
+            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+        }
+
+        try {
+            return allievoLezioneDAO.segnaPresenza(idLezione, idAllievo, presente);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante la segnatura della presenza: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Aggiunge note specifiche per un allievo in una lezione.
+     */
+    public boolean aggiungiNote(Integer idLezione, Integer idAllievo, String note)
+            throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+        }
+        if (idAllievo == null || idAllievo <= 0) {
+            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+        }
+
+        try {
+            return allievoLezioneDAO.aggiungiFeedback(idLezione, idAllievo, note);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante l'aggiunta delle note: " + e.getMessage(), e);
         }
     }
 }

@@ -188,7 +188,6 @@ public class LezioneDAOTest {
             Lezione nuovaLezione = new Lezione();
             nuovaLezione.setPrenotazione(prenotazione);
             nuovaLezione.setMaestro(maestro);
-            nuovaLezione.setFeedback("Test Feedback");
             nuovaLezione.setDescrizione("Test Descrizione");
 
             // Inserisci nel database
@@ -204,7 +203,6 @@ public class LezioneDAOTest {
             assertNotNull(lezioneInserita, "La lezione dovrebbe essere nel database");
             assertEquals(nuovaLezione.getPrenotazione().getId(), lezioneInserita.getPrenotazione().getId());
             assertEquals(nuovaLezione.getMaestro().getId(), lezioneInserita.getMaestro().getId());
-            assertEquals(nuovaLezione.getFeedback(), lezioneInserita.getFeedback());
             assertEquals(nuovaLezione.getDescrizione(), lezioneInserita.getDescrizione());
 
             System.out.println("Lezione creata con ID: " + generatedId);
@@ -229,13 +227,11 @@ public class LezioneDAOTest {
             Lezione lezione = new Lezione();
             lezione.setPrenotazione(prenotazione);
             lezione.setMaestro(maestro);
-            lezione.setFeedback("Feedback originale");
             lezione.setDescrizione("Descrizione originale");
 
             Integer id = lezioneDAO.createLezione(lezione);
 
             // Modifica i dati
-            lezione.setFeedback("Feedback aggiornato");
             lezione.setDescrizione("Descrizione aggiornata");
 
             // Aggiorna nel database
@@ -245,8 +241,6 @@ public class LezioneDAOTest {
 
             // Verifica che le modifiche siano state salvate
             Lezione lezioneAggiornata = lezioneDAO.getLezioneById(id);
-            assertEquals("Feedback aggiornato", lezioneAggiornata.getFeedback(),
-                    "Il feedback dovrebbe essere stato aggiornato");
             assertEquals("Descrizione aggiornata", lezioneAggiornata.getDescrizione(),
                     "La descrizione dovrebbe essere stata aggiornata");
 
@@ -271,7 +265,6 @@ public class LezioneDAOTest {
             Lezione lezione = new Lezione();
             lezione.setPrenotazione(prenotazione);
             lezione.setMaestro(maestro);
-            lezione.setFeedback("Da eliminare");
             lezione.setDescrizione("Questa lezione sarà eliminata");
 
             Integer id = lezioneDAO.createLezione(lezione);
@@ -298,7 +291,6 @@ public class LezioneDAOTest {
     void testUpdateLezioneNotFound() throws SQLException {
         Lezione lezioneFake = new Lezione();
         lezioneFake.setId(9999);
-        lezioneFake.setFeedback("Fake feedback");
         lezioneFake.setDescrizione("Fake descrizione");
 
         // Crea una prenotazione di test e recupera un maestro

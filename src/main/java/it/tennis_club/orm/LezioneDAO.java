@@ -42,13 +42,12 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "INSERT INTO lezione (id_prenotazione, id_maestro, feedback, descrizione) " +
-                    "VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO lezione (id_prenotazione, id_maestro, descrizione) " +
+                    "VALUES (?, ?, ?)";
             statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, lezione.getPrenotazione().getId());
             statement.setInt(2, lezione.getMaestro().getId());
-            statement.setString(3, lezione.getFeedback());
-            statement.setString(4, lezione.getDescrizione());
+            statement.setString(3, lezione.getDescrizione());
 
             int affectedRows = statement.executeUpdate();
 
@@ -115,14 +114,13 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "UPDATE lezione SET feedback = ?, descrizione = ?, " +
+            String query = "UPDATE lezione SET descrizione = ?, " +
                     "id_prenotazione = ?, id_maestro = ? WHERE id = ?";
             statement = connection.prepareStatement(query);
-            statement.setString(1, lezione.getFeedback());
-            statement.setString(2, lezione.getDescrizione());
-            statement.setInt(3, lezione.getPrenotazione().getId());
-            statement.setInt(4, lezione.getMaestro().getId());
-            statement.setInt(5, lezione.getId());
+            statement.setString(1, lezione.getDescrizione());
+            statement.setInt(2, lezione.getPrenotazione().getId());
+            statement.setInt(3, lezione.getMaestro().getId());
+            statement.setInt(4, lezione.getId());
 
             int affectedRows = statement.executeUpdate();
             return affectedRows > 0;
@@ -149,7 +147,7 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_prenotazione, id_maestro, feedback, descrizione " +
+            String query = "SELECT id, id_prenotazione, id_maestro, descrizione " +
                     "FROM lezione ORDER BY id_prenotazione";
 
             statement = connection.prepareStatement(query);
@@ -184,7 +182,7 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_prenotazione, id_maestro, feedback, descrizione " +
+            String query = "SELECT id, id_prenotazione, id_maestro, descrizione " +
                     "FROM lezione WHERE id = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, id);
@@ -219,7 +217,7 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_prenotazione, id_maestro, feedback, descrizione " +
+            String query = "SELECT id, id_prenotazione, id_maestro, descrizione " +
                     "FROM lezione WHERE id_prenotazione = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idPrenotazione);
@@ -254,7 +252,7 @@ public class LezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_prenotazione, id_maestro, feedback, descrizione " +
+            String query = "SELECT id, id_prenotazione, id_maestro, descrizione " +
                     "FROM lezione WHERE id_maestro = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idMaestro);
@@ -284,7 +282,6 @@ public class LezioneDAO {
     private Lezione mapResultSetToLezione(ResultSet rs) throws SQLException {
         Lezione lezione = new Lezione();
         lezione.setId(rs.getInt("id"));
-        lezione.setFeedback(rs.getString("feedback"));
         lezione.setDescrizione(rs.getString("descrizione"));
 
         // Recupero oggetti completi tramite gli ID
