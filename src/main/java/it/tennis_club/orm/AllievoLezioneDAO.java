@@ -265,7 +265,7 @@ public class AllievoLezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_lezione, id_allievo, presente, note " +
+            String query = "SELECT id, id_lezione, id_allievo, presente, feedback " +
                     "FROM allievo_lezione WHERE id_lezione = ? AND id_allievo = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idLezione);
@@ -299,7 +299,7 @@ public class AllievoLezioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT id, id_lezione, id_allievo, presente, note " +
+            String query = "SELECT id, id_lezione, id_allievo, presente, feedback " +
                     "FROM allievo_lezione WHERE id_lezione = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idLezione);
