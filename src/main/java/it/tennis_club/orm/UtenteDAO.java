@@ -7,11 +7,74 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Data Access Object per la gestione degli utenti nel database.
  */
 public class UtenteDAO {
+
+    /**
+     * Registra un nuovo utente nel database.
+     * 
+     * @param nuovoUtente l'oggetto Utente da registrare (senza ID)
+     * @return l'ID generato per il nuovo utente
+     * @throws SQLException se si verifica un errore durante l'inserimento
+     *                      o se l'email è già presente nel database
+     */
+    public Integer registrazione(Utente nuovoUtente) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+            String query = "INSERT INTO utente (nome, cognome, email, password, ruolo) " +
+                    "VALUES (?, ?, ?, ?, ?::ruolo_utente)";
+
+            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, nuovoUtente.getNome());
+            statement.setString(2, nuovoUtente.getCognome());
+            statement.setString(3, nuovoUtente.getEmail());
+            statement.setString(4, nuovoUtente.getPassword());
+            statement.setString(5, nuovoUtente.getRuolo().toString());
+
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Registrazione fallita: nessuna riga inserita");
+            }
+
+            resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                Integer idGenerato = resultSet.getInt(1);
+                nuovoUtente.setId(idGenerato);
+            } else {
+                throw new SQLException("Registrazione fallita: ID non generato");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante la registrazione: " + e.getMessage());
+            throw e;
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+            ConnectionManager.closeConnection(connection);
+        }
+
+        return nuovoUtente.getId();
+    }
 
     /**
      * Esegue il login di un utente verificando email e password.

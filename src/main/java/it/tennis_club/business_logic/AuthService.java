@@ -33,6 +33,59 @@ public class AuthService {
     }
 
     /**
+     * Registra un nuovo utente nel sistema.
+     * Valida i dati in input, salva l'utente nel database e crea una sessione.
+     * 
+     * @param nuovoUtente l'oggetto Utente da registrare
+     * @return l'ID generato per il nuovo utente
+     * @throws AuthenticationException se i dati non sono validi o si verifica un
+     *                                 errore
+     */
+    public Integer registrazione(Utente nuovoUtente) throws AuthenticationException {
+        // Validazione input
+        if (nuovoUtente == null) {
+            throw new AuthenticationException("I dati dell'utente non possono essere nulli");
+        }
+        if (nuovoUtente.getNome() == null || nuovoUtente.getNome().trim().isEmpty()) {
+            throw new AuthenticationException("Il nome non può essere vuoto");
+        }
+        if (nuovoUtente.getCognome() == null || nuovoUtente.getCognome().trim().isEmpty()) {
+            throw new AuthenticationException("Il cognome non può essere vuoto");
+        }
+        if (nuovoUtente.getEmail() == null || nuovoUtente.getEmail().trim().isEmpty()) {
+            throw new AuthenticationException("L'email non può essere vuota");
+        }
+        if (nuovoUtente.getPassword() == null || nuovoUtente.getPassword().isEmpty()) {
+            throw new AuthenticationException("La password non può essere vuota");
+        }
+        if (nuovoUtente.getRuolo() == null) {
+            throw new AuthenticationException("Il ruolo non può essere nullo");
+        }
+
+        try {
+            // Prima salva l'utente nel database
+            Integer idGenerato = utenteDAO.registrazione(nuovoUtente);
+
+            // Poi crea la sessione per l'utente appena registrato
+            SessionManager sessionManager = SessionManager.getInstance();
+            String sessionId = sessionManager.createSession(nuovoUtente);
+
+            System.out.println("Registrazione completata per: " + nuovoUtente.getEmail() +
+                    " (ID: " + idGenerato + ", Session ID: " + sessionId + ")");
+
+            return idGenerato;
+
+        } catch (SQLException e) {
+            // Controlla se è un errore di email duplicata (violazione unique constraint)
+            if (e.getMessage() != null && e.getMessage().contains("duplicate key")
+                    || e.getMessage().contains("unique constraint")) {
+                throw new AuthenticationException("L'email è già registrata nel sistema", e);
+            }
+            throw new AuthenticationException("Errore durante la registrazione: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Autentica un utente verificando le sue credenziali.
      * 
      * @param email    l'email dell'utente

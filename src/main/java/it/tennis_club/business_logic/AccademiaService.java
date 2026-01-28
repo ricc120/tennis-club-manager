@@ -373,7 +373,7 @@ public class AccademiaService {
     /**
      * Aggiunge note specifiche per un allievo in una lezione.
      */
-    public boolean aggiungiNote(Integer idLezione, Integer idAllievo, String note)
+    public boolean aggiungiFeedback(Integer idLezione, Integer idAllievo, String feedback)
             throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
             throw new AccademiaException("L'ID della lezione non può essere null o negativo");
@@ -383,9 +383,9 @@ public class AccademiaService {
         }
 
         try {
-            return allievoLezioneDAO.aggiungiFeedback(idLezione, idAllievo, note);
+            return allievoLezioneDAO.aggiungiFeedback(idLezione, idAllievo, feedback);
         } catch (SQLException e) {
-            throw new AccademiaException("Errore durante l'aggiunta delle note: " + e.getMessage(), e);
+            throw new AccademiaException("Errore durante l'aggiunta del feedback: " + e.getMessage(), e);
         }
     }
 }
