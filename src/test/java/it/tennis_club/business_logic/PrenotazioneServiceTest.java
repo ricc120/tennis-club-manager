@@ -95,10 +95,10 @@ public class PrenotazioneServiceTest {
     @Test
     @Order(2)
     @DisplayName("Test creazione prenotazione con data nel passato")
-    public void testCreaPrenotazioneDataPassata() {
+    public void testCreaPrenotazioneDataPassata() throws PrenotazioneException {
         // Arrange
         LocalDate dataPassata = LocalDate.now().minusDays(1);
-        LocalTime oraValida = LocalTime.of(10, 0);
+        LocalTime oraValida = LocalTime.now();
 
         // Act & Assert
         PrenotazioneException exception = assertThrows(
@@ -114,10 +114,10 @@ public class PrenotazioneServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test creazione prenotazione con orario non valido")
-    public void testCreaPrenotazioneOrarioNonValido() {
+    public void testCreaPrenotazioneOrarioNonValido() throws PrenotazioneException {
         // Arrange
         LocalDate dataFutura = LocalDate.now().plusDays(7);
-        LocalTime oraTroppoPresto = LocalTime.of(6, 0); // Prima delle 8:00
+        LocalTime oraTroppoPresto = LocalTime.of(7, 0); // Prima delle 8:00
 
         // Act & Assert
         PrenotazioneException exception = assertThrows(
@@ -133,20 +133,22 @@ public class PrenotazioneServiceTest {
     @Test
     @Order(4)
     @DisplayName("Test creazione prenotazione duplicata (stesso campo, stessa ora)")
-    public void testCreaPrenotazioneDuplicata() throws PrenotazioneException {
+    public void testCreaPrenotazioneDuplicata() throws PrenotazioneException, SQLException {
         // Arrange
         LocalDate dataFutura = LocalDate.now().plusDays(110);
-        LocalTime ora = LocalTime.of(14, 0);
+        LocalTime ora = LocalTime.of(11, 0);
 
         // Crea la prima prenotazione
         Integer primaPrenotazione = prenotazioneService.creaPrenotazione(
                 dataFutura, ora, campoTest, utenteTest);
         assertNotNull(primaPrenotazione);
 
+        LocalTime oraDuplicata = ora;
+
         // Act & Assert - Prova a creare una seconda prenotazione alla stessa ora
         PrenotazioneException exception = assertThrows(
                 PrenotazioneException.class,
-                () -> prenotazioneService.creaPrenotazione(dataFutura, ora, campoTest, utenteTest));
+                () -> prenotazioneService.creaPrenotazione(dataFutura, oraDuplicata, campoTest, utenteTest));
 
         assertTrue(exception.getMessage().contains("già prenotato"),
                 "Il messaggio dovrebbe indicare che il campo è già prenotato");
@@ -159,7 +161,7 @@ public class PrenotazioneServiceTest {
     @DisplayName("Test verifica disponibilità campo")
     public void testIsCampoDisponibile() throws PrenotazioneException {
         LocalTime oraLibera = LocalTime.of(16, 0);
-        LocalTime oraOccupata = LocalTime.of(10, 0); // Usata nel primo test
+        LocalTime oraOccupata = LocalTime.of(12, 0);
 
         // Crea una prenotazione
         LocalDate dataTest = LocalDate.now().plusDays(120);
@@ -183,8 +185,8 @@ public class PrenotazioneServiceTest {
     public void testGetPrenotazioniPerData() throws PrenotazioneException {
         // Arrange
         LocalDate dataTest = LocalDate.now().plusDays(125);
-        LocalTime ora1 = LocalTime.of(9, 0);
-        LocalTime ora2 = LocalTime.of(11, 0);
+        LocalTime ora1 = LocalTime.of(13, 0);
+        LocalTime ora2 = LocalTime.of(14, 0);
 
         // Crea due prenotazioni nella stessa data
         prenotazioneService.creaPrenotazione(dataTest, ora1, campoTest, utenteTest);
@@ -208,7 +210,7 @@ public class PrenotazioneServiceTest {
         LocalDate data1 = LocalDate.now().plusDays(140);
         LocalDate data2 = LocalDate.now().plusDays(141);
         prenotazioneService.creaPrenotazione(data1, LocalTime.of(9, 0), campoTest, utenteTest);
-        prenotazioneService.creaPrenotazione(data2, LocalTime.of(10, 0), campoTest, utenteTest);
+        prenotazioneService.creaPrenotazione(data2, LocalTime.of(9, 0), campoTest, utenteTest);
 
         // Act
         List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerCampo(campoTest);
@@ -234,8 +236,8 @@ public class PrenotazioneServiceTest {
         // Arrange - Crea alcune prenotazioni per il socio
         LocalDate data1 = LocalDate.now().plusDays(145);
         LocalDate data2 = LocalDate.now().plusDays(146);
-        prenotazioneService.creaPrenotazione(data1, LocalTime.of(11, 0), campoTest, utenteTest);
-        prenotazioneService.creaPrenotazione(data2, LocalTime.of(12, 0), campoTest, utenteTest);
+        prenotazioneService.creaPrenotazione(data1, LocalTime.of(15, 0), campoTest, utenteTest);
+        prenotazioneService.creaPrenotazione(data2, LocalTime.of(15, 0), campoTest, utenteTest);
 
         // Act
         List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerSocio(utenteTest);
@@ -260,7 +262,7 @@ public class PrenotazioneServiceTest {
     public void testGetPrenotazioniPerDataECampo() throws PrenotazioneException {
         // Arrange
         LocalDate dataTest = LocalDate.now().plusDays(130);
-        LocalTime ora = LocalTime.of(15, 0);
+        LocalTime ora = LocalTime.of(16, 0);
 
         // Crea una prenotazione specifica
         prenotazioneService.creaPrenotazione(dataTest, ora, campoTest, utenteTest);
@@ -289,7 +291,7 @@ public class PrenotazioneServiceTest {
     public void testValidazioneParametriNull() {
         // Test con data null
         assertThrows(PrenotazioneException.class,
-                () -> prenotazioneService.creaPrenotazione(null, LocalTime.of(10, 0), campoTest, utenteTest));
+                () -> prenotazioneService.creaPrenotazione(null, LocalTime.now(), campoTest, utenteTest));
 
         // Test con ora null
         assertThrows(PrenotazioneException.class,
@@ -297,12 +299,12 @@ public class PrenotazioneServiceTest {
 
         // Test con campo null
         assertThrows(PrenotazioneException.class,
-                () -> prenotazioneService.creaPrenotazione(LocalDate.now().plusDays(1), LocalTime.of(10, 0), null,
+                () -> prenotazioneService.creaPrenotazione(LocalDate.now().plusDays(1), LocalTime.now(), null,
                         utenteTest));
 
         // Test con socio null
         assertThrows(PrenotazioneException.class,
-                () -> prenotazioneService.creaPrenotazione(LocalDate.now().plusDays(1), LocalTime.of(10, 0), campoTest,
+                () -> prenotazioneService.creaPrenotazione(LocalDate.now().plusDays(1), LocalTime.now(), campoTest,
                         null));
 
         System.out.println("✅ Validazione parametri null funziona correttamente");
@@ -314,7 +316,7 @@ public class PrenotazioneServiceTest {
     public void testCancellaPrenotazione() throws PrenotazioneException, SQLException {
         // Arrange - Crea una prenotazione da cancellare
         LocalDate dataFutura = LocalDate.now().plusDays(135);
-        LocalTime ora = LocalTime.of(18, 0);
+        LocalTime ora = LocalTime.of(17, 0);
         Integer idDaCancellare = prenotazioneService.creaPrenotazione(
                 dataFutura, ora, campoTest, utenteTest);
 
@@ -388,7 +390,7 @@ public class PrenotazioneServiceTest {
     public void testGetAllPrenotazioni() throws PrenotazioneException {
         // Arrange - Crea almeno una prenotazione
         LocalDate data = LocalDate.now().plusDays(150);
-        prenotazioneService.creaPrenotazione(data, LocalTime.of(13, 0), campoTest, utenteTest);
+        prenotazioneService.creaPrenotazione(data, LocalTime.of(18, 0), campoTest, utenteTest);
 
         // Act
         List<Prenotazione> prenotazioni = prenotazioneService.getAllPrenotazioni();

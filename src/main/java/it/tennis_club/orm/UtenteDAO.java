@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data Access Object per la gestione degli utenti nel database.
@@ -211,5 +213,205 @@ public class UtenteDAO {
         }
 
         return utente;
+    }
+
+    /**
+     * Recupera tutti gli utenti con un determinato ruolo.
+     * 
+     * @param ruolo il ruolo degli utenti da cercare
+     * @return lista di utenti con il ruolo specificato
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public List<Utente> getUtentiByRuolo(Ruolo ruolo) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Utente> utenti = new ArrayList<>();
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "SELECT id, nome, cognome, email, password, ruolo " +
+                    "FROM utente WHERE ruolo = ?::ruolo_utente";
+
+            statement = connection.prepareStatement(query);
+            statement.setString(1, ruolo.toString());
+
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Utente utente = new Utente();
+                utente.setId(resultSet.getInt("id"));
+                utente.setNome(resultSet.getString("nome"));
+                utente.setCognome(resultSet.getString("cognome"));
+                utente.setEmail(resultSet.getString("email"));
+                utente.setPassword(resultSet.getString("password"));
+
+                String ruoloStr = resultSet.getString("ruolo");
+                utente.setRuolo(Ruolo.valueOf(ruoloStr));
+
+                utenti.add(utente);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero degli utenti per ruolo: " + e.getMessage());
+            throw e;
+
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+                }
+            }
+
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+
+            ConnectionManager.closeConnection(connection);
+        }
+
+        return utenti;
+    }
+
+    /**
+     * Recupera tutti gli utenti dal database.
+     * 
+     * @return lista di tutti gli utenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public List<Utente> getAllUtenti() throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Utente> utenti = new ArrayList<>();
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "SELECT id, nome, cognome, email, password, ruolo " +
+                    "FROM utente ORDER BY id";
+
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Utente utente = new Utente();
+                utente.setId(resultSet.getInt("id"));
+                utente.setNome(resultSet.getString("nome"));
+                utente.setCognome(resultSet.getString("cognome"));
+                utente.setEmail(resultSet.getString("email"));
+                utente.setPassword(resultSet.getString("password"));
+
+                String ruoloStr = resultSet.getString("ruolo");
+                utente.setRuolo(Ruolo.valueOf(ruoloStr));
+
+                utenti.add(utente);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero di tutti gli utenti: " + e.getMessage());
+            throw e;
+
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+                }
+            }
+
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+
+            ConnectionManager.closeConnection(connection);
+        }
+
+        return utenti;
+    }
+
+    /**
+     * Aggiorna il ruolo di un utente.
+     * 
+     * @param id         l'ID dell'utente da aggiornare
+     * @param nuovoRuolo il nuovo ruolo da assegnare
+     * @return true se l'aggiornamento è avvenuto con successo, false altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public boolean updateRuolo(Integer id, Ruolo nuovoRuolo) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "UPDATE utente SET ruolo = ?::ruolo_utente WHERE id = ?";
+
+            statement = connection.prepareStatement(query);
+            statement.setString(1, nuovoRuolo.toString());
+            statement.setInt(2, id);
+
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'aggiornamento del ruolo: " + e.getMessage());
+            throw e;
+
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+
+            ConnectionManager.closeConnection(connection);
+        }
+    }
+
+    public boolean deleteUtente(Integer id) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "DELETE FROM utente WHERE id = ?";
+
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante la cancellazione dell'utente: " + e.getMessage());
+            throw e;
+
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+
+            ConnectionManager.closeConnection(connection);
+        }
     }
 }

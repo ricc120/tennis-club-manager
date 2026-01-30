@@ -55,6 +55,11 @@ public class PrenotazioneService {
             throw new PrenotazioneException("L'orario di prenotazione deve essere tra le 8:00 e le 22:00");
         }
 
+        // Validazione orario passato (solo se la data è oggi)
+        if (data.equals(LocalDate.now()) && oraInizio.isBefore(LocalTime.now())) {
+            throw new PrenotazioneException("Non è possibile prenotare un campo per un orario passato");
+        }
+
         try {
             // Verifica disponibilità del campo
             // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO

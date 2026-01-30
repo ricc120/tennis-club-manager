@@ -42,6 +42,36 @@ public class AuthService {
      *                                 errore
      */
     public Integer registrazione(Utente nuovoUtente) throws AuthenticationException {
+        return registrazione(nuovoUtente, true);
+    }
+
+    /**
+     * Registra un nuovo utente nel sistema senza creare una sessione.
+     * Utile quando un admin crea utenti - non vogliamo cambiare la sessione
+     * corrente.
+     * 
+     * @param nuovoUtente l'oggetto Utente da registrare
+     * @return l'ID generato per il nuovo utente
+     * @throws AuthenticationException se i dati non sono validi o si verifica un
+     *                                 errore
+     */
+    public Integer registrazioneSenzaSessione(Utente nuovoUtente) throws AuthenticationException {
+        return registrazione(nuovoUtente, false);
+    }
+
+    /**
+     * Registra un nuovo utente nel sistema.
+     * Valida i dati in input e salva l'utente nel database.
+     * Se creaSessione è true, crea anche una sessione per l'utente.
+     * 
+     * @param nuovoUtente  l'oggetto Utente da registrare
+     * @param creaSessione se true, crea una sessione per l'utente dopo la
+     *                     registrazione
+     * @return l'ID generato per il nuovo utente
+     * @throws AuthenticationException se i dati non sono validi o si verifica un
+     *                                 errore
+     */
+    private Integer registrazione(Utente nuovoUtente, boolean creaSessione) throws AuthenticationException {
         // Validazione input
         if (nuovoUtente == null) {
             throw new AuthenticationException("I dati dell'utente non possono essere nulli");
@@ -63,15 +93,19 @@ public class AuthService {
         }
 
         try {
-            // Prima salva l'utente nel database
+            // Salva l'utente nel database
             Integer idGenerato = utenteDAO.registrazione(nuovoUtente);
 
-            // Poi crea la sessione per l'utente appena registrato
-            SessionManager sessionManager = SessionManager.getInstance();
-            String sessionId = sessionManager.createSession(nuovoUtente);
-
-            System.out.println("Registrazione completata per: " + nuovoUtente.getEmail() +
-                    " (ID: " + idGenerato + ", Session ID: " + sessionId + ")");
+            // Crea la sessione solo se richiesto
+            if (creaSessione) {
+                SessionManager sessionManager = SessionManager.getInstance();
+                String sessionId = sessionManager.createSession(nuovoUtente);
+                System.out.println("Registrazione completata per: " + nuovoUtente.getEmail() +
+                        " (ID: " + idGenerato + ", Session ID: " + sessionId + ")");
+            } else {
+                System.out.println("Utente creato: " + nuovoUtente.getEmail() +
+                        " (ID: " + idGenerato + ") - senza sessione");
+            }
 
             return idGenerato;
 
@@ -174,5 +208,26 @@ public class AuthService {
         }
 
         return success;
+    }
+
+    public boolean deleteUtente(Utente utente) throws AuthenticationException {
+
+        if (utente.getId() == null) {
+            throw new AuthenticationException("L'ID dell'utente non può essere vuoto");
+        }
+
+        try {
+
+            boolean success = utenteDAO.deleteUtente(utente.getId());
+            if (success) {
+                System.out.println("Cancellazione effettuata per: " + utente.getEmail());
+
+            }
+
+            return success;
+        } catch (SQLException e) {
+            throw new AuthenticationException("Errore durante la cancellazione dell'utente " + e.getMessage(), e);
+        }
+
     }
 }

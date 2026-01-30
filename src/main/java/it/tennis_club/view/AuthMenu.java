@@ -20,7 +20,8 @@ public class AuthMenu {
     }
 
     /**
-     * Mostra il menu di autenticazione.
+     * Mostra il menu di autenticazione (versione legacy, non più usata dal menu
+     * principale).
      */
     public void show() {
         boolean running = true;
@@ -28,7 +29,6 @@ public class AuthMenu {
         while (running) {
             CLIUtils.printHeader("AUTENTICAZIONE");
 
-            // Mostra stato corrente
             Utente utenteCorrente = sessionManager.getCurrentUser();
             if (utenteCorrente != null) {
                 CLIUtils.printInfo("Utente connesso: " + utenteCorrente.getNome() + " " +
@@ -42,14 +42,15 @@ public class AuthMenu {
             System.out.println("2. Registrazione");
             System.out.println("3. Logout");
             System.out.println("4. Visualizza utente corrente");
+            System.out.println();
             System.out.println("0. Torna al menu principale");
             System.out.println();
 
             int scelta = CLIUtils.readInt("Scelta: ");
 
             switch (scelta) {
-                case 1 -> login();
-                case 2 -> registrazione();
+                case 1 -> loginSingolo();
+                case 2 -> registrazionePubblica();
                 case 3 -> logout();
                 case 4 -> visualizzaUtenteCorrente();
                 case 0 -> running = false;
@@ -60,11 +61,11 @@ public class AuthMenu {
 
     /**
      * Effettua il login di un utente.
+     * Metodo pubblico chiamato dalla schermata di autenticazione obbligatoria.
      */
-    private void login() {
+    public void loginSingolo() {
         CLIUtils.printSubHeader("Login");
 
-        // Verifica se già loggato
         if (sessionManager.getCurrentUser() != null) {
             CLIUtils.printWarning("Sei già autenticato. Effettua prima il logout.");
             CLIUtils.waitForEnter();
@@ -91,55 +92,36 @@ public class AuthMenu {
     }
 
     /**
-     * Registra un nuovo utente nel sistema.
+     * Registrazione pubblica: assegna automaticamente il ruolo SOCIO.
+     * Chiamata dalla schermata di autenticazione obbligatoria.
      */
-    private void registrazione() {
-        CLIUtils.printSubHeader("Registrazione Nuovo Utente");
+    public void registrazionePubblica() {
+        CLIUtils.printSubHeader("Registrazione Nuovo Socio");
 
-        // Verifica se già loggato
         if (sessionManager.getCurrentUser() != null) {
             CLIUtils.printWarning("Sei già autenticato. Effettua prima il logout per registrare un nuovo utente.");
             CLIUtils.waitForEnter();
             return;
         }
 
-        System.out.println("Inserisci i dati per la registrazione:");
+        System.out.println("Inserisci i tuoi dati per la registrazione:");
+        CLIUtils.printInfo("Sarai registrato come SOCIO del Tennis Club.");
         System.out.println();
 
-        String nome = CLIUtils.readString("Nome: ");
-        String cognome = CLIUtils.readString("Cognome: ");
+        String nome = CLIUtils.readTextString("Nome: ");
+        String cognome = CLIUtils.readTextString("Cognome: ");
         String email = CLIUtils.readString("Email: ");
         String password = CLIUtils.readString("Password: ");
 
-        // Selezione ruolo
-        System.out.println();
-        System.out.println("Seleziona il ruolo:");
-        System.out.println("1. Socio");
-        System.out.println("2. Allievo");
-        System.out.println("3. Maestro");
-        System.out.println("4. Manutentore");
-
-        int sceltaRuolo = CLIUtils.readInt("Ruolo: ");
-
-        Utente.Ruolo ruolo;
-        switch (sceltaRuolo) {
-            case 1 -> ruolo = Utente.Ruolo.SOCIO;
-            case 2 -> ruolo = Utente.Ruolo.ALLIEVO;
-            case 3 -> ruolo = Utente.Ruolo.MAESTRO;
-            case 4 -> ruolo = Utente.Ruolo.MANUTENTORE;
-            default -> {
-                CLIUtils.printError("Ruolo non valido. Operazione annullata.");
-                CLIUtils.waitForEnter();
-                return;
-            }
-        }
+        // Ruolo assegnato automaticamente
+        Utente.Ruolo ruolo = Utente.Ruolo.SOCIO;
 
         // Riepilogo e conferma
         System.out.println();
         CLIUtils.printSubHeader("Riepilogo");
         System.out.println("  Nome:    " + nome + " " + cognome);
         System.out.println("  Email:   " + email);
-        System.out.println("  Ruolo:   " + ruolo);
+        System.out.println("  Ruolo:   " + ruolo + " (assegnato automaticamente)");
         System.out.println();
 
         if (!CLIUtils.readConfirm("Confermi la registrazione?")) {
@@ -148,7 +130,6 @@ public class AuthMenu {
             return;
         }
 
-        // Crea l'oggetto utente
         Utente nuovoUtente = new Utente();
         nuovoUtente.setNome(nome);
         nuovoUtente.setCognome(cognome);
@@ -169,9 +150,95 @@ public class AuthMenu {
     }
 
     /**
-     * Effettua il logout dell'utente corrente.
+     * Registrazione con ruolo specifico: solo per Admin.
+     * Permette di creare utenti con ruoli diversi da SOCIO.
+     * 
+     * @return l'ID del nuovo utente, o null se la registrazione fallisce
      */
-    private void logout() {
+    public Integer registrazioneAdmin() {
+        CLIUtils.printSubHeader("Crea Nuovo Utente");
+
+        System.out.println("Inserisci i dati del nuovo utente:");
+        System.out.println();
+
+        String nome = CLIUtils.readTextString("Nome: ");
+        String cognome = CLIUtils.readTextString("Cognome: ");
+        String email = CLIUtils.readString("Email: ");
+        String password = CLIUtils.readString("Password: ");
+
+        // Validazione email e password (nome e cognome sono già validati da
+        // readTextString)
+
+        if (email == null || email.trim().isEmpty()) {
+            CLIUtils.printError("L'email è obbligatoria.");
+            return null;
+        }
+        if (password == null || password.trim().isEmpty()) {
+            CLIUtils.printError("La password è obbligatoria.");
+            return null;
+        }
+
+        // Selezione ruolo
+        System.out.println();
+        System.out.println("Seleziona il ruolo:");
+        System.out.println("1. Socio");
+        System.out.println("2. Allievo");
+        System.out.println("3. Maestro");
+        System.out.println("4. Manutentore");
+        System.out.println("5. Admin");
+
+        int sceltaRuolo = CLIUtils.readInt("Ruolo: ");
+
+        Utente.Ruolo ruolo;
+        switch (sceltaRuolo) {
+            case 1 -> ruolo = Utente.Ruolo.SOCIO;
+            case 2 -> ruolo = Utente.Ruolo.ALLIEVO;
+            case 3 -> ruolo = Utente.Ruolo.MAESTRO;
+            case 4 -> ruolo = Utente.Ruolo.MANUTENTORE;
+            case 5 -> ruolo = Utente.Ruolo.ADMIN;
+            default -> {
+                CLIUtils.printError("Ruolo non valido. Operazione annullata.");
+                return null;
+            }
+        }
+
+        // Riepilogo e conferma
+        System.out.println();
+        CLIUtils.printSubHeader("Riepilogo");
+        System.out.println("  Nome:    " + nome + " " + cognome);
+        System.out.println("  Email:   " + email);
+        System.out.println("  Ruolo:   " + ruolo);
+        System.out.println();
+
+        if (!CLIUtils.readConfirm("Confermi la creazione dell'utente?")) {
+            CLIUtils.printWarning("Creazione annullata.");
+            return null;
+        }
+
+        Utente nuovoUtente = new Utente();
+        nuovoUtente.setNome(nome);
+        nuovoUtente.setCognome(cognome);
+        nuovoUtente.setEmail(email);
+        nuovoUtente.setPassword(password);
+        nuovoUtente.setRuolo(ruolo);
+
+        try {
+            // Usa registrazioneSenzaSessione per non cambiare la sessione dell'admin
+            Integer idGenerato = authService.registrazioneSenzaSessione(nuovoUtente);
+            CLIUtils.printSuccess("Utente creato con successo!");
+            CLIUtils.printInfo("ID utente: " + idGenerato);
+            return idGenerato;
+        } catch (AuthenticationException e) {
+            CLIUtils.printError("Errore durante la creazione: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Effettua il logout dell'utente corrente.
+     * Metodo pubblico chiamato dal menu principale.
+     */
+    public void logout() {
         CLIUtils.printSubHeader("Logout");
 
         Utente utenteCorrente = sessionManager.getCurrentUser();
@@ -210,7 +277,6 @@ public class AuthMenu {
             System.out.println("  Ruolo:   " + utente.getRuolo());
             System.out.println();
 
-            // Mostra informazioni sessione
             if (sessionManager.isUserLoggedIn()) {
                 CLIUtils.printInfo("Sessione attiva");
             }

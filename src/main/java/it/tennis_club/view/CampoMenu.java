@@ -32,31 +32,60 @@ public class CampoMenu {
         while (running) {
             CLIUtils.printHeader("GESTIONE CAMPI");
 
-            System.out.println("1. Visualizza tutti i campi");
-            System.out.println("2. Cerca campo per ID");
-            System.out.println("3. Campi coperti");
-            System.out.println("4. Campi per tipo superficie");
-            System.out.println("───────────────────────────────");
-            System.out.println("5. Crea manutenzione (Admin/Manutentore)");
-            System.out.println("6. Completa manutenzione (Admin/Manutentore)");
-            System.out.println("7. Annulla manutenzione (Admin/Manutentore)");
-            System.out.println("8. Visualizza manutenzioni campo");
-            System.out.println("0. Torna al menu principale");
-            System.out.println();
+            Utente utenteCorrente = sessionManager.getCurrentUser();
+            Utente.Ruolo ruolo = utenteCorrente != null ? utenteCorrente.getRuolo() : null;
 
-            int scelta = CLIUtils.readInt("Scelta: ");
+            if (ruolo == Utente.Ruolo.ADMIN || ruolo == Utente.Ruolo.MANUTENTORE) {
 
-            switch (scelta) {
-                case 1 -> visualizzaTuttiCampi();
-                case 2 -> cercaCampoPerID();
-                case 3 -> campiCoperti();
-                case 4 -> campiPerTipoSuperficie();
-                case 5 -> creaManutenzione();
-                case 6 -> completaManutenzione();
-                case 7 -> annullaManutenzione();
-                case 8 -> visualizzaManutenzioni();
-                case 0 -> running = false;
-                default -> CLIUtils.printError("Opzione non valida");
+                System.out.println("═══ CAMPI ═══");
+                System.out.println("1. Visualizza tutti i campi");
+                System.out.println("2. Cerca campo per ID");
+                System.out.println("3. Campi coperti");
+                System.out.println("4. Campi per tipo superficie");
+                System.out.println();
+                System.out.println("═══ MANUTENZIONI ═══");
+                System.out.println("5. Crea manutenzione");
+                System.out.println("6. Completa manutenzione");
+                System.out.println("7. Annulla manutenzione");
+                System.out.println("8. Visualizza manutenzioni campo");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+
+                switch (scelta) {
+                    case 1 -> visualizzaTuttiCampi();
+                    case 2 -> cercaCampoPerID();
+                    case 3 -> campiCoperti();
+                    case 4 -> campiPerTipoSuperficie();
+                    case 5 -> creaManutenzione();
+                    case 6 -> completaManutenzione();
+                    case 7 -> annullaManutenzione();
+                    case 8 -> visualizzaManutenzioni();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+            } else {
+                System.out.println("1. Visualizza tutti i campi");
+                System.out.println("2. Cerca campo per ID");
+                System.out.println("3. Campi coperti");
+                System.out.println("4. Campi per tipo superficie");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+
+                switch (scelta) {
+                    case 1 -> visualizzaTuttiCampi();
+                    case 2 -> cercaCampoPerID();
+                    case 3 -> campiCoperti();
+                    case 4 -> campiPerTipoSuperficie();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+
             }
         }
     }

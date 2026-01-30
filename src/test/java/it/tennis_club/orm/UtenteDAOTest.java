@@ -204,4 +204,37 @@ class UtenteDAOTest {
 
         assertNull(utente, "Dovrebbe restituire null per ID inesistente");
     }
+
+    // ===== TEST DELETE UTENTE =====
+
+    @Test
+    @DisplayName("Cancellazione utente esistente con successo")
+    void testDeleteUtenteSuccess() throws SQLException {
+        // Crea un utente da cancellare
+        Utente nuovoUtente = new Utente();
+        nuovoUtente.setNome("DaCancellare");
+        nuovoUtente.setCognome("Test");
+        nuovoUtente.setEmail("da.cancellare@tennis.it");
+        nuovoUtente.setPassword("password");
+        nuovoUtente.setRuolo(Utente.Ruolo.SOCIO);
+
+        Integer id = utenteDAO.registrazione(nuovoUtente);
+
+        // Verifica che esista
+        assertNotNull(utenteDAO.getUtenteById(id), "L'utente dovrebbe esistere prima della cancellazione");
+
+        // Cancella
+        boolean risultato = utenteDAO.deleteUtente(id);
+
+        assertTrue(risultato, "La cancellazione dovrebbe avere successo");
+        assertNull(utenteDAO.getUtenteById(id), "L'utente non dovrebbe più esistere dopo la cancellazione");
+    }
+
+    @Test
+    @DisplayName("Cancellazione utente inesistente restituisce false")
+    void testDeleteUtenteNonEsistente() throws SQLException {
+        boolean risultato = utenteDAO.deleteUtente(999999);
+
+        assertFalse(risultato, "La cancellazione di un utente inesistente dovrebbe restituire false");
+    }
 }

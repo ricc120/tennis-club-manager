@@ -58,6 +58,8 @@ public class AccademiaServiceTest {
             utenteAllievo = utenteTest; // Fallback al primo utente se non esiste il secondo
         }
         assertNotNull(utenteAllievo, "Il database dovrebbe contenere almeno un utente per allievo");
+        // Imposta il ruolo ALLIEVO per poter partecipare alle lezioni
+        utenteAllievo.setRuolo(Ruolo.ALLIEVO);
     }
 
     @BeforeEach
@@ -100,7 +102,7 @@ public class AccademiaServiceTest {
     @DisplayName("Test creazione lezione valida")
     void testCreateLezione() throws AccademiaException, PrenotazioneException {
         LocalDate dataFutura = LocalDate.now().plusDays(100);
-        LocalTime oraFutura = LocalTime.of(10, 0);
+        LocalTime oraFutura = LocalTime.now();
 
         Integer idPrenotazioneLezione = accademiaService.createLezione(dataFutura, oraFutura, campoTest, utenteTest,
                 "Descrizione test");
@@ -117,7 +119,7 @@ public class AccademiaServiceTest {
     @Order(2)
     @DisplayName("Test inserimento descrizione lezione valida")
     void testInserisciDescrizione() throws AccademiaException, PrenotazioneException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0), campoTest, utenteTest,
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(), campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getAllLezioni();
         if (!lezioni.isEmpty()) {
@@ -136,7 +138,7 @@ public class AccademiaServiceTest {
     @Order(3)
     @DisplayName("Test eliminazione lezione")
     void testDeleteLezione() throws AccademiaException, PrenotazioneException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0), campoTest, utenteTest,
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(), campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getAllLezioni();
         if (!lezioni.isEmpty()) {
@@ -154,7 +156,7 @@ public class AccademiaServiceTest {
     @Order(4)
     @DisplayName("Test recupero lezioni per ID")
     void testGetLezioniById() throws AccademiaException, PrenotazioneException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0), campoTest, utenteTest,
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(), campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getAllLezioni();
         for (Lezione l : lezioni) {
@@ -171,7 +173,7 @@ public class AccademiaServiceTest {
     @Order(5)
     @DisplayName("Test recupero di tutte le lezioni esistenti")
     void testGetAllLezioni() throws AccademiaException, PrenotazioneException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0), campoTest, utenteTest,
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(), campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getAllLezioni();
         assertNotNull(lezioni, "La lista di lezioni non dovrebbe essere null");
@@ -184,7 +186,7 @@ public class AccademiaServiceTest {
     @Order(6)
     @DisplayName("Test recupero di una lezione per Maestro")
     void testGetLezioneByMaestro() throws AccademiaException, PrenotazioneException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0), campoTest, utenteTest,
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(), campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getLezioneByMaestro(utenteTest);
         assertNotNull(lezioni, "La lista di lezioni non dovrebbe essere null");
@@ -201,7 +203,7 @@ public class AccademiaServiceTest {
     @Order(7)
     @DisplayName("Test recupero di una lezione per Prenotazione")
     void testGetLezioneByPrenotazione() throws AccademiaException, PrenotazioneException, SQLException {
-        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.of(10, 0),
+        accademiaService.createLezione(LocalDate.now().plusDays(10), LocalTime.now(),
                 campoTest, utenteTest,
                 "Descrzione Test");
         List<Lezione> lezioni = accademiaService.getAllLezioni();
@@ -222,7 +224,7 @@ public class AccademiaServiceTest {
     void testAggiungiAllievo() throws AccademiaException, PrenotazioneException, SQLException {
         // Arrange - Crea una nuova lezione per questo test
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(50), LocalTime.of(14, 0), campoTest, utenteTest, "Lezione per test allievo");
+                LocalDate.now().plusDays(50), LocalTime.now(), campoTest, utenteTest, "Lezione per test allievo");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
         List<Lezione> lezioni = accademiaService.getAllLezioni();
@@ -249,7 +251,7 @@ public class AccademiaServiceTest {
     void testRimuoviAllievo() throws AccademiaException, PrenotazioneException, SQLException {
         // Arrange - Crea una lezione e aggiungi un allievo
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(55), LocalTime.of(15, 0), campoTest, utenteTest,
+                LocalDate.now().plusDays(55), LocalTime.now(), campoTest, utenteTest,
                 "Lezione per test rimozione allievo");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
@@ -284,7 +286,7 @@ public class AccademiaServiceTest {
     void testGetLezioniAllievo() throws AccademiaException, PrenotazioneException {
         // Arrange - Crea una lezione e aggiungi l'allievo
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(60), LocalTime.of(16, 0), campoTest, utenteTest,
+                LocalDate.now().plusDays(60), LocalTime.now(), campoTest, utenteTest,
                 "Lezione per test getLezioniAllievo");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
@@ -310,7 +312,7 @@ public class AccademiaServiceTest {
     void testContaAllievi() throws AccademiaException, PrenotazioneException {
         // Arrange - Crea una lezione e aggiungi un allievo
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(65), LocalTime.of(17, 0), campoTest, utenteTest,
+                LocalDate.now().plusDays(65), LocalTime.now(), campoTest, utenteTest,
                 "Lezione per test contaAllievi");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
@@ -340,7 +342,7 @@ public class AccademiaServiceTest {
     void testSegnaPresenza() throws AccademiaException, SQLException, PrenotazioneException {
         // Arrange - Crea una lezione e aggiungi un allievo
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(70), LocalTime.of(18, 0), campoTest, utenteTest,
+                LocalDate.now().plusDays(70), LocalTime.now(), campoTest, utenteTest,
                 "Lezione per test segnaPresenza");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
@@ -453,7 +455,7 @@ public class AccademiaServiceTest {
     void testRimuoviAllievoNonIscritto() throws AccademiaException, PrenotazioneException {
         // Arrange - Crea una lezione senza allievi
         Integer idPrenotazione = accademiaService.createLezione(
-                LocalDate.now().plusDays(90), LocalTime.of(11, 0), campoTest, utenteTest, "Lezione senza allievi");
+                LocalDate.now().plusDays(90), LocalTime.now(), campoTest, utenteTest, "Lezione senza allievi");
         assertNotNull(idPrenotazione, "La lezione dovrebbe essere stata creata");
 
         List<Lezione> lezioni = accademiaService.getAllLezioni();

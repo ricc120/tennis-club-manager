@@ -38,43 +38,63 @@ public class AccademiaMenu {
         while (running) {
             CLIUtils.printHeader("GESTIONE ACCADEMIA");
 
-            System.out.println("═══ LEZIONI ═══");
-            System.out.println("1. Crea nuova lezione");
-            System.out.println("2. Visualizza tutte le lezioni");
-            System.out.println("3. Le mie lezioni (come maestro)");
-            System.out.println("4. Dettaglio lezione");
-            System.out.println("5. Modifica descrizione lezione");
-            System.out.println("6. Elimina lezione");
-            System.out.println();
-            System.out.println("═══ ALLIEVI ═══");
-            System.out.println("7. Aggiungi allievo a lezione");
-            System.out.println("8. Rimuovi allievo da lezione");
-            System.out.println("9. Visualizza allievi di una lezione");
-            System.out.println("10. Le mie lezioni (come allievo)");
-            System.out.println("11. Segna presenza allievo");
-            System.out.println("12. Aggiungi note allievo");
-            System.out.println();
-            System.out.println("0. Torna al menu principale");
-            System.out.println();
+            Utente utenteCorrente = sessionManager.getCurrentUser();
+            Utente.Ruolo ruolo = utenteCorrente != null ? utenteCorrente.getRuolo() : null;
 
-            int scelta = CLIUtils.readInt("Scelta: ");
+            if (ruolo == Utente.Ruolo.ADMIN || ruolo == Utente.Ruolo.MAESTRO) {
+                System.out.println("═══ LEZIONI ═══");
+                System.out.println("1. Crea nuova lezione");
+                System.out.println("2. Visualizza tutte le lezioni");
+                System.out.println("3. Le mie lezioni (come maestro)");
+                System.out.println("4. Dettaglio lezione");
+                System.out.println("5. Modifica descrizione lezione");
+                System.out.println("6. Elimina lezione");
+                System.out.println();
+                System.out.println("═══ ALLIEVI ═══");
+                System.out.println("7. Aggiungi allievo a lezione");
+                System.out.println("8. Rimuovi allievo da lezione");
+                System.out.println("9. Visualizza allievi di una lezione");
+                System.out.println("10. Le mie lezioni (come allievo)");
+                System.out.println("11. Segna presenza allievo");
+                System.out.println("12. Aggiungi note allievo");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
 
-            switch (scelta) {
-                case 1 -> creaLezione();
-                case 2 -> visualizzaTutteLeLezioni();
-                case 3 -> lezioniMaestro();
-                case 4 -> dettaglioLezione();
-                case 5 -> modificaDescrizione();
-                case 6 -> eliminaLezione();
-                case 7 -> aggiungiAllievo();
-                case 8 -> rimuoviAllievo();
-                case 9 -> visualizzaAllieviLezione();
-                case 10 -> lezioniAllievo();
-                case 11 -> segnaPresenza();
-                case 12 -> aggiungiNote();
-                case 0 -> running = false;
-                default -> CLIUtils.printError("Opzione non valida");
+                int scelta = CLIUtils.readInt("Scelta: ");
+
+                switch (scelta) {
+                    case 1 -> creaLezione();
+                    case 2 -> visualizzaTutteLeLezioni();
+                    case 3 -> lezioniMaestro();
+                    case 4 -> dettaglioLezione();
+                    case 5 -> modificaDescrizione();
+                    case 6 -> eliminaLezione();
+                    case 7 -> aggiungiAllievo();
+                    case 8 -> rimuoviAllievo();
+                    case 9 -> visualizzaAllieviLezione();
+                    case 10 -> lezioniAllievo();
+                    case 11 -> segnaPresenza();
+                    case 12 -> aggiungiNote();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+            } else if (ruolo == Utente.Ruolo.ALLIEVO) {
+
+                System.out.println("10. Le mie lezioni");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+                switch (scelta) {
+                    case 10 -> lezioniAllievo();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+
             }
+
         }
     }
 
@@ -233,7 +253,7 @@ public class AccademiaMenu {
     }
 
     /**
-     * Aggiunge un allievo a una lezione.
+     * Aggiunge un allievo a una lezione (operazione svolta dal maestro).
      */
     private void aggiungiAllievo() {
         CLIUtils.printSubHeader("Aggiungi Allievo a Lezione");
@@ -245,16 +265,46 @@ public class AccademiaMenu {
             return;
         }
 
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-        CLIUtils.printInfo("Stai aggiungendo te stesso (" + utente.getNome() + ") come allievo.");
+        // Solo i maestri possono aggiungere allievi alle lezioni
+        if (utente.getRuolo() != Utente.Ruolo.MAESTRO && utente.getRuolo() != Utente.Ruolo.ADMIN) {
+            CLIUtils.printError("Solo i maestri o gli admin possono aggiungere allievi alle lezioni.");
+            CLIUtils.waitForEnter();
+            return;
+        }
 
-        if (CLIUtils.readConfirm("Confermi?")) {
-            try {
-                accademiaService.aggiungiAllievo(idLezione, utente);
-                CLIUtils.printSuccess("Allievo aggiunto alla lezione.");
-            } catch (AccademiaException e) {
-                CLIUtils.printError(e.getMessage());
+        try {
+            // Mostra la lista degli allievi disponibili
+            List<Utente> allievi = accademiaService.getUtentiAllievi();
+            if (allievi.isEmpty()) {
+                CLIUtils.printInfo("Nessun allievo registrato nel sistema.");
+                CLIUtils.waitForEnter();
+                return;
             }
+
+            System.out.println("\nAllievi disponibili:");
+            CLIUtils.printTableHeader("ID", "Nome", "Cognome", "Email");
+            for (Utente allievo : allievi) {
+                CLIUtils.printTableRow(
+                        String.valueOf(allievo.getId()),
+                        allievo.getNome(),
+                        allievo.getCognome(),
+                        allievo.getEmail());
+            }
+            CLIUtils.printTableFooter(4);
+
+            int idLezione = CLIUtils.readInt("ID Lezione: ");
+            int idAllievo = CLIUtils.readInt("ID Allievo da aggiungere: ");
+
+            Utente allievoDaAggiungere = accademiaService.getUtenteById(idAllievo);
+            CLIUtils.printInfo("Stai aggiungendo " + allievoDaAggiungere.getNome() + " " +
+                    allievoDaAggiungere.getCognome() + " alla lezione " + idLezione + ".");
+
+            if (CLIUtils.readConfirm("Confermi?")) {
+                accademiaService.aggiungiAllievo(idLezione, allievoDaAggiungere);
+                CLIUtils.printSuccess("Allievo aggiunto alla lezione.");
+            }
+        } catch (AccademiaException e) {
+            CLIUtils.printError(e.getMessage());
         }
 
         CLIUtils.waitForEnter();

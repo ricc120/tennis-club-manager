@@ -30,6 +30,7 @@ public class PrenotazioneMenu {
 
     /**
      * Mostra il menu prenotazioni.
+     * Le opzioni sono filtrate in base al ruolo dell'utente.
      */
     public void show() {
         boolean running = true;
@@ -37,28 +38,60 @@ public class PrenotazioneMenu {
         while (running) {
             CLIUtils.printHeader("GESTIONE PRENOTAZIONI");
 
-            System.out.println("1. Nuova prenotazione");
-            System.out.println("2. Le mie prenotazioni");
-            System.out.println("3. Prenotazioni per data");
-            System.out.println("4. Prenotazioni per campo");
-            System.out.println("5. Verifica disponibilità campo");
-            System.out.println("6. Cancella prenotazione");
-            System.out.println("7. Tutte le prenotazioni");
-            System.out.println("0. Torna al menu principale");
-            System.out.println();
+            Utente utenteCorrente = sessionManager.getCurrentUser();
+            Utente.Ruolo ruolo = utenteCorrente != null ? utenteCorrente.getRuolo() : null;
 
-            int scelta = CLIUtils.readInt("Scelta: ");
+            if (!ruolo.equals(Utente.Ruolo.MANUTENTORE)) {
 
-            switch (scelta) {
-                case 1 -> nuovaPrenotazione();
-                case 2 -> miePrenotazioni();
-                case 3 -> prenotazioniPerData();
-                case 4 -> prenotazioniPerCampo();
-                case 5 -> verificaDisponibilita();
-                case 6 -> cancellaPrenotazione();
-                case 7 -> tutteLePrenotazioni();
-                case 0 -> running = false;
-                default -> CLIUtils.printError("Opzione non valida");
+                // Verifica se l'utente può vedere tutte le prenotazioni
+                // Solo ADMIN, MAESTRO, MANUTENTORE possono visualizzare tutte le prenotazioni
+                boolean puoVedereTutte = ruolo == Utente.Ruolo.ADMIN ||
+                        ruolo == Utente.Ruolo.MAESTRO;
+
+                System.out.println("1. Nuova prenotazione");
+                System.out.println("2. Le mie prenotazioni");
+                System.out.println("3. Prenotazioni per data");
+                System.out.println("4. Prenotazioni per campo");
+                System.out.println("5. Verifica disponibilità campo");
+                System.out.println("6. Cancella prenotazione");
+                if (puoVedereTutte) {
+                    System.out.println("7. Tutte le prenotazioni");
+                }
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+
+                switch (scelta) {
+                    case 1 -> nuovaPrenotazione();
+                    case 2 -> miePrenotazioni();
+                    case 3 -> prenotazioniPerData();
+                    case 4 -> prenotazioniPerCampo();
+                    case 5 -> verificaDisponibilita();
+                    case 6 -> cancellaPrenotazione();
+                    case 7 -> {
+                        if (puoVedereTutte) {
+                            tutteLePrenotazioni();
+                        } else {
+                            CLIUtils.printError("Accesso negato. Non hai i permessi per questa funzione.");
+                        }
+                    }
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+            } else {
+                System.out.println("7. Tutte le prenotazioni");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+                switch (scelta) {
+                    case 7 -> tutteLePrenotazioni();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import it.tennis_club.domain_model.Utente;
 import it.tennis_club.domain_model.Utente.Ruolo;
 import it.tennis_club.orm.LezioneDAO;
 import it.tennis_club.orm.AllievoLezioneDAO;
+import it.tennis_club.orm.UtenteDAO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,6 +19,7 @@ public class AccademiaService {
     private final LezioneDAO lezioneDAO;
     private final PrenotazioneService prenotazioneService;
     private final AllievoLezioneDAO allievoLezioneDAO;
+    private final UtenteDAO utenteDAO;
     private static final int MAX_ALLIEVI_PER_LEZIONE = 8;
 
     /**
@@ -27,6 +29,7 @@ public class AccademiaService {
         this.lezioneDAO = new LezioneDAO();
         this.prenotazioneService = new PrenotazioneService();
         this.allievoLezioneDAO = new AllievoLezioneDAO();
+        this.utenteDAO = new UtenteDAO();
     }
 
     /**
@@ -386,6 +389,46 @@ public class AccademiaService {
             return allievoLezioneDAO.aggiungiFeedback(idLezione, idAllievo, feedback);
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante l'aggiunta del feedback: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera tutti gli utenti con ruolo ALLIEVO.
+     * Utile per permettere al maestro di selezionare un allievo da aggiungere a una
+     * lezione.
+     * 
+     * @return lista di utenti con ruolo ALLIEVO
+     * @throws AccademiaException se si verifica un errore durante il recupero
+     */
+    public List<Utente> getUtentiAllievi() throws AccademiaException {
+        try {
+            return utenteDAO.getUtentiByRuolo(Ruolo.ALLIEVO);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero degli allievi: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera un utente tramite ID.
+     * Utile per selezionare un allievo specifico da aggiungere a una lezione.
+     * 
+     * @param idUtente l'ID dell'utente
+     * @return l'utente richiesto
+     * @throws AccademiaException se l'utente non esiste o si verifica un errore
+     */
+    public Utente getUtenteById(Integer idUtente) throws AccademiaException {
+        if (idUtente == null || idUtente <= 0) {
+            throw new AccademiaException("L'ID dell'utente non può essere null o negativo");
+        }
+
+        try {
+            Utente utente = utenteDAO.getUtenteById(idUtente);
+            if (utente == null) {
+                throw new AccademiaException("Utente con ID " + idUtente + " non trovato");
+            }
+            return utente;
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero dell'utente: " + e.getMessage(), e);
         }
     }
 }
