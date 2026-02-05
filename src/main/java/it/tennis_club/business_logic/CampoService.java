@@ -179,7 +179,14 @@ public class CampoService {
             throw new CampoException("Data fine non può essere null");
         }
 
+        if (dataFine.isBefore(LocalDate.now())) {
+            throw new CampoException("La data di fine manutenzione non può essere passata");
+        }
+
         try {
+            if (manutenzioneDAO.getManutenzioneById(idManutenzione) == null) {
+                throw new CampoException("Manutenzione con ID " + idManutenzione + " non trovata");
+            }
             manutenzioneDAO.completaManutenzione(idManutenzione, dataFine);
         } catch (SQLException e) {
             throw new CampoException("Errore durante il completamento della manutenzione: " + e.getMessage(), e);
@@ -205,6 +212,11 @@ public class CampoService {
         }
 
         try {
+
+            if (manutenzioneDAO.getManutenzioneById(idManutenzione) == null) {
+                throw new CampoException("Manutenzione con ID " + idManutenzione + " non trovata");
+            }
+
             manutenzioneDAO.updateStatoManutenzione(idManutenzione, Manutenzione.Stato.ANNULLATA);
         } catch (SQLException e) {
             throw new CampoException("Errore durante l'annullamento della manutenzione: " + e.getMessage(), e);
@@ -237,6 +249,14 @@ public class CampoService {
         }
     }
 
+    public List<Manutenzione> getAllManutenzioni() throws CampoException {
+        try {
+            return manutenzioneDAO.getAllManutenzioni();
+        } catch (SQLException e) {
+            throw new CampoException("Errore durante il recupero delle manutenzioni: " + e.getMessage(), e);
+        }
+    }
+
     // ========== METODI PRIVATI DI UTILITÀ ==========
 
     /**
@@ -262,4 +282,5 @@ public class CampoService {
                     "Permessi insufficienti. Solo ADMIN e MANUTENTORE possono gestire le manutenzioni.");
         }
     }
+
 }

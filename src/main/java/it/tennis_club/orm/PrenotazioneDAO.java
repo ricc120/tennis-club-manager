@@ -392,6 +392,43 @@ public class PrenotazioneDAO {
     }
 
     /**
+     * Recupera la lezione associata a una specifica prenotazione.
+     * 
+     * @param idPrenotazione l'ID della prenotazione
+     * @return l'oggetto Lezione se trovato, null altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public Prenotazione getPrenotazioneByLezione(Integer idLezione) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Prenotazione prenotazione = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+            String query = "SELECT p.id, p.data, p.ora_inizio, p.id_campo, p.id_socio \r\n" + //
+                    "FROM prenotazione p \r\n" + //
+                    "JOIN lezione l ON l.id_prenotazione = p.id \r\n" + //
+                    "WHERE l.id = ?";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idLezione);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                prenotazione = mapResultSetToPrenotazione(resultSet);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero della lezione per prenotazione: " + e.getMessage());
+            throw e;
+        } finally {
+            closeResources(resultSet, statement, connection);
+        }
+
+        return prenotazione;
+    }
+
+    /**
      * Metodo helper per mappare un ResultSet a un oggetto Prenotazione.
      * QUESTO È IL PUNTO CHIAVE: Non fare cast da int a Campo o Utente!
      * Invece, recupera gli ID e poi usa i DAO per ottenere gli oggetti completi.
@@ -406,7 +443,6 @@ public class PrenotazioneDAO {
         prenotazione.setData(resultSet.getDate("data").toLocalDate());
         prenotazione.setOraInizio(resultSet.getTime("ora_inizio").toLocalTime());
 
-        // ✅ SOLUZIONE CORRETTA: Non fare cast da int a Campo!
         // Recupera l'ID e poi usa il DAO per ottenere l'oggetto completo
         int idCampo = resultSet.getInt("id_campo");
         Campo campo = campoDAO.getCampoById(idCampo);

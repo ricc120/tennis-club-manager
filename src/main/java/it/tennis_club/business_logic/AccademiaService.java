@@ -102,7 +102,7 @@ public class AccademiaService {
     public boolean inserisciDescrizione(Integer idLezione, String descrizione) throws AccademiaException {
 
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere nullo o negativo");
+            throw new AccademiaException("ID lezione non valido");
         }
 
         try {
@@ -127,7 +127,7 @@ public class AccademiaService {
      */
     public boolean deleteLezione(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere nullo o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
 
         try {
@@ -146,7 +146,7 @@ public class AccademiaService {
      */
     public Lezione getLezioneById(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
 
         try {
@@ -188,7 +188,7 @@ public class AccademiaService {
         }
 
         if (maestro.getId() == null) {
-            throw new AccademiaException("L'ID del maestro non può essere null");
+            throw new AccademiaException("ID del maestro non valido");
         }
 
         if (maestro.getRuolo() != Ruolo.MAESTRO) {
@@ -221,7 +221,7 @@ public class AccademiaService {
         }
 
         if (prenotazione.getId() == null) {
-            throw new AccademiaException("L'ID della prenotazione non può essere null");
+            throw new AccademiaException("ID della prenotazione non valido");
         }
 
         try {
@@ -242,7 +242,7 @@ public class AccademiaService {
     public void aggiungiAllievo(Integer idLezione, Utente allievo) throws AccademiaException {
         // Validazione
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
         if (allievo == null) {
             throw new AccademiaException("L'allievo non può essere null");
@@ -281,10 +281,10 @@ public class AccademiaService {
      */
     public boolean rimuoviAllievo(Integer idLezione, Integer idAllievo) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
         if (idAllievo == null || idAllievo <= 0) {
-            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+            throw new AccademiaException("ID dell'allievo non valido");
         }
 
         try {
@@ -305,7 +305,7 @@ public class AccademiaService {
      */
     public List<Utente> getAllievi(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
 
         try {
@@ -335,7 +335,7 @@ public class AccademiaService {
      */
     public int contaAllievi(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
 
         try {
@@ -360,10 +360,10 @@ public class AccademiaService {
     public boolean segnaPresenza(Integer idLezione, Integer idAllievo, boolean presente)
             throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
         if (idAllievo == null || idAllievo <= 0) {
-            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+            throw new AccademiaException("ID dell'allievo non valido");
         }
 
         try {
@@ -379,10 +379,10 @@ public class AccademiaService {
     public boolean aggiungiFeedback(Integer idLezione, Integer idAllievo, String feedback)
             throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
-            throw new AccademiaException("L'ID della lezione non può essere null o negativo");
+            throw new AccademiaException("ID della lezione non valido");
         }
         if (idAllievo == null || idAllievo <= 0) {
-            throw new AccademiaException("L'ID dell'allievo non può essere null o negativo");
+            throw new AccademiaException("ID dell'allievo non valido");
         }
 
         try {
@@ -418,7 +418,7 @@ public class AccademiaService {
      */
     public Utente getUtenteById(Integer idUtente) throws AccademiaException {
         if (idUtente == null || idUtente <= 0) {
-            throw new AccademiaException("L'ID dell'utente non può essere null o negativo");
+            throw new AccademiaException("ID dell'utente non valido");
         }
 
         try {

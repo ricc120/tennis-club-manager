@@ -36,6 +36,15 @@ public class CLIUtils {
     }
 
     /**
+     * Legge una stringa opzionale dall'input (premere INVIO per annullare).
+     */
+    public static String readStringOptional(String prompt) {
+        System.out.print(prompt);
+        String input = scanner.nextLine().trim();
+        return input.isEmpty() ? null : input;
+    }
+
+    /**
      * Legge una stringa di testo che deve contenere almeno una lettera.
      * Rifiuta input vuoti o composti solo da numeri.
      * Utile per campi come nome e cognome.
@@ -47,6 +56,26 @@ public class CLIUtils {
             if (input.isEmpty()) {
                 printError("Il campo non può essere vuoto.");
                 continue;
+            }
+            // Rifiuta input composti solo da numeri
+            if (input.matches("^[0-9]+$")) {
+                printError("Il valore deve contenere almeno una lettera.");
+                continue;
+            }
+            return input;
+        }
+    }
+
+    /**
+     * Legge una stringa di testo opzionale (premere INVIO per annullare).
+     * Se non vuota, deve contenere almeno una lettera.
+     */
+    public static String readTextStringOptional(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                return null;
             }
             // Rifiuta input composti solo da numeri
             if (input.matches("^[0-9]+$")) {
@@ -120,12 +149,48 @@ public class CLIUtils {
     }
 
     /**
+     * Legge una data opzionale (premere INVIO per annullare).
+     */
+    public static LocalDate readDateOptional(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (dd/MM/yyyy, vuoto per annullare): ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                return null;
+            }
+            try {
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                printError("Formato data non valido. Usa dd/MM/yyyy.");
+            }
+        }
+    }
+
+    /**
      * Legge un'ora dall'input nel formato HH:mm.
      */
     public static LocalTime readTime(String prompt) {
         while (true) {
             System.out.print(prompt + " (HH:mm): ");
             String input = scanner.nextLine().trim();
+            try {
+                return LocalTime.parse(input, TIME_FORMATTER);
+            } catch (DateTimeParseException e) {
+                printError("Formato ora non valido. Usa HH:mm.");
+            }
+        }
+    }
+
+    /**
+     * Legge un'ora opzionale (premere INVIO per annullare).
+     */
+    public static LocalTime readTimeOptional(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (HH:mm, vuoto per annullare): ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                return null;
+            }
             try {
                 return LocalTime.parse(input, TIME_FORMATTER);
             } catch (DateTimeParseException e) {
@@ -154,28 +219,28 @@ public class CLIUtils {
      * Stampa un messaggio di successo in verde.
      */
     public static void printSuccess(String message) {
-        System.out.println(GREEN + "✓ " + message + RESET);
+        System.out.println(GREEN + message + RESET);
     }
 
     /**
      * Stampa un messaggio di errore in rosso.
      */
     public static void printError(String message) {
-        System.out.println(RED + "✗ " + message + RESET);
+        System.out.println(RED + message + RESET);
     }
 
     /**
      * Stampa un avviso in giallo.
      */
     public static void printWarning(String message) {
-        System.out.println(YELLOW + "⚠ " + message + RESET);
+        System.out.println(YELLOW + message + RESET);
     }
 
     /**
      * Stampa un'informazione in ciano.
      */
     public static void printInfo(String message) {
-        System.out.println(CYAN + "ℹ " + message + RESET);
+        System.out.println(CYAN + message + RESET);
     }
 
     /**
@@ -196,6 +261,7 @@ public class CLIUtils {
     public static void printSubHeader(String title) {
         System.out.println();
         System.out.println(CYAN + "── " + title + " ──" + RESET);
+        System.out.println();
     }
 
     /**

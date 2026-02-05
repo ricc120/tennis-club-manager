@@ -72,11 +72,15 @@ public class AuthMenu {
             return;
         }
 
-        String email = CLIUtils.readString("Email: ");
+        String email = CLIUtils.readStringOptional("Email (vuoto per annullare): ");
+        if (email == null)
+            return;
+
         String password = CLIUtils.readString("Password: ");
 
         try {
             Utente utente = authService.login(email, password);
+            System.out.println();
             if (utente != null) {
                 CLIUtils.printSuccess("Login effettuato con successo!");
                 CLIUtils.printInfo("Benvenuto, " + utente.getNome() + " " + utente.getCognome());
@@ -104,11 +108,14 @@ public class AuthMenu {
             return;
         }
 
-        System.out.println("Inserisci i tuoi dati per la registrazione:");
         CLIUtils.printInfo("Sarai registrato come SOCIO del Tennis Club.");
+        System.out.println("Inserisci i tuoi dati per la registrazione:");
         System.out.println();
 
-        String nome = CLIUtils.readTextString("Nome: ");
+        String nome = CLIUtils.readTextStringOptional("Nome (vuoto per annullare): ");
+        if (nome == null)
+            return;
+
         String cognome = CLIUtils.readTextString("Cognome: ");
         String email = CLIUtils.readString("Email: ");
         String password = CLIUtils.readString("Password: ");
@@ -156,12 +163,15 @@ public class AuthMenu {
      * @return l'ID del nuovo utente, o null se la registrazione fallisce
      */
     public Integer registrazioneAdmin() {
-        CLIUtils.printSubHeader("Crea Nuovo Utente");
 
         System.out.println("Inserisci i dati del nuovo utente:");
         System.out.println();
 
-        String nome = CLIUtils.readTextString("Nome: ");
+        String nome = CLIUtils.readTextStringOptional("Nome (vuoto per annullare): ");
+        if (nome == null) {
+            return null;
+        }
+
         String cognome = CLIUtils.readTextString("Cognome: ");
         String email = CLIUtils.readString("Email: ");
         String password = CLIUtils.readString("Password: ");

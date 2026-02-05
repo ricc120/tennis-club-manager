@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test per il DAO delle lezioni.
  * Questi test richiedono che il database sia configurato e popolato
  * con i dati di default (vedi default.sql).
- * 
- * IMPORTANTE: I test di creazione, aggiornamento ed eliminazione
- * modificano il database. Eseguire reset.sql e default.sql tra le esecuzioni
- * se necessario per ripristinare lo stato iniziale.
  * 
  * NOTA: I test che creano lezioni generano anche nuove prenotazioni per evitare
  * violazioni del vincolo UNIQUE su id_prenotazione nella tabella lezione.
@@ -33,6 +30,9 @@ public class LezioneDAOTest {
     private UtenteDAO utenteDAO;
     private CampoDAO campoDAO;
 
+    private List<Integer> idsLezioniCreate;
+    private List<Integer> idsPrenotazioniCreate;
+
     // Contatore per generare date uniche per le prenotazioni di test
     private static int testCounter = 0;
 
@@ -42,42 +42,116 @@ public class LezioneDAOTest {
         prenotazioneDAO = new PrenotazioneDAO();
         utenteDAO = new UtenteDAO();
         campoDAO = new CampoDAO();
+        idsLezioniCreate = new ArrayList<>();
+        idsPrenotazioniCreate = new ArrayList<>();
     }
 
+    @AfterEach
+    void tearDown() throws SQLException {
+        for (Integer id : idsLezioniCreate) {
+            lezioneDAO.deleteLezione(id);
+        }
+        for (Integer id : idsPrenotazioniCreate) {
+            prenotazioneDAO.deletePrenotazione(id);
+        }
+        idsLezioniCreate.clear();
+        idsPrenotazioniCreate.clear();
+    }
+
+    // ==================== METODI HELPER ====================
+
     /**
-     * Metodo helper per creare una nuova prenotazione di test.
+     * Crea una nuova prenotazione di test.
      * Ogni chiamata crea una prenotazione con data e ora uniche per evitare
      * conflitti.
+     * La prenotazione viene automaticamente registrata per la pulizia nel tearDown.
+     * 
+     * @return La prenotazione creata
      */
     private Prenotazione createTestPrenotazione() throws SQLException {
         List<Campo> campi = campoDAO.getAllCampi();
-        Utente socio = utenteDAO.getUtenteById(1);
-        if (socio == null) {
-            socio = utenteDAO.getUtenteById(2);
-        }
+        List<Utente> soci = utenteDAO.getUtentiByRuolo(Utente.Ruolo.SOCIO);
 
-        if (campi.isEmpty() || socio == null) {
+        if (campi.isEmpty() || soci.isEmpty()) {
             fail("Non ci sono campi o utenti disponibili per creare prenotazioni di test");
         }
 
-        // Genera una prenotazione con data/ora uniche
         Prenotazione prenotazione = new Prenotazione();
-        prenotazione.setData(LocalDate.now().plusDays(testCounter + 50)); // +50 per evitare conflitti con dati
-                                                                          // esistenti
-        prenotazione.setOraInizio(LocalTime.of(10 + (testCounter % 8), 0)); // Varia l'ora
-        prenotazione.setCampo(campi.get(testCounter % campi.size())); // Varia il campo
-        prenotazione.setSocio(socio);
+        prenotazione.setData(LocalDate.now().plusDays(testCounter + 50));
+        prenotazione.setOraInizio(LocalTime.of(10 + (testCounter % 8), 0));
+        prenotazione.setCampo(campi.get(testCounter % campi.size()));
+        prenotazione.setSocio(soci.get(testCounter % soci.size()));
 
         Integer id = prenotazioneDAO.createPrenotazione(prenotazione);
+        if (id != null) {
+            idsPrenotazioniCreate.add(id);
+        }
         testCounter++;
 
         return prenotazioneDAO.getPrenotazioneById(id);
     }
 
+    /**
+     * Crea una nuova lezione di test con descrizione di default.
+     * La lezione viene automaticamente registrata per la pulizia nel tearDown.
+     * 
+     * @param maestro Il maestro associato alla lezione
+     * @return La lezione creata con ID popolato
+     */
+    private Lezione createTestLezione(Utente maestro) throws SQLException {
+        return createTestLezione(maestro, "Test Descrizione");
+    }
+
+    /**
+     * Crea una nuova lezione di test con descrizione personalizzata.
+     * La lezione viene automaticamente registrata per la pulizia nel tearDown.
+     * 
+     * @param maestro     Il maestro associato alla lezione
+     * @param descrizione La descrizione della lezione
+     * @return La lezione creata con ID popolato
+     */
+    private Lezione createTestLezione(Utente maestro, String descrizione) throws SQLException {
+        Prenotazione prenotazione = createTestPrenotazione();
+
+        Lezione lezione = new Lezione();
+        lezione.setPrenotazione(prenotazione);
+        lezione.setMaestro(maestro);
+        lezione.setDescrizione(descrizione);
+
+        Integer id = lezioneDAO.createLezione(lezione);
+        assertNotNull(id, "L'ID della lezione non dovrebbe essere null");
+        assertTrue(id > 0, "L'ID della lezione dovrebbe essere positivo");
+
+        if (id != null) {
+            idsLezioniCreate.add(id);
+        }
+
+        return lezioneDAO.getLezioneById(id);
+    }
+
+    /**
+     * Ottiene la lista dei maestri disponibili.
+     * Fallisce il test se non ci sono maestri.
+     */
+    private List<Utente> getMaestri() throws SQLException {
+        List<Utente> maestri = utenteDAO.getUtentiByRuolo(Utente.Ruolo.MAESTRO);
+        if (maestri.isEmpty()) {
+            fail("Non ci sono maestri disponibili per eseguire il test");
+        }
+        return maestri;
+    }
+
+    // ==================== TEST ====================
+
     @Test
     @Order(1)
     @DisplayName("Verifica il recupero di tutte le lezioni")
     void testGetAllLezioni() throws SQLException {
+        List<Utente> maestri = getMaestri();
+
+        // Crea almeno una lezione di test
+        createTestLezione(maestri.get(0));
+
         List<Lezione> lezioni = lezioneDAO.getAllLezioni();
 
         assertNotNull(lezioni, "La lista delle lezioni non dovrebbe essere null");
@@ -96,119 +170,86 @@ public class LezioneDAOTest {
     @Order(2)
     @DisplayName("Verifica il recupero di una lezione specificata per ID")
     void testGetLezioneById() throws SQLException {
+        List<Utente> maestri = getMaestri();
+        Lezione lezioneCreata = createTestLezione(maestri.get(0));
 
-        List<Lezione> lezioni = lezioneDAO.getAllLezioni();
-        if (!lezioni.isEmpty()) {
-            int id = lezioni.get(0).getId();
-            Lezione lezione = lezioneDAO.getLezioneById(id);
+        Lezione lezioneRecuperata = lezioneDAO.getLezioneById(lezioneCreata.getId());
 
-            assertNotNull(lezione, "La lezione dovrebbe esistere");
-            assertEquals(id, lezione.getId());
-            assertNotNull(lezione.getPrenotazione(), "La prenotazione non dovrebbe essere null");
-            assertNotNull(lezione.getMaestro(), "Il maestro non dovrebbe essere null");
+        assertNotNull(lezioneRecuperata, "La lezione dovrebbe esistere");
+        assertEquals(lezioneCreata.getId(), lezioneRecuperata.getId());
+        assertNotNull(lezioneRecuperata.getPrenotazione(), "La prenotazione non dovrebbe essere null");
+        assertNotNull(lezioneRecuperata.getMaestro(), "Il maestro non dovrebbe essere null");
 
-            System.out.println("Trovata lezione " + lezione);
-
-        } else {
-            System.out.println("Nessuna lezione presente nel database per testare getLezioneById");
-        }
+        System.out.println("Trovata lezione " + lezioneRecuperata);
     }
 
     @Test
     @Order(3)
-    @DisplayName("Verifica che getLezioniById restituisca null per ID inesistente")
+    @DisplayName("Verifica che getLezioneById restituisca null per ID inesistente")
     void testGetLezioneByIdNotFound() throws SQLException {
         Lezione lezione = lezioneDAO.getLezioneById(9999);
-
         assertNull(lezione, "Non dovrebbe trovare una lezione con ID inesistente");
-
     }
 
     @Test
     @Order(4)
     @DisplayName("Verifica il recupero di una lezione specificata per una prenotazione")
     void testGetLezioneByPrenotazione() throws SQLException {
-        List<Lezione> lezioni = lezioneDAO.getAllLezioni();
-        if (!lezioni.isEmpty()) {
-            int id = lezioni.get(0).getId();
-            Lezione lezione = lezioneDAO.getLezioneById(id);
-            assertNotNull(lezione, "La lezione dovrebbe esistere");
+        List<Utente> maestri = getMaestri();
+        Lezione lezioneCreata = createTestLezione(maestri.get(0));
 
-            for (Lezione l : lezioni) {
-                Integer idPrenotazione = l.getPrenotazione().getId();
-                l = lezioneDAO.getLezioneByPrenotazione(idPrenotazione);
-                assertNotNull(l, "La lezione dovrebbe avere una prenotazione");
-                assertEquals(idPrenotazione, l.getPrenotazione().getId());
-            }
-            System.out.println("Trovata lezioni " + lezione);
-        } else {
-            System.out.println("Nessuna lezione presente nel database per testare getLezioneByPrenotazione");
-        }
+        Integer idPrenotazione = lezioneCreata.getPrenotazione().getId();
+        Lezione lezioneRecuperata = lezioneDAO.getLezioneByPrenotazione(idPrenotazione);
+
+        assertNotNull(lezioneRecuperata, "La lezione dovrebbe avere una prenotazione");
+        assertEquals(idPrenotazione, lezioneRecuperata.getPrenotazione().getId());
+
+        System.out.println("Trovata lezione " + lezioneRecuperata);
     }
 
     @Test
     @Order(5)
     @DisplayName("Verifica il recupero delle lezioni per maestro")
     void testGetLezioniByMaestro() throws SQLException {
-        List<Lezione> tutteLezioni = lezioneDAO.getAllLezioni();
+        List<Utente> maestri = getMaestri();
+        Utente maestro = maestri.get(0);
 
-        if (!tutteLezioni.isEmpty()) {
-            Integer idMaestro = tutteLezioni.get(0).getMaestro().getId();
-            List<Lezione> lezioni = lezioneDAO.getLezioniByMaestro(idMaestro);
+        // Crea una lezione per il maestro
+        createTestLezione(maestro);
 
-            assertNotNull(lezioni, "La lista non dovrebbe essere null");
-            assertFalse(lezioni.isEmpty(), "Dovrebbe esserci almeno una lezione");
+        List<Lezione> lezioni = lezioneDAO.getLezioniByMaestro(maestro.getId());
 
-            // Verifica che tutte le lezioni siano del maestro richiesto
-            for (Lezione lezione : lezioni) {
-                assertEquals(idMaestro, lezione.getMaestro().getId(),
-                        "Tutte le lezioni dovrebbero essere del maestro richiesto");
-            }
+        assertNotNull(lezioni, "La lista non dovrebbe essere null");
+        assertFalse(lezioni.isEmpty(), "Dovrebbe esserci almeno una lezione");
 
-            System.out.println("Trovate " + lezioni.size() + " lezioni per il maestro ID " + idMaestro);
-        } else {
-            System.out.println("Nessuna lezione presente nel database per testare getLezioniByMaestro");
+        for (Lezione lezione : lezioni) {
+            assertEquals(maestro.getId(), lezione.getMaestro().getId(),
+                    "Tutte le lezioni dovrebbero essere del maestro richiesto");
         }
+
+        System.out.println("Trovate " + lezioni.size() + " lezioni per il maestro ID " + maestro.getId());
     }
 
     @Test
     @Order(6)
     @DisplayName("Verifica la creazione di una nuova lezione")
     void testCreateLezione() throws SQLException {
-        // Crea una nuova prenotazione per evitare violazioni del vincolo UNIQUE
-        Prenotazione prenotazione = createTestPrenotazione();
-        Utente maestro = utenteDAO.getUtenteById(1);
+        List<Utente> maestri = getMaestri();
 
-        if (maestro == null) {
-            maestro = utenteDAO.getUtenteById(2);
-        }
+        for (Utente maestro : maestri) {
+            Lezione lezione = createTestLezione(maestro);
 
-        if (maestro != null) {
-            // Crea una nuova lezione
-            Lezione nuovaLezione = new Lezione();
-            nuovaLezione.setPrenotazione(prenotazione);
-            nuovaLezione.setMaestro(maestro);
-            nuovaLezione.setDescrizione("Test Descrizione");
+            assertNotNull(lezione, "La lezione non dovrebbe essere null");
+            assertNotNull(lezione.getId(), "L'ID non dovrebbe essere null");
+            assertTrue(lezione.getId() > 0, "L'ID dovrebbe essere positivo");
 
-            // Inserisci nel database
-            Integer generatedId = lezioneDAO.createLezione(nuovaLezione);
-
-            assertNotNull(generatedId, "L'ID generato non dovrebbe essere null");
-            assertTrue(generatedId > 0, "L'ID generato dovrebbe essere positivo");
-            assertEquals(generatedId, nuovaLezione.getId(),
-                    "L'ID dovrebbe essere stato assegnato all'oggetto");
-
-            // Verifica che la lezione sia stata effettivamente inserita
-            Lezione lezioneInserita = lezioneDAO.getLezioneById(generatedId);
+            Lezione lezioneInserita = lezioneDAO.getLezioneById(lezione.getId());
             assertNotNull(lezioneInserita, "La lezione dovrebbe essere nel database");
-            assertEquals(nuovaLezione.getPrenotazione().getId(), lezioneInserita.getPrenotazione().getId());
-            assertEquals(nuovaLezione.getMaestro().getId(), lezioneInserita.getMaestro().getId());
-            assertEquals(nuovaLezione.getDescrizione(), lezioneInserita.getDescrizione());
+            assertEquals(lezione.getPrenotazione().getId(), lezioneInserita.getPrenotazione().getId());
+            assertEquals(lezione.getMaestro().getId(), lezioneInserita.getMaestro().getId());
+            assertEquals(lezione.getDescrizione(), lezioneInserita.getDescrizione());
 
-            System.out.println("Lezione creata con ID: " + generatedId);
-            System.out.println(lezioneInserita);
-        } else {
-            fail("Non ci sono maestri disponibili per testare la creazione");
+            System.out.println("Lezione creata con ID: " + lezione.getId());
         }
     }
 
@@ -216,95 +257,61 @@ public class LezioneDAOTest {
     @Order(7)
     @DisplayName("Verifica l'aggiornamento di una lezione")
     void testUpdateLezione() throws SQLException {
-        // Crea una nuova prenotazione per evitare violazioni del vincolo UNIQUE
-        Prenotazione prenotazione = createTestPrenotazione();
-        Utente maestro = utenteDAO.getUtenteById(1);
-        if (maestro == null)
-            maestro = utenteDAO.getUtenteById(2);
+        List<Utente> maestri = getMaestri();
+        Lezione lezione = createTestLezione(maestri.get(0));
 
-        if (maestro != null) {
-            // Crea una lezione temporanea
-            Lezione lezione = new Lezione();
-            lezione.setPrenotazione(prenotazione);
-            lezione.setMaestro(maestro);
-            lezione.setDescrizione("Descrizione originale");
+        // Modifica i dati
+        lezione.setDescrizione("Descrizione aggiornata");
 
-            Integer id = lezioneDAO.createLezione(lezione);
+        // Aggiorna nel database
+        boolean success = lezioneDAO.updateLezione(lezione);
+        assertTrue(success, "L'aggiornamento dovrebbe avere successo");
 
-            // Modifica i dati
-            lezione.setDescrizione("Descrizione aggiornata");
+        // Verifica che le modifiche siano state salvate
+        Lezione lezioneAggiornata = lezioneDAO.getLezioneById(lezione.getId());
+        assertEquals("Descrizione aggiornata", lezioneAggiornata.getDescrizione(),
+                "La descrizione dovrebbe essere stata aggiornata");
 
-            // Aggiorna nel database
-            boolean success = lezioneDAO.updateLezione(lezione);
-
-            assertTrue(success, "L'aggiornamento dovrebbe avere successo");
-
-            // Verifica che le modifiche siano state salvate
-            Lezione lezioneAggiornata = lezioneDAO.getLezioneById(id);
-            assertEquals("Descrizione aggiornata", lezioneAggiornata.getDescrizione(),
-                    "La descrizione dovrebbe essere stata aggiornata");
-
-            System.out.println("Lezione aggiornata: " + lezioneAggiornata);
-        } else {
-            fail("Non ci sono maestri disponibili per testare l'aggiornamento");
-        }
+        System.out.println("Lezione aggiornata: " + lezioneAggiornata);
     }
 
     @Test
     @Order(8)
     @DisplayName("Verifica l'eliminazione di una lezione")
     void testDeleteLezione() throws SQLException {
-        // Crea una nuova prenotazione per evitare violazioni del vincolo UNIQUE
-        Prenotazione prenotazione = createTestPrenotazione();
-        Utente maestro = utenteDAO.getUtenteById(1);
-        if (maestro == null)
-            maestro = utenteDAO.getUtenteById(2);
+        List<Utente> maestri = getMaestri();
+        Lezione lezione = createTestLezione(maestri.get(0));
+        Integer id = lezione.getId();
 
-        if (maestro != null) {
-            // Crea una lezione temporanea
-            Lezione lezione = new Lezione();
-            lezione.setPrenotazione(prenotazione);
-            lezione.setMaestro(maestro);
-            lezione.setDescrizione("Questa lezione sarà eliminata");
+        // Rimuovi dalla lista di cleanup poiché verrà eliminato nel test
+        idsLezioniCreate.remove(id);
 
-            Integer id = lezioneDAO.createLezione(lezione);
+        // Elimina la lezione
+        boolean success = lezioneDAO.deleteLezione(id);
+        assertTrue(success, "L'eliminazione dovrebbe avere successo");
 
-            // Elimina la lezione
-            boolean success = lezioneDAO.deleteLezione(id);
+        // Verifica che la lezione sia stata davvero eliminata
+        Lezione lezioneEliminata = lezioneDAO.getLezioneById(id);
+        assertNull(lezioneEliminata, "La lezione dovrebbe essere stata eliminata dal database");
 
-            assertTrue(success, "L'eliminazione dovrebbe avere successo");
-
-            // Verifica che la lezione sia stata davvero eliminata
-            Lezione lezioneEliminata = lezioneDAO.getLezioneById(id);
-            assertNull(lezioneEliminata,
-                    "La lezione dovrebbe essere stata eliminata dal database");
-
-            System.out.println("Lezione con ID " + id + " eliminata con successo");
-        } else {
-            fail("Non ci sono maestri disponibili per testare l'eliminazione");
-        }
+        System.out.println("Lezione con ID " + id + " eliminata con successo");
     }
 
     @Test
     @Order(9)
     @DisplayName("Verifica che l'aggiornamento di una lezione inesistente fallisca")
     void testUpdateLezioneNotFound() throws SQLException {
+        List<Utente> maestri = getMaestri();
+        Prenotazione prenotazione = createTestPrenotazione();
+
         Lezione lezioneFake = new Lezione();
         lezioneFake.setId(9999);
         lezioneFake.setDescrizione("Fake descrizione");
+        lezioneFake.setPrenotazione(prenotazione);
+        lezioneFake.setMaestro(maestri.get(0));
 
-        // Crea una prenotazione di test e recupera un maestro
-        Prenotazione prenotazione = createTestPrenotazione();
-        Utente maestro = utenteDAO.getUtenteById(1);
-
-        if (maestro != null) {
-            lezioneFake.setPrenotazione(prenotazione);
-            lezioneFake.setMaestro(maestro);
-
-            boolean success = lezioneDAO.updateLezione(lezioneFake);
-
-            assertFalse(success, "L'aggiornamento di una lezione inesistente dovrebbe fallire");
-        }
+        boolean success = lezioneDAO.updateLezione(lezioneFake);
+        assertFalse(success, "L'aggiornamento di una lezione inesistente dovrebbe fallire");
     }
 
     @Test
@@ -312,7 +319,6 @@ public class LezioneDAOTest {
     @DisplayName("Verifica che l'eliminazione di una lezione inesistente fallisca")
     void testDeleteLezioneNotFound() throws SQLException {
         boolean success = lezioneDAO.deleteLezione(9999);
-
         assertFalse(success, "L'eliminazione di una lezione inesistente dovrebbe fallire");
     }
 }

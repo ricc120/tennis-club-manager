@@ -248,6 +248,36 @@ public class AdminMenu {
     private void cancellaUtente() {
         CLIUtils.printSubHeader("Cancella Utente");
 
+        // Prima mostra la lista degli utenti
+        try {
+            List<Utente> utenti = utenteDAO.getAllUtenti();
+
+            if (utenti.isEmpty()) {
+                CLIUtils.printWarning("Nessun utente trovato.");
+                CLIUtils.waitForEnter();
+                return;
+            }
+
+            System.out.println();
+            System.out.printf("%-5s %-20s %-25s %-12s%n",
+                    "ID", "Nome Completo", "Email", "Ruolo");
+            System.out.println("─".repeat(65));
+
+            for (Utente utente : utenti) {
+                System.out.printf("%-5d %-20s %-25s %-12s%n",
+                        utente.getId(),
+                        truncate(utente.getNome() + " " + utente.getCognome(), 20),
+                        truncate(utente.getEmail(), 25),
+                        utente.getRuolo());
+            }
+            System.out.println();
+
+        } catch (SQLException e) {
+            CLIUtils.printError("Errore durante il recupero degli utenti: " + e.getMessage());
+            CLIUtils.waitForEnter();
+            return;
+        }
+
         Integer idUtente = CLIUtils.readIntOptional("ID utente da cancellare (vuoto per annullare): ");
         if (idUtente == null) {
             CLIUtils.printWarning("Operazione annullata.");

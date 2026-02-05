@@ -1,9 +1,7 @@
 package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Campo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Questi test richiedono che il database sia configurato e popolato
  * con i dati di default (vedi default.sql).
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CampoDAOTest {
 
     private CampoDAO campoDAO;
@@ -25,6 +24,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Verifica il recupero di tutti i campi")
     void testGetAllCampi() throws SQLException {
         List<Campo> campi = campoDAO.getAllCampi();
@@ -45,6 +45,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Verifica il recupero di un campo specifico per ID")
     void testGetCampoById() throws SQLException {
         // Assumiamo che esista un campo con ID 1 (dal default.sql)
@@ -60,6 +61,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Verifica che getCampoById restituisca null per ID inesistente")
     void testGetCampoByIdNotFound() throws SQLException {
         Campo campo = campoDAO.getCampoById(9999);
@@ -68,6 +70,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(4)
     @DisplayName("Verifica il recupero dei campi coperti")
     void testGetCampiCoperti() throws SQLException {
         List<Campo> campiCoperti = campoDAO.getCampiCoperti();
@@ -85,6 +88,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(5)
     @DisplayName("Verifica il recupero dei campi per tipo di superficie")
     void testGetCampiByTipoSuperficie() throws SQLException {
         // Test per campi in Terra
@@ -114,6 +118,7 @@ class CampoDAOTest {
     }
 
     @Test
+    @Order(6)
     @DisplayName("Verifica che la ricerca per tipo superficie inesistente restituisca lista vuota")
     void testGetCampiByTipoSuperficieNotFound() throws SQLException {
         List<Campo> campi = campoDAO.getCampiByTipoSuperficie("Erba");

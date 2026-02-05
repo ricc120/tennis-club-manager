@@ -1,106 +1,97 @@
 package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Utente;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UtenteDAOTest {
 
     private UtenteDAO utenteDAO;
-    private List<Integer> utentiCreatiIds;
+    private List<Integer> idsUtentiCreati;
 
     @BeforeEach
     void setUp() {
         utenteDAO = new UtenteDAO();
-        utentiCreatiIds = new ArrayList<>();
+        idsUtentiCreati = new ArrayList<>();
     }
 
     @AfterEach
     void tearDown() {
-        // Rimuove tutti gli utenti creati durante i test
-        for (Integer id : utentiCreatiIds) {
+        for (Integer id : idsUtentiCreati) {
             try {
-                deleteUtenteById(id);
+                utenteDAO.deleteUtente(id);
             } catch (SQLException e) {
                 System.err.println("Errore durante la pulizia dell'utente ID " + id + ": " + e.getMessage());
             }
         }
     }
 
-    /**
-     * Elimina un utente dal database tramite il suo ID.
-     */
-    private void deleteUtenteById(Integer id) throws SQLException {
-        Connection connection = null;
-        PreparedStatement statement = null;
+    private Utente createTestUtente() throws SQLException {
+        Utente utente = new Utente();
+        utente.setNome("Test");
+        utente.setCognome("Utente");
+        utente.setEmail("test.registrazione@tennis.it");
+        utente.setPassword("password123");
+        utente.setRuolo(Utente.Ruolo.SOCIO);
 
-        try {
-            connection = ConnectionManager.getConnection();
-            String query = "DELETE FROM utente WHERE id = ?";
-            statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            statement.executeUpdate();
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            ConnectionManager.closeConnection(connection);
-        }
+        Integer id = utenteDAO.registrazione(utente);
+        idsUtentiCreati.add(id);
+
+        return utenteDAO.getUtenteById(id);
     }
 
-    // ===== TEST REGISTRAZIONE =====
+    private Utente createTestUtente(String nome, String cognome, String email, String password, Utente.Ruolo ruolo)
+            throws SQLException {
+        Utente utente = new Utente();
+        utente.setNome(nome);
+        utente.setCognome(cognome);
+        utente.setEmail(email);
+        utente.setPassword(password);
+        utente.setRuolo(ruolo);
+
+        Integer id = utenteDAO.registrazione(utente);
+        idsUtentiCreati.add(id);
+
+        return utenteDAO.getUtenteById(id);
+    }
 
     @Test
+    @Order(1)
     @DisplayName("Registrazione nuovo utente con successo")
     void testRegistrazioneSuccess() throws SQLException {
-        Utente nuovoUtente = new Utente();
-        nuovoUtente.setNome("Test");
-        nuovoUtente.setCognome("Utente");
-        nuovoUtente.setEmail("test.registrazione@tennis.it");
-        nuovoUtente.setPassword("password123");
-        nuovoUtente.setRuolo(Utente.Ruolo.SOCIO);
 
-        Integer idGenerato = utenteDAO.registrazione(nuovoUtente);
-        utentiCreatiIds.add(idGenerato);
+        Utente nuovoUtente = createTestUtente();
+        Integer id = nuovoUtente.getId();
 
-        assertNotNull(idGenerato, "L'ID generato non dovrebbe essere null");
-        assertTrue(idGenerato > 0, "L'ID generato dovrebbe essere positivo");
-        assertEquals(idGenerato, nuovoUtente.getId(), "L'ID dovrebbe essere impostato nell'oggetto Utente");
+        assertNotNull(id, "L'ID generato non dovrebbe essere null");
+        assertTrue(id > 0, "L'ID generato dovrebbe essere positivo");
+        assertEquals(id, nuovoUtente.getId(), "L'ID dovrebbe essere impostato nell'oggetto Utente");
 
         // Verifica che l'utente sia realmente nel database
-        Utente utenteRecuperato = utenteDAO.getUtenteById(idGenerato);
+        Utente utenteRecuperato = utenteDAO.getUtenteById(id);
         assertNotNull(utenteRecuperato, "L'utente dovrebbe essere recuperabile dal DB");
         assertEquals("Test", utenteRecuperato.getNome());
         assertEquals("Utente", utenteRecuperato.getCognome());
         assertEquals("test.registrazione@tennis.it", utenteRecuperato.getEmail());
         assertEquals(Utente.Ruolo.SOCIO, utenteRecuperato.getRuolo());
+
+        System.out.println("Utente test " + id + " registrato con successo.");
     }
 
     @Test
+    @Order(2)
     @DisplayName("Registrazione fallisce con email duplicata")
     void testRegistrazioneEmailDuplicata() throws SQLException {
-        // Prima registrazione
-        Utente utente1 = new Utente();
-        utente1.setNome("Primo");
-        utente1.setCognome("Utente");
-        utente1.setEmail("email.duplicata@tennis.it");
-        utente1.setPassword("password123");
-        utente1.setRuolo(Utente.Ruolo.SOCIO);
+        Utente utente1 = createTestUtente("Primo", "Utente", "email.duplicata@tennis.it", "password123",
+                Utente.Ruolo.SOCIO);
+        assertNotNull(utente1.getId(), "L'ID generato non dovrebbe essere null");
 
-        Integer id1 = utenteDAO.registrazione(utente1);
-        utentiCreatiIds.add(id1);
-
-        // Seconda registrazione con stessa email dovrebbe fallire
         Utente utente2 = new Utente();
         utente2.setNome("Secondo");
         utente2.setCognome("Utente");
@@ -113,91 +104,82 @@ class UtenteDAOTest {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Registrazione con tutti i ruoli")
     void testRegistrazioneRuoliDiversi() throws SQLException {
         Utente.Ruolo[] ruoli = { Utente.Ruolo.SOCIO, Utente.Ruolo.MAESTRO, Utente.Ruolo.ALLIEVO };
 
         for (Utente.Ruolo ruolo : ruoli) {
-            Utente utente = new Utente();
-            utente.setNome("Test" + ruolo.name());
-            utente.setCognome("Ruolo");
-            utente.setEmail("test." + ruolo.name().toLowerCase() + "@tennis.it");
-            utente.setPassword("password123");
-            utente.setRuolo(ruolo);
+            Utente utente = createTestUtente("Test" + ruolo.name(), "Utente",
+                    "test." + ruolo.name().toLowerCase() + "@tennis.it", "password123", ruolo);
 
-            Integer id = utenteDAO.registrazione(utente);
-            utentiCreatiIds.add(id);
+            Integer id = utente.getId();
 
             assertNotNull(id, "ID non dovrebbe essere null per ruolo " + ruolo);
 
             Utente recuperato = utenteDAO.getUtenteById(id);
             assertEquals(ruolo, recuperato.getRuolo(), "Il ruolo dovrebbe corrispondere");
         }
+
+        System.out.println("Utenti test generati: " + idsUtentiCreati.size());
+
     }
 
-    // ===== TEST LOGIN =====
-
     @Test
-    @DisplayName("Verifica il login con credenziali corrette (Admin)")
+    @Order(4)
+    @DisplayName("Verifica il login con credenziali corrette")
     void testLoginSuccessAdmin() throws SQLException {
-        // Questi dati devono essere presenti nel DB (es. caricati tramite default.sql)
-        Utente utente = utenteDAO.login("admin@tennis.it", "admin123");
+        Utente nuovoUtente = createTestUtente();
 
-        assertNotNull(utente, "L'utente dovrebbe essere trovato");
-        assertEquals("Mario", utente.getNome());
-        assertEquals(Utente.Ruolo.ADMIN, utente.getRuolo());
+        Utente utenteLoggato = utenteDAO.login(nuovoUtente.getEmail(), nuovoUtente.getPassword());
+
+        assertNotNull(utenteLoggato, "L'utente dovrebbe essere trovato");
+        assertEquals(nuovoUtente.getNome(), utenteLoggato.getNome());
+        assertEquals(nuovoUtente.getCognome(), utenteLoggato.getCognome());
+        assertEquals(nuovoUtente.getEmail(), utenteLoggato.getEmail());
+        assertEquals(nuovoUtente.getRuolo(), utenteLoggato.getRuolo());
     }
 
     @Test
-    @DisplayName("Verifica il login con credenziali corrette (Socio)")
-    void testLoginSuccessSocio() throws SQLException {
-        Utente utente = utenteDAO.login("socio@tennis.it", "socio123");
-
-        assertNotNull(utente, "L'utente dovrebbe essere trovato");
-        assertEquals("Luigi", utente.getNome());
-        assertEquals(Utente.Ruolo.SOCIO, utente.getRuolo());
-    }
-
-    @Test
+    @Order(5)
     @DisplayName("Verifica il login con password errata")
     void testLoginWrongPassword() throws SQLException {
-        Utente utente = utenteDAO.login("admin@tennis.it", "wrong_password");
+        Utente nuovoUtente = createTestUtente();
+        Utente utenteLoggato = utenteDAO.login(nuovoUtente.getEmail(), "wrong_password");
 
-        assertNull(utente, "Il login dovrebbe fallire con password errata");
+        assertNull(utenteLoggato, "Il login dovrebbe fallire con password errata");
     }
 
     @Test
+    @Order(6)
     @DisplayName("Verifica il login con email inesistente")
     void testLoginUserNotFound() throws SQLException {
-        Utente utente = utenteDAO.login("non_esiste@tennis.it", "password");
+        Utente nuovoUtente = createTestUtente();
+        Utente utenteLoggato = utenteDAO.login("non_esiste@tennis.it", nuovoUtente.getPassword());
 
-        assertNull(utente, "Il login dovrebbe fallire per utente inesistente");
+        assertNull(utenteLoggato, "Il login dovrebbe fallire per utente inesistente");
     }
 
-    // ===== TEST GET UTENTE BY ID =====
-
     @Test
+    @Order(8)
     @DisplayName("Recupera utente per ID esistente")
-    void testGetUtenteByIdExistente() throws SQLException {
+    void testGetUtenteByIdEsistente() throws SQLException {
         // Crea un utente e poi lo recupera
-        Utente nuovoUtente = new Utente();
-        nuovoUtente.setNome("GetById");
-        nuovoUtente.setCognome("Test");
-        nuovoUtente.setEmail("getbyid.test@tennis.it");
-        nuovoUtente.setPassword("password");
-        nuovoUtente.setRuolo(Utente.Ruolo.SOCIO);
+        Utente nuovoUtente = createTestUtente();
 
-        Integer id = utenteDAO.registrazione(nuovoUtente);
-        utentiCreatiIds.add(id);
+        Integer id = nuovoUtente.getId();
 
         Utente recuperato = utenteDAO.getUtenteById(id);
 
         assertNotNull(recuperato, "L'utente dovrebbe essere trovato");
         assertEquals(id, recuperato.getId());
-        assertEquals("GetById", recuperato.getNome());
+        assertEquals(nuovoUtente.getNome(), recuperato.getNome());
+
+        System.out.println("Utente test " + id + " recuperato con successo.");
     }
 
     @Test
+    @Order(9)
     @DisplayName("GetUtenteById restituisce null per ID inesistente")
     void testGetUtenteByIdNonEsistente() throws SQLException {
         Utente utente = utenteDAO.getUtenteById(999999);
@@ -205,20 +187,14 @@ class UtenteDAOTest {
         assertNull(utente, "Dovrebbe restituire null per ID inesistente");
     }
 
-    // ===== TEST DELETE UTENTE =====
-
     @Test
+    @Order(10)
     @DisplayName("Cancellazione utente esistente con successo")
     void testDeleteUtenteSuccess() throws SQLException {
         // Crea un utente da cancellare
-        Utente nuovoUtente = new Utente();
-        nuovoUtente.setNome("DaCancellare");
-        nuovoUtente.setCognome("Test");
-        nuovoUtente.setEmail("da.cancellare@tennis.it");
-        nuovoUtente.setPassword("password");
-        nuovoUtente.setRuolo(Utente.Ruolo.SOCIO);
+        Utente nuovoUtente = createTestUtente();
 
-        Integer id = utenteDAO.registrazione(nuovoUtente);
+        Integer id = nuovoUtente.getId();
 
         // Verifica che esista
         assertNotNull(utenteDAO.getUtenteById(id), "L'utente dovrebbe esistere prima della cancellazione");
@@ -228,9 +204,12 @@ class UtenteDAOTest {
 
         assertTrue(risultato, "La cancellazione dovrebbe avere successo");
         assertNull(utenteDAO.getUtenteById(id), "L'utente non dovrebbe più esistere dopo la cancellazione");
+
+        System.out.println("Utente test " + id + " cancellato con successo.");
     }
 
     @Test
+    @Order(11)
     @DisplayName("Cancellazione utente inesistente restituisce false")
     void testDeleteUtenteNonEsistente() throws SQLException {
         boolean risultato = utenteDAO.deleteUtente(999999);

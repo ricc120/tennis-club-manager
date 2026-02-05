@@ -9,10 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test per la classe SessionManager.
  * Verifica il corretto funzionamento della gestione delle sessioni utente.
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SessionManagerTest {
 
     private SessionManager sessionManager;
-    private Utente testUser;
+    private Utente testUtente;
 
     @BeforeEach
     void setUp() {
@@ -21,7 +22,7 @@ class SessionManagerTest {
         sessionManager.clearAllSessions();
 
         // Crea un utente di test
-        testUser = new Utente(1, "Mario", "Rossi", "mario.rossi@test.it", "password123", Utente.Ruolo.SOCIO);
+        testUtente = new Utente(1, "Mario", "Rossi", "mario.rossi@test.it", "password123", Utente.Ruolo.SOCIO);
     }
 
     @AfterEach
@@ -31,25 +32,28 @@ class SessionManagerTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Verifica che l'istanza sia singleton")
     void testSingletonInstance() {
-        SessionManager instance1 = SessionManager.getInstance();
-        SessionManager instance2 = SessionManager.getInstance();
+        SessionManager sessione1 = SessionManager.getInstance();
+        SessionManager sessione2 = SessionManager.getInstance();
 
-        assertSame(instance1, instance2, "Le istanze dovrebbero essere la stessa (Singleton)");
+        assertSame(sessione1, sessione2, "Le istanze dovrebbero essere la stessa (Singleton)");
     }
 
     @Test
+    @Order(2)
     @DisplayName("Creazione di una nuova sessione")
     void testCreateSession() {
-        String sessionId = sessionManager.createSession(testUser);
+        String id = sessionManager.createSession(testUtente);
 
-        assertNotNull(sessionId, "L'ID della sessione non dovrebbe essere null");
-        assertFalse(sessionId.isEmpty(), "L'ID della sessione non dovrebbe essere vuoto");
+        assertNotNull(id, "L'ID della sessione non dovrebbe essere null");
+        assertFalse(id.isEmpty(), "L'ID della sessione non dovrebbe essere vuoto");
         assertEquals(1, sessionManager.getActiveSessionsCount(), "Dovrebbe esserci una sessione attiva");
     }
 
     @Test
+    @Order(3)
     @DisplayName("Creazione sessione con utente null solleva eccezione")
     void testCreateSessionWithNullUser() {
         assertThrows(IllegalArgumentException.class,
@@ -58,105 +62,115 @@ class SessionManagerTest {
     }
 
     @Test
+    @Order(4)
     @DisplayName("Recupero utente da sessione valida")
     void testGetUserFromValidSession() {
-        String sessionId = sessionManager.createSession(testUser);
+        String id = sessionManager.createSession(testUtente);
 
-        Utente retrievedUser = sessionManager.getUser(sessionId);
+        Utente utenteRecuperato = sessionManager.getUser(id);
 
-        assertNotNull(retrievedUser, "L'utente recuperato non dovrebbe essere null");
-        assertEquals(testUser.getId(), retrievedUser.getId(), "L'ID utente dovrebbe corrispondere");
-        assertEquals(testUser.getEmail(), retrievedUser.getEmail(), "L'email dovrebbe corrispondere");
+        assertNotNull(utenteRecuperato, "L'utente recuperato non dovrebbe essere null");
+        assertEquals(testUtente.getId(), utenteRecuperato.getId(), "L'ID utente dovrebbe corrispondere");
+        assertEquals(testUtente.getEmail(), utenteRecuperato.getEmail(), "L'email dovrebbe corrispondere");
     }
 
     @Test
+    @Order(5)
     @DisplayName("Recupero utente da sessione inesistente")
     void testGetUserFromInvalidSession() {
-        Utente retrievedUser = sessionManager.getUser("invalid-session-id");
+        Utente utenteRecuperato = sessionManager.getUser("ID di sessione non valido");
 
-        assertNull(retrievedUser, "L'utente dovrebbe essere null per sessione inesistente");
+        assertNull(utenteRecuperato, "L'utente dovrebbe essere null per sessione inesistente");
     }
 
     @Test
+    @Order(6)
     @DisplayName("Recupero utente corrente")
     void testGetCurrentUser() {
         assertNull(sessionManager.getCurrentUser(), "Non dovrebbe esserci utente corrente inizialmente");
 
-        sessionManager.createSession(testUser);
+        sessionManager.createSession(testUtente);
 
-        Utente currentUser = sessionManager.getCurrentUser();
-        assertNotNull(currentUser, "Dovrebbe esserci un utente corrente dopo il login");
-        assertEquals(testUser.getEmail(), currentUser.getEmail(), "L'utente corrente dovrebbe corrispondere");
+        Utente utenteCorrente = sessionManager.getCurrentUser();
+        assertNotNull(utenteCorrente, "Dovrebbe esserci un utente corrente dopo il login");
+        assertEquals(testUtente.getEmail(), utenteCorrente.getEmail(), "L'utente corrente dovrebbe corrispondere");
     }
 
     @Test
+    @Order(7)
     @DisplayName("Verifica se utente è loggato")
     void testIsUserLoggedIn() {
         assertFalse(sessionManager.isUserLoggedIn(), "Nessun utente dovrebbe essere loggato inizialmente");
 
-        sessionManager.createSession(testUser);
+        sessionManager.createSession(testUtente);
 
         assertTrue(sessionManager.isUserLoggedIn(),
                 "Un utente dovrebbe essere loggato dopo la creazione della sessione");
     }
 
     @Test
+    @Order(8)
     @DisplayName("Invalidazione di una sessione specifica")
     void testInvalidateSession() {
-        String sessionId = sessionManager.createSession(testUser);
+        String id = sessionManager.createSession(testUtente);
 
         assertTrue(sessionManager.isUserLoggedIn(), "L'utente dovrebbe essere loggato");
 
-        boolean result = sessionManager.invalidateSession(sessionId);
+        boolean risultato = sessionManager.invalidateSession(id);
 
-        assertTrue(result, "L'invalidazione dovrebbe avere successo");
+        assertTrue(risultato, "L'invalidazione dovrebbe avere successo");
         assertFalse(sessionManager.isUserLoggedIn(), "L'utente non dovrebbe più essere loggato");
         assertEquals(0, sessionManager.getActiveSessionsCount(), "Non dovrebbero esserci sessioni attive");
     }
 
     @Test
+    @Order(9)
     @DisplayName("Invalidazione di sessione inesistente")
     void testInvalidateNonExistentSession() {
-        boolean result = sessionManager.invalidateSession("non-existent-id");
+        boolean risultato = sessionManager.invalidateSession("ID non esistente");
 
-        assertFalse(result, "L'invalidazione di una sessione inesistente dovrebbe fallire");
+        assertFalse(risultato, "L'invalidazione di una sessione inesistente dovrebbe fallire");
     }
 
     @Test
+    @Order(10)
     @DisplayName("Invalidazione di sessione null")
     void testInvalidateNullSession() {
-        boolean result = sessionManager.invalidateSession(null);
+        boolean risultato = sessionManager.invalidateSession(null);
 
-        assertFalse(result, "L'invalidazione di una sessione null dovrebbe fallire");
+        assertFalse(risultato, "L'invalidazione di una sessione null dovrebbe fallire");
     }
 
     @Test
+    @Order(11)
     @DisplayName("Logout dell'utente corrente")
     void testLogout() {
-        sessionManager.createSession(testUser);
+        sessionManager.createSession(testUtente);
         assertTrue(sessionManager.isUserLoggedIn(), "L'utente dovrebbe essere loggato");
 
-        boolean result = sessionManager.logout();
+        boolean risultato = sessionManager.logout();
 
-        assertTrue(result, "Il logout dovrebbe avere successo");
+        assertTrue(risultato, "Il logout dovrebbe avere successo");
         assertFalse(sessionManager.isUserLoggedIn(), "L'utente non dovrebbe più essere loggato");
         assertNull(sessionManager.getCurrentUser(), "Non dovrebbe esserci utente corrente");
     }
 
     @Test
+    @Order(12)
     @DisplayName("Logout senza utente loggato")
     void testLogoutWithoutUser() {
-        boolean result = sessionManager.logout();
+        boolean risultato = sessionManager.logout();
 
-        assertFalse(result, "Il logout senza utente loggato dovrebbe fallire");
+        assertFalse(risultato, "Il logout senza utente loggato dovrebbe fallire");
     }
 
     @Test
+    @Order(13)
     @DisplayName("Conteggio sessioni attive")
     void testActiveSessionsCount() {
         assertEquals(0, sessionManager.getActiveSessionsCount(), "Inizialmente non dovrebbero esserci sessioni");
 
-        sessionManager.createSession(testUser);
+        sessionManager.createSession(testUtente);
         assertEquals(1, sessionManager.getActiveSessionsCount(), "Dovrebbe esserci una sessione attiva");
 
         sessionManager.logout();
@@ -164,12 +178,13 @@ class SessionManagerTest {
     }
 
     @Test
+    @Order(14)
     @DisplayName("Pulizia di tutte le sessioni")
     void testClearAllSessions() {
-        sessionManager.createSession(testUser);
+        sessionManager.createSession(testUtente);
 
-        Utente anotherUser = new Utente(2, "Luigi", "Verdi", "luigi.verdi@test.it", "pass456", Utente.Ruolo.ADMIN);
-        sessionManager.createSession(anotherUser);
+        Utente utente = new Utente(2, "Luigi", "Verdi", "luigi.verdi@test.it", "pass456", Utente.Ruolo.ADMIN);
+        sessionManager.createSession(utente);
 
         assertTrue(sessionManager.getActiveSessionsCount() > 0, "Dovrebbero esserci sessioni attive");
 
@@ -180,40 +195,42 @@ class SessionManagerTest {
     }
 
     @Test
+    @Order(15)
     @DisplayName("Creazione di sessioni multiple (sovrascrittura)")
     void testMultipleSessionCreation() {
-        String sessionId1 = sessionManager.createSession(testUser);
-        assertNotNull(sessionId1, "La prima sessione dovrebbe essere creata");
+        String id1 = sessionManager.createSession(testUtente);
+        assertNotNull(id1, "La prima sessione dovrebbe essere creata");
 
-        Utente anotherUser = new Utente(2, "Luigi", "Verdi", "luigi.verdi@test.it", "pass456", Utente.Ruolo.ADMIN);
-        String sessionId2 = sessionManager.createSession(anotherUser);
+        Utente utente = new Utente(2, "Luigi", "Verdi", "luigi.verdi@test.it", "pass456", Utente.Ruolo.ADMIN);
+        String id2 = sessionManager.createSession(utente);
 
-        assertNotNull(sessionId2, "La seconda sessione dovrebbe essere creata");
-        assertNotEquals(sessionId1, sessionId2, "Gli ID delle sessioni dovrebbero essere diversi");
+        assertNotNull(id2, "La seconda sessione dovrebbe essere creata");
+        assertNotEquals(id1, id2, "Gli ID delle sessioni dovrebbero essere diversi");
 
         // L'utente corrente dovrebbe essere l'ultimo che ha fatto login
-        Utente currentUser = sessionManager.getCurrentUser();
-        assertEquals(anotherUser.getEmail(), currentUser.getEmail(),
+        Utente utenteCorrente = sessionManager.getCurrentUser();
+        assertEquals(utente.getEmail(), utenteCorrente.getEmail(),
                 "L'utente corrente dovrebbe essere l'ultimo che ha fatto login");
     }
 
     @Test
+    @Order(16)
     @DisplayName("Verifica che la sessione aggiorni il timestamp di ultimo accesso")
     void testSessionLastAccessUpdate() throws InterruptedException {
-        String sessionId = sessionManager.createSession(testUser);
+        String id = sessionManager.createSession(testUtente);
 
         // Prima chiamata
-        Utente user1 = sessionManager.getUser(sessionId);
-        assertNotNull(user1, "L'utente dovrebbe essere recuperato");
+        Utente utente1 = sessionManager.getUser(id);
+        assertNotNull(utente1, "L'utente dovrebbe essere recuperato");
 
         // Attendi un po'
         Thread.sleep(100);
 
         // Seconda chiamata - dovrebbe aggiornare il timestamp
-        Utente user2 = sessionManager.getUser(sessionId);
-        assertNotNull(user2, "L'utente dovrebbe essere ancora recuperabile");
+        Utente utente2 = sessionManager.getUser(id);
+        assertNotNull(utente2, "L'utente dovrebbe essere ancora recuperabile");
 
         // Verifica che sia lo stesso utente
-        assertEquals(user1.getId(), user2.getId(), "Dovrebbe essere lo stesso utente");
+        assertEquals(utente1.getId(), utente2.getId(), "Dovrebbe essere lo stesso utente");
     }
 }

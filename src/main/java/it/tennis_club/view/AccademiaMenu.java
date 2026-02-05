@@ -56,7 +56,7 @@ public class AccademiaMenu {
                 System.out.println("9. Visualizza allievi di una lezione");
                 System.out.println("10. Le mie lezioni (come allievo)");
                 System.out.println("11. Segna presenza allievo");
-                System.out.println("12. Aggiungi note allievo");
+                System.out.println("12. Aggiungi feedback allievo");
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
                 System.out.println();
@@ -75,20 +75,20 @@ public class AccademiaMenu {
                     case 9 -> visualizzaAllieviLezione();
                     case 10 -> lezioniAllievo();
                     case 11 -> segnaPresenza();
-                    case 12 -> aggiungiNote();
+                    case 12 -> aggiungiFeedback();
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
             } else if (ruolo == Utente.Ruolo.ALLIEVO) {
 
-                System.out.println("10. Le mie lezioni");
+                System.out.println("1. Le mie lezioni");
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
                 System.out.println();
 
                 int scelta = CLIUtils.readInt("Scelta: ");
                 switch (scelta) {
-                    case 10 -> lezioniAllievo();
+                    case 1 -> lezioniAllievo();
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
@@ -119,7 +119,10 @@ public class AccademiaMenu {
                 System.out.println("  [" + c.getId() + "] " + c.getNome());
             }
 
-            int idCampo = CLIUtils.readInt("ID Campo: ");
+            System.out.println();
+            Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
+            if (idCampo == null)
+                return;
             Campo campo = campoService.getCampoById(idCampo);
 
             LocalDate data = CLIUtils.readDate("Data lezione");
@@ -141,7 +144,6 @@ public class AccademiaMenu {
      */
     private void visualizzaTutteLeLezioni() {
         CLIUtils.printSubHeader("Tutte le Lezioni");
-
         try {
             List<Lezione> lezioni = accademiaService.getAllLezioni();
             stampaListaLezioni(lezioni);
@@ -157,7 +159,6 @@ public class AccademiaMenu {
      */
     private void lezioniMaestro() {
         CLIUtils.printSubHeader("Le Mie Lezioni (Maestro)");
-
         Utente utente = sessionManager.getCurrentUser();
         if (utente == null) {
             CLIUtils.printError("Devi effettuare il login.");
@@ -180,15 +181,19 @@ public class AccademiaMenu {
      */
     private void dettaglioLezione() {
         CLIUtils.printSubHeader("Dettaglio Lezione");
-
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-
         try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
             Lezione lezione = accademiaService.getLezioneById(idLezione);
             System.out.println();
             System.out.println("  ID:          " + lezione.getId());
             System.out.println(
-                    "  Maestro:     " + lezione.getMaestro().getNome() + " " + lezione.getMaestro().getCognome());
+                    "  Maestro:     " + lezione.getMaestro().getNome() + " "
+                            + (lezione.getMaestro().getCognome() != null ? lezione.getMaestro().getCognome() : ""));
             System.out.println("  Data:        " + CLIUtils.formatDate(lezione.getPrenotazione().getData()));
             System.out.println("  Ora:         " + CLIUtils.formatTime(lezione.getPrenotazione().getOraInizio()));
             System.out.println("  Campo:       " + lezione.getPrenotazione().getCampo().getNome());
@@ -210,11 +215,14 @@ public class AccademiaMenu {
      */
     private void modificaDescrizione() {
         CLIUtils.printSubHeader("Modifica Descrizione Lezione");
-
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-        String nuovaDescrizione = CLIUtils.readString("Nuova descrizione: ");
-
         try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+            String nuovaDescrizione = CLIUtils.readString("Nuova descrizione: ");
+
             boolean success = accademiaService.inserisciDescrizione(idLezione, nuovaDescrizione);
             if (success) {
                 CLIUtils.printSuccess("Descrizione aggiornata.");
@@ -233,20 +241,23 @@ public class AccademiaMenu {
      */
     private void eliminaLezione() {
         CLIUtils.printSubHeader("Elimina Lezione");
+        try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
 
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-
-        if (CLIUtils.readConfirm("Confermi l'eliminazione?")) {
-            try {
+            if (CLIUtils.readConfirm("Confermi l'eliminazione?")) {
                 boolean success = accademiaService.deleteLezione(idLezione);
                 if (success) {
                     CLIUtils.printSuccess("Lezione eliminata.");
                 } else {
                     CLIUtils.printWarning("Lezione non trovata o già eliminata.");
                 }
-            } catch (AccademiaException e) {
-                CLIUtils.printError(e.getMessage());
             }
+        } catch (AccademiaException e) {
+            CLIUtils.printError(e.getMessage());
         }
 
         CLIUtils.waitForEnter();
@@ -257,7 +268,6 @@ public class AccademiaMenu {
      */
     private void aggiungiAllievo() {
         CLIUtils.printSubHeader("Aggiungi Allievo a Lezione");
-
         Utente utente = sessionManager.getCurrentUser();
         if (utente == null) {
             CLIUtils.printError("Devi effettuare il login.");
@@ -273,6 +283,14 @@ public class AccademiaMenu {
         }
 
         try {
+            // Mostra la lista delle lezioni
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
             // Mostra la lista degli allievi disponibili
             List<Utente> allievi = accademiaService.getUtentiAllievi();
             if (allievi.isEmpty()) {
@@ -281,18 +299,8 @@ public class AccademiaMenu {
                 return;
             }
 
-            System.out.println("\nAllievi disponibili:");
-            CLIUtils.printTableHeader("ID", "Nome", "Cognome", "Email");
-            for (Utente allievo : allievi) {
-                CLIUtils.printTableRow(
-                        String.valueOf(allievo.getId()),
-                        allievo.getNome(),
-                        allievo.getCognome(),
-                        allievo.getEmail());
-            }
-            CLIUtils.printTableFooter(4);
-
-            int idLezione = CLIUtils.readInt("ID Lezione: ");
+            stampaListaUtenti(allievi, "Allievi disponibili");
+            System.out.println();
             int idAllievo = CLIUtils.readInt("ID Allievo da aggiungere: ");
 
             Utente allievoDaAggiungere = accademiaService.getUtenteById(idAllievo);
@@ -311,25 +319,41 @@ public class AccademiaMenu {
     }
 
     /**
-     * Rimuove un allievo da una lezione.
+     * Rimuovi un allievo da una lezione.
      */
     private void rimuoviAllievo() {
         CLIUtils.printSubHeader("Rimuovi Allievo da Lezione");
 
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-        int idAllievo = CLIUtils.readInt("ID Allievo: ");
+        try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
 
-        if (CLIUtils.readConfirm("Confermi la rimozione?")) {
-            try {
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
+            List<Utente> allieviLezione = accademiaService.getAllievi(idLezione);
+            if (allieviLezione.isEmpty()) {
+                CLIUtils.printInfo("Nessun allievo iscritto a questa lezione.");
+                CLIUtils.waitForEnter();
+                return;
+            }
+
+            stampaListaUtenti(allieviLezione, "Allievi iscritti alla lezione");
+            System.out.println();
+
+            int idAllievo = CLIUtils.readInt("ID Allievo: ");
+
+            if (CLIUtils.readConfirm("Confermi la rimozione?")) {
                 boolean success = accademiaService.rimuoviAllievo(idLezione, idAllievo);
                 if (success) {
                     CLIUtils.printSuccess("Allievo rimosso dalla lezione.");
                 } else {
                     CLIUtils.printError("Impossibile rimuovere l'allievo.");
                 }
-            } catch (AccademiaException e) {
-                CLIUtils.printError(e.getMessage());
             }
+        } catch (AccademiaException e) {
+            CLIUtils.printError(e.getMessage());
         }
 
         CLIUtils.waitForEnter();
@@ -340,25 +364,19 @@ public class AccademiaMenu {
      */
     private void visualizzaAllieviLezione() {
         CLIUtils.printSubHeader("Allievi della Lezione");
-
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-
         try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
             List<Utente> allievi = accademiaService.getAllievi(idLezione);
 
             if (allievi.isEmpty()) {
                 CLIUtils.printInfo("Nessun allievo iscritto a questa lezione.");
             } else {
-                System.out.println();
-                CLIUtils.printTableHeader("ID", "Nome", "Cognome", "Email");
-                for (Utente allievo : allievi) {
-                    CLIUtils.printTableRow(
-                            String.valueOf(allievo.getId()),
-                            allievo.getNome(),
-                            allievo.getCognome(),
-                            allievo.getEmail());
-                }
-                CLIUtils.printTableFooter(4);
+                stampaListaUtenti(allievi, "Allievi della lezione");
                 CLIUtils.printInfo("Totale: " + allievi.size() + " allievi");
             }
         } catch (AccademiaException e) {
@@ -373,7 +391,6 @@ public class AccademiaMenu {
      */
     private void lezioniAllievo() {
         CLIUtils.printSubHeader("Le Mie Lezioni (Allievo)");
-
         Utente utente = sessionManager.getCurrentUser();
         if (utente == null) {
             CLIUtils.printError("Devi effettuare il login.");
@@ -396,12 +413,26 @@ public class AccademiaMenu {
      */
     private void segnaPresenza() {
         CLIUtils.printSubHeader("Segna Presenza Allievo");
-
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-        int idAllievo = CLIUtils.readInt("ID Allievo: ");
-        boolean presente = CLIUtils.readConfirm("L'allievo è presente?");
-
         try {
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
+            List<Utente> allieviLezione = accademiaService.getAllievi(idLezione);
+            if (allieviLezione.isEmpty()) {
+                CLIUtils.printInfo("Nessun allievo iscritto a questa lezione.");
+                CLIUtils.waitForEnter();
+                return;
+            }
+
+            stampaListaUtenti(allieviLezione, "Allievi iscritti alla lezione");
+            System.out.println();
+
+            int idAllievo = CLIUtils.readInt("ID Allievo: ");
+            boolean presente = CLIUtils.readConfirm("L'allievo è presente?");
+
             boolean success = accademiaService.segnaPresenza(idLezione, idAllievo, presente);
             if (success) {
                 CLIUtils.printSuccess("Presenza registrata: " + (presente ? "PRESENTE" : "ASSENTE"));
@@ -416,21 +447,35 @@ public class AccademiaMenu {
     }
 
     /**
-     * Aggiunge note per un allievo in una lezione.
+     * Aggiunge feedback per un allievo in una lezione.
      */
-    private void aggiungiNote() {
-        CLIUtils.printSubHeader("Aggiungi Note Allievo");
-
-        int idLezione = CLIUtils.readInt("ID Lezione: ");
-        int idAllievo = CLIUtils.readInt("ID Allievo: ");
-        String note = CLIUtils.readString("Note: ");
-
+    private void aggiungiFeedback() {
+        CLIUtils.printSubHeader("Aggiungi Feedback Allievo");
         try {
-            boolean success = accademiaService.aggiungiFeedback(idLezione, idAllievo, note);
+            stampaListaLezioni(accademiaService.getAllLezioni());
+            System.out.println();
+            Integer idLezione = CLIUtils.readIntOptional("ID Lezione (vuoto per annullare): ");
+            if (idLezione == null)
+                return;
+
+            List<Utente> allieviLezione = accademiaService.getAllievi(idLezione);
+            if (allieviLezione.isEmpty()) {
+                CLIUtils.printInfo("Nessun allievo iscritto a questa lezione.");
+                CLIUtils.waitForEnter();
+                return;
+            }
+
+            stampaListaUtenti(allieviLezione, "Allievi iscritti alla lezione");
+            System.out.println();
+
+            int idAllievo = CLIUtils.readInt("ID Allievo: ");
+            String feedback = CLIUtils.readString("Feedback: ");
+
+            boolean success = accademiaService.aggiungiFeedback(idLezione, idAllievo, feedback);
             if (success) {
-                CLIUtils.printSuccess("Note aggiunte.");
+                CLIUtils.printSuccess("Feedback aggiunto.");
             } else {
-                CLIUtils.printError("Impossibile aggiungere le note.");
+                CLIUtils.printError("Impossibile aggiungere il feedback.");
             }
         } catch (AccademiaException e) {
             CLIUtils.printError(e.getMessage());
@@ -451,15 +496,38 @@ public class AccademiaMenu {
         System.out.println();
         CLIUtils.printTableHeader("ID", "Data", "Ora", "Campo", "Maestro");
         for (Lezione l : lezioni) {
+            String nomeM = l.getMaestro().getNome() + " "
+                    + (l.getMaestro().getCognome() != null ? l.getMaestro().getCognome() : "");
             CLIUtils.printTableRow(
                     String.valueOf(l.getId()),
                     CLIUtils.formatDate(l.getPrenotazione().getData()),
                     CLIUtils.formatTime(l.getPrenotazione().getOraInizio()),
                     l.getPrenotazione().getCampo().getNome(),
-                    l.getMaestro().getNome());
+                    nomeM);
         }
         CLIUtils.printTableFooter(5);
         CLIUtils.printInfo("Totale: " + lezioni.size() + " lezioni");
+    }
+
+    /**
+     * Helper per stampare lista utenti (allievi).
+     */
+    private void stampaListaUtenti(List<Utente> utenti, String titolo) {
+        if (utenti.isEmpty()) {
+            CLIUtils.printInfo("Nessun utente trovato.");
+            return;
+        }
+
+        System.out.println("\n" + titolo + ":");
+        CLIUtils.printTableHeader("ID", "Nome", "Cognome", "Email");
+        for (Utente u : utenti) {
+            CLIUtils.printTableRow(
+                    String.valueOf(u.getId()),
+                    u.getNome(),
+                    u.getCognome(),
+                    u.getEmail());
+        }
+        CLIUtils.printTableFooter(4);
     }
 
     /**

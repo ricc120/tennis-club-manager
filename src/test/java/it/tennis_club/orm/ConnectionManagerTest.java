@@ -1,7 +1,6 @@
 package it.tennis_club.orm;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
@@ -12,9 +11,11 @@ import java.sql.SQLException;
  * Questi test richiedono che il database PostgreSQL sia in esecuzione
  * e configurato correttamente in db.properties.
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ConnectionManagerTest {
 
     @Test
+    @Order(1)
     @DisplayName("Verifica che la connessione al database venga stabilita correttamente")
     void testGetConnection() {
         Connection connection = null;
@@ -32,7 +33,7 @@ class ConnectionManagerTest {
             // Verifica che la connessione non sia chiusa
             assertFalse(connection.isClosed(), "La connessione non dovrebbe essere chiusa");
 
-            System.out.println("✓ Connessione al database stabilita con successo!");
+            System.out.println("Connessione al database stabilita con successo!");
 
         } catch (SQLException e) {
             fail("Errore durante la connessione al database: " + e.getMessage());
@@ -43,6 +44,7 @@ class ConnectionManagerTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Verifica che la connessione venga chiusa correttamente")
     void testCloseConnection() {
         Connection connection = null;
@@ -58,7 +60,7 @@ class ConnectionManagerTest {
             // Verifica che la connessione sia effettivamente chiusa
             assertTrue(connection.isClosed(), "La connessione dovrebbe essere chiusa");
 
-            System.out.println("✓ Connessione chiusa correttamente!");
+            System.out.println("Connessione chiusa correttamente!");
 
         } catch (SQLException e) {
             fail("Errore durante il test di chiusura: " + e.getMessage());
@@ -66,16 +68,18 @@ class ConnectionManagerTest {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Verifica che closeConnection gestisca correttamente una connessione null")
     void testCloseNullConnection() {
         // Non dovrebbe lanciare eccezioni
         assertDoesNotThrow(() -> {
             ConnectionManager.closeConnection(null);
-            System.out.println("✓ Gestione corretta di connessione null");
+            System.out.println("Gestione corretta di connessione null");
         });
     }
 
     @Test
+    @Order(4)
     @DisplayName("Verifica che sia possibile ottenere multiple connessioni")
     void testMultipleConnections() {
         Connection conn1 = null;

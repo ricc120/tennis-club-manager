@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test per il DAO delle manutenzioni.
  * Questi test richiedono che il database sia configurato e popolato
  * con i dati di default (vedi default.sql).
- * 
- * IMPORTANTE: I test di creazione, aggiornamento ed eliminazione
- * modificano il database. Eseguire reset.sql e default.sql tra le esecuzioni
- * se necessario per ripristinare lo stato iniziale.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ManutenzioneDAOTest {
@@ -27,12 +24,89 @@ class ManutenzioneDAOTest {
     private CampoDAO campoDAO;
     private UtenteDAO utenteDAO;
 
+    private List<Integer> idsManutenzioniCreate;
+
     @BeforeEach
     void setUp() {
         manutenzioneDAO = new ManutenzioneDAO();
         campoDAO = new CampoDAO();
         utenteDAO = new UtenteDAO();
+        idsManutenzioniCreate = new ArrayList<>();
     }
+
+    @AfterEach
+    void tearDown() throws SQLException {
+        for (Integer id : idsManutenzioniCreate) {
+            manutenzioneDAO.deleteManutenzioni(id);
+        }
+        idsManutenzioniCreate.clear();
+    }
+
+    // ==================== METODI HELPER ====================
+
+    /**
+     * Crea una nuova manutenzione di test con stato IN_CORSO.
+     * La manutenzione viene automaticamente registrata per la pulizia nel tearDown.
+     * 
+     * @param manutentore L'utente che esegue la manutenzione (MANUTENTORE o ADMIN)
+     * @return La manutenzione creata con ID popolato
+     */
+    private Manutenzione createTestManutenzione(Utente manutentore) throws SQLException {
+        return createTestManutenzione(manutentore, Manutenzione.Stato.IN_CORSO, null);
+    }
+
+    /**
+     * Crea una nuova manutenzione di test con stato e descrizione personalizzati.
+     * La manutenzione viene automaticamente registrata per la pulizia nel tearDown.
+     * 
+     * @param manutentore L'utente che esegue la manutenzione (MANUTENTORE o ADMIN)
+     * @param stato       Lo stato della manutenzione
+     * @param descrizione La descrizione (se null, usa una descrizione di default)
+     * @return La manutenzione creata con ID popolato
+     */
+    private Manutenzione createTestManutenzione(Utente manutentore, Manutenzione.Stato stato, String descrizione)
+            throws SQLException {
+        List<Campo> campi = campoDAO.getAllCampi();
+        if (campi.isEmpty()) {
+            fail("Non ci sono campi disponibili per creare manutenzioni di test");
+        }
+
+        Manutenzione manutenzione = new Manutenzione();
+        manutenzione.setCampo(campi.get(0));
+        manutenzione.setManutentore(manutentore);
+        manutenzione.setDataInizio(LocalDate.now());
+        manutenzione.setDescrizione(descrizione != null ? descrizione : "Test manutenzione");
+        manutenzione.setStato(stato);
+
+        if (stato == Manutenzione.Stato.COMPLETATA) {
+            manutenzione.setDataFine(LocalDate.now());
+        }
+
+        Integer id = manutenzioneDAO.createManutenzione(manutenzione);
+        assertNotNull(id, "L'ID generato non dovrebbe essere null");
+        assertTrue(id > 0, "L'ID generato dovrebbe essere positivo");
+
+        idsManutenzioniCreate.add(id);
+        return manutenzioneDAO.getManutenzioneById(id);
+    }
+
+    /**
+     * Ottiene la lista di tutti gli utenti autorizzati a creare manutenzioni
+     * (MANUTENTORE e ADMIN).
+     */
+    private List<Utente> getUtentiAutorizzati() throws SQLException {
+        List<Utente> autorizzati = new ArrayList<>();
+        autorizzati.addAll(utenteDAO.getUtentiByRuolo(Utente.Ruolo.MANUTENTORE));
+        autorizzati.addAll(utenteDAO.getUtentiByRuolo(Utente.Ruolo.ADMIN));
+
+        if (autorizzati.isEmpty()) {
+            fail("Non ci sono manutentori o admin disponibili per eseguire il test");
+        }
+
+        return autorizzati;
+    }
+
+    // ==================== TEST ====================
 
     @Test
     @Order(1)
@@ -42,7 +116,6 @@ class ManutenzioneDAOTest {
 
         assertNotNull(manutenzioni, "La lista delle manutenzioni non dovrebbe essere null");
 
-        // Verifica che le manutenzioni abbiano tutti i dati popolati
         for (Manutenzione manutenzione : manutenzioni) {
             assertNotNull(manutenzione.getId(), "L'ID non dovrebbe essere null");
             assertNotNull(manutenzione.getCampo(), "Il campo non dovrebbe essere null");
@@ -50,13 +123,11 @@ class ManutenzioneDAOTest {
             assertNotNull(manutenzione.getDataInizio(), "La data inizio non dovrebbe essere null");
             assertNotNull(manutenzione.getDescrizione(), "La descrizione non dovrebbe essere null");
             assertNotNull(manutenzione.getStato(), "Lo stato non dovrebbe essere null");
-
-            // Verifica che gli oggetti Campo e Utente siano completi
             assertNotNull(manutenzione.getCampo().getNome(), "Il nome del campo non dovrebbe essere null");
             assertNotNull(manutenzione.getManutentore().getNome(), "Il nome del manutentore non dovrebbe essere null");
         }
 
-        System.out.println("✅ Trovate " + manutenzioni.size() + " manutenzioni nel database");
+        System.out.println("Trovate " + manutenzioni.size() + " manutenzioni nel database");
         manutenzioni.forEach(System.out::println);
     }
 
@@ -64,7 +135,6 @@ class ManutenzioneDAOTest {
     @Order(2)
     @DisplayName("Verifica il recupero delle manutenzioni per campo")
     void testGetManutenzioniByIdCampo() throws SQLException {
-        // Ottieni un campo dal database
         List<Campo> campi = campoDAO.getAllCampi();
 
         if (!campi.isEmpty()) {
@@ -73,15 +143,14 @@ class ManutenzioneDAOTest {
 
             assertNotNull(manutenzioni, "La lista non dovrebbe essere null");
 
-            // Verifica che tutte le manutenzioni siano per il campo richiesto
             for (Manutenzione manutenzione : manutenzioni) {
                 assertEquals(idCampo, manutenzione.getCampo().getId(),
                         "Tutte le manutenzioni dovrebbero essere per il campo richiesto");
             }
 
-            System.out.println("✅ Trovate " + manutenzioni.size() + " manutenzioni per il campo ID " + idCampo);
+            System.out.println("Trovate " + manutenzioni.size() + " manutenzioni per il campo ID " + idCampo);
         } else {
-            System.out.println("⚠️ Nessun campo presente nel database per testare getManutenzioniByIdCampo");
+            System.out.println("Nessun campo presente nel database per testare getManutenzioniByIdCampo");
         }
     }
 
@@ -89,39 +158,23 @@ class ManutenzioneDAOTest {
     @Order(3)
     @DisplayName("Verifica la creazione di una nuova manutenzione")
     void testCreateManutenzione() throws SQLException {
-        // Ottieni un campo e un utente esistenti
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1); // Admin/Manutentore
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        for (Utente manutentore : utentiAutorizzati) {
+            Manutenzione manutenzione = createTestManutenzione(manutentore);
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Crea una nuova manutenzione
-            Manutenzione nuovaManutenzione = new Manutenzione();
-            nuovaManutenzione.setCampo(campi.get(0));
-            nuovaManutenzione.setManutentore(manutentore);
-            nuovaManutenzione.setDataInizio(LocalDate.now());
-            nuovaManutenzione.setDescrizione("Test manutenzione ordinaria");
-            nuovaManutenzione.setStato(Manutenzione.Stato.IN_CORSO);
+            assertNotNull(manutenzione, "La manutenzione non dovrebbe essere null");
+            assertNotNull(manutenzione.getId(), "L'ID non dovrebbe essere null");
 
-            // Inserisci nel database
-            Integer generatedId = manutenzioneDAO.createManutenzione(nuovaManutenzione);
-
-            assertNotNull(generatedId, "L'ID generato non dovrebbe essere null");
-            assertTrue(generatedId > 0, "L'ID generato dovrebbe essere positivo");
-
-            // Verifica che la manutenzione sia stata effettivamente inserita
-            List<Manutenzione> manutenzioniCampo = manutenzioneDAO.getManutenzioniByIdCampo(campi.get(0).getId());
+            // Verifica che sia nel database
+            List<Manutenzione> manutenzioniCampo = manutenzioneDAO.getManutenzioniByIdCampo(
+                    manutenzione.getCampo().getId());
             boolean trovata = manutenzioniCampo.stream()
-                    .anyMatch(m -> m.getId().equals(generatedId));
-
+                    .anyMatch(m -> m.getId().equals(manutenzione.getId()));
             assertTrue(trovata, "La manutenzione dovrebbe essere nel database");
 
-            System.out.println("✅ Manutenzione creata con ID: " + generatedId);
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare la creazione");
+            System.out.println("Manutenzione creata con ID: " + manutenzione.getId() +
+                    " (ruolo: " + manutentore.getRuolo() + ")");
         }
     }
 
@@ -129,31 +182,19 @@ class ManutenzioneDAOTest {
     @Order(4)
     @DisplayName("Verifica la creazione di una manutenzione con data fine")
     void testCreateManutenzioneConDataFine() throws SQLException {
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1);
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        for (Utente manutentore : utentiAutorizzati) {
+            Manutenzione manutenzione = createTestManutenzione(
+                    manutentore,
+                    Manutenzione.Stato.COMPLETATA,
+                    "Test manutenzione completata");
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Crea una manutenzione già completata
-            Manutenzione manutenzione = new Manutenzione();
-            manutenzione.setCampo(campi.get(0));
-            manutenzione.setManutentore(manutentore);
-            manutenzione.setDataInizio(LocalDate.now().minusDays(5));
-            manutenzione.setDataFine(LocalDate.now().minusDays(1));
-            manutenzione.setDescrizione("Manutenzione completata test");
-            manutenzione.setStato(Manutenzione.Stato.COMPLETATA);
+            assertNotNull(manutenzione, "La manutenzione non dovrebbe essere null");
+            assertEquals(Manutenzione.Stato.COMPLETATA, manutenzione.getStato(),
+                    "Lo stato dovrebbe essere COMPLETATA");
 
-            Integer generatedId = manutenzioneDAO.createManutenzione(manutenzione);
-
-            assertNotNull(generatedId, "L'ID generato non dovrebbe essere null");
-            assertTrue(generatedId > 0, "L'ID generato dovrebbe essere positivo");
-
-            System.out.println("✅ Manutenzione con data fine creata con ID: " + generatedId);
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare la creazione");
+            System.out.println("Manutenzione con data fine creata con ID: " + manutenzione.getId());
         }
     }
 
@@ -161,32 +202,20 @@ class ManutenzioneDAOTest {
     @Order(5)
     @DisplayName("Verifica l'aggiornamento dello stato di una manutenzione")
     void testUpdateStatoManutenzione() throws SQLException {
-        // Prima crea una manutenzione da aggiornare
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1);
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        for (Utente manutentore : utentiAutorizzati) {
+            Manutenzione manutenzione = createTestManutenzione(manutentore);
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Crea una manutenzione temporanea
-            Manutenzione manutenzione = new Manutenzione();
-            manutenzione.setCampo(campi.get(0));
-            manutenzione.setManutentore(manutentore);
-            manutenzione.setDataInizio(LocalDate.now());
-            manutenzione.setDescrizione("Manutenzione da aggiornare");
-            manutenzione.setStato(Manutenzione.Stato.IN_CORSO);
+            boolean success = manutenzioneDAO.updateStatoManutenzione(
+                    manutenzione.getId(), Manutenzione.Stato.ANNULLATA);
+            assertTrue(success, "L'aggiornamento dello stato dovrebbe avere successo");
 
-            Integer id = manutenzioneDAO.createManutenzione(manutenzione);
+            Manutenzione manutenzioneAggiornata = manutenzioneDAO.getManutenzioneById(manutenzione.getId());
+            assertEquals(Manutenzione.Stato.ANNULLATA, manutenzioneAggiornata.getStato(),
+                    "Lo stato della manutenzione dovrebbe essere ANNULLATA");
 
-            // Aggiorna lo stato ad ANNULLATA
-            assertDoesNotThrow(() -> manutenzioneDAO.updateStatoManutenzione(id, Manutenzione.Stato.ANNULLATA),
-                    "L'aggiornamento dello stato non dovrebbe lanciare eccezioni");
-
-            System.out.println("✅ Stato manutenzione aggiornato per ID: " + id);
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare l'aggiornamento");
+            System.out.println("Stato manutenzione aggiornato per ID: " + manutenzione.getId());
         }
     }
 
@@ -194,33 +223,20 @@ class ManutenzioneDAOTest {
     @Order(6)
     @DisplayName("Verifica il completamento di una manutenzione")
     void testCompletaManutenzione() throws SQLException {
-        // Prima crea una manutenzione da completare
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1);
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        for (Utente manutentore : utentiAutorizzati) {
+            Manutenzione manutenzione = createTestManutenzione(manutentore);
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Crea una manutenzione in corso
-            Manutenzione manutenzione = new Manutenzione();
-            manutenzione.setCampo(campi.get(0));
-            manutenzione.setManutentore(manutentore);
-            manutenzione.setDataInizio(LocalDate.now().minusDays(3));
-            manutenzione.setDescrizione("Manutenzione da completare");
-            manutenzione.setStato(Manutenzione.Stato.IN_CORSO);
-
-            Integer id = manutenzioneDAO.createManutenzione(manutenzione);
-
-            // Completa la manutenzione
             LocalDate dataFine = LocalDate.now();
-            assertDoesNotThrow(() -> manutenzioneDAO.completaManutenzione(id, dataFine),
+            assertDoesNotThrow(() -> manutenzioneDAO.completaManutenzione(manutenzione.getId(), dataFine),
                     "Il completamento non dovrebbe lanciare eccezioni");
 
-            System.out.println("✅ Manutenzione completata con ID: " + id);
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare il completamento");
+            Manutenzione manutenzioneCompletata = manutenzioneDAO.getManutenzioneById(manutenzione.getId());
+            assertEquals(Manutenzione.Stato.COMPLETATA, manutenzioneCompletata.getStato(),
+                    "Lo stato della manutenzione dovrebbe essere COMPLETATA");
+
+            System.out.println("Manutenzione completata per ID: " + manutenzione.getId());
         }
     }
 
@@ -228,34 +244,19 @@ class ManutenzioneDAOTest {
     @Order(7)
     @DisplayName("Verifica la creazione di manutenzioni con stati diversi")
     void testCreateManutenzioniConStatiDiversi() throws SQLException {
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1);
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        // Usa il primo utente autorizzato per testare tutti gli stati
+        Utente manutentore = utentiAutorizzati.get(0);
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Test per ogni stato possibile
-            for (Manutenzione.Stato stato : Manutenzione.Stato.values()) {
-                Manutenzione manutenzione = new Manutenzione();
-                manutenzione.setCampo(campi.get(0));
-                manutenzione.setManutentore(manutentore);
-                manutenzione.setDataInizio(LocalDate.now());
-                manutenzione.setDescrizione("Test stato " + stato.name());
-                manutenzione.setStato(stato);
+        for (Manutenzione.Stato stato : Manutenzione.Stato.values()) {
+            Manutenzione manutenzione = createTestManutenzione(
+                    manutentore, stato, "Test stato " + stato.name());
 
-                if (stato == Manutenzione.Stato.COMPLETATA) {
-                    manutenzione.setDataFine(LocalDate.now());
-                }
+            assertNotNull(manutenzione, "La manutenzione non dovrebbe essere null");
+            assertEquals(stato, manutenzione.getStato(), "Lo stato dovrebbe corrispondere");
 
-                Integer id = manutenzioneDAO.createManutenzione(manutenzione);
-                assertNotNull(id, "Dovrebbe creare manutenzione con stato " + stato);
-
-                System.out.println("✅ Creata manutenzione con stato " + stato + ", ID: " + id);
-            }
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare gli stati");
+            System.out.println("Creata manutenzione con stato " + stato + ", ID: " + manutenzione.getId());
         }
     }
 
@@ -263,18 +264,17 @@ class ManutenzioneDAOTest {
     @Order(8)
     @DisplayName("Verifica che getManutenzioniByIdCampo restituisca lista vuota per campo senza manutenzioni")
     void testGetManutenzioniByIdCampoVuoto() throws SQLException {
-        // Usa un ID campo che probabilmente non ha manutenzioni
         List<Campo> campi = campoDAO.getAllCampi();
 
-        if (campi.size() > 1) {
+        if (!campi.isEmpty()) {
             // Prova con l'ultimo campo della lista
             Integer idCampo = campi.get(campi.size() - 1).getId();
             List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
 
             assertNotNull(manutenzioni, "La lista non dovrebbe essere null anche se vuota");
-            System.out.println("✅ Trovate " + manutenzioni.size() + " manutenzioni per il campo ID " + idCampo);
+            System.out.println("Trovate " + manutenzioni.size() + " manutenzioni per il campo ID " + idCampo);
         } else {
-            System.out.println("⚠️ Non ci sono abbastanza campi per testare questo scenario");
+            System.out.println("Non ci sono abbastanza campi per testare questo scenario");
         }
     }
 
@@ -289,7 +289,6 @@ class ManutenzioneDAOTest {
             List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
 
             if (manutenzioni.size() > 1) {
-                // Verifica che siano ordinate per data_inizio DESC
                 for (int i = 0; i < manutenzioni.size() - 1; i++) {
                     LocalDate dataCorrente = manutenzioni.get(i).getDataInizio();
                     LocalDate dataSuccessiva = manutenzioni.get(i + 1).getDataInizio();
@@ -298,9 +297,9 @@ class ManutenzioneDAOTest {
                             "Le manutenzioni dovrebbero essere ordinate per data decrescente");
                 }
 
-                System.out.println("✅ Ordinamento manutenzioni verificato correttamente");
+                System.out.println("Ordinamento manutenzioni verificato correttamente");
             } else {
-                System.out.println("⚠️ Non ci sono abbastanza manutenzioni per verificare l'ordinamento");
+                System.out.println("Non ci sono abbastanza manutenzioni per verificare l'ordinamento");
             }
         }
     }
@@ -309,39 +308,47 @@ class ManutenzioneDAOTest {
     @Order(10)
     @DisplayName("Verifica la gestione di descrizioni lunghe")
     void testDescrizioneLunga() throws SQLException {
-        List<Campo> campi = campoDAO.getAllCampi();
-        Utente manutentore = utenteDAO.getUtenteById(1);
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
 
-        if (manutentore == null) {
-            manutentore = utenteDAO.getUtenteById(2);
-        }
+        String descrizioneLunga = "Manutenzione straordinaria del campo che include: " +
+                "rifacimento completo delle linee, riparazione della rete, " +
+                "livellamento del terreno, sostituzione della sabbia, " +
+                "pulizia approfondita e controllo generale delle strutture. " +
+                "Questa manutenzione richiederà diversi giorni di lavoro.";
 
-        if (!campi.isEmpty() && manutentore != null) {
-            // Crea una descrizione molto lunga
-            String descrizioneLunga = "Manutenzione straordinaria del campo che include: " +
-                    "rifacimento completo delle linee, riparazione della rete, " +
-                    "livellamento del terreno, sostituzione della sabbia, " +
-                    "pulizia approfondita e controllo generale delle strutture. " +
-                    "Questa manutenzione richiederà diversi giorni di lavoro.";
+        Utente manutentore = utentiAutorizzati.get(0);
+        Manutenzione manutenzione = createTestManutenzione(manutentore, Manutenzione.Stato.IN_CORSO, descrizioneLunga);
 
-            Manutenzione manutenzione = new Manutenzione();
-            manutenzione.setCampo(campi.get(0));
-            manutenzione.setManutentore(manutentore);
-            manutenzione.setDataInizio(LocalDate.now());
-            manutenzione.setDescrizione(descrizioneLunga);
-            manutenzione.setStato(Manutenzione.Stato.IN_CORSO);
+        assertNotNull(manutenzione, "La manutenzione non dovrebbe essere null");
+        assertEquals(descrizioneLunga, manutenzione.getDescrizione(), "La descrizione dovrebbe corrispondere");
 
-            Integer id = manutenzioneDAO.createManutenzione(manutenzione);
+        System.out.println("Manutenzione con descrizione lunga creata con ID: " + manutenzione.getId());
+    }
 
-            assertNotNull(id, "Dovrebbe gestire descrizioni lunghe");
-            System.out.println("✅ Manutenzione con descrizione lunga creata con ID: " + id);
-        } else {
-            fail("Non ci sono campi o utenti disponibili per testare le descrizioni lunghe");
+    @Test
+    @Order(11)
+    @DisplayName("Verifica il corretto recupero di una manutenzione per il suo ID")
+    void testGetManutenzioneById() throws SQLException {
+        List<Utente> utentiAutorizzati = getUtentiAutorizzati();
+
+        for (Utente manutentore : utentiAutorizzati) {
+            Manutenzione manutenzioneCreata = createTestManutenzione(manutentore);
+
+            Manutenzione manutenzioneRecuperata = manutenzioneDAO.getManutenzioneById(manutenzioneCreata.getId());
+
+            assertNotNull(manutenzioneRecuperata, "La manutenzione non dovrebbe essere null");
+            assertEquals(manutenzioneCreata.getId(), manutenzioneRecuperata.getId(),
+                    "L'ID della manutenzione dovrebbe corrispondere");
+
+            System.out.println("Manutenzione con ID: " + manutenzioneCreata.getId() + " recuperata con successo");
         }
     }
 
-    @AfterAll
-    static void tearDown() {
-        System.out.println("\n📊 Test completati per ManutenzioneDAO");
+    @Test
+    @Order(12)
+    @DisplayName("Verifica che getManutenzioneById restituisca null per ID inesistente")
+    void testGetManutenzioneByIdInesistente() throws SQLException {
+        Manutenzione manutenzione = manutenzioneDAO.getManutenzioneById(9999);
+        assertNull(manutenzione, "La manutenzione dovrebbe essere null");
     }
 }

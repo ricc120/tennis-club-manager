@@ -70,8 +70,9 @@ public class TennisClubCLI {
         System.out.println();
         System.out.println(CLIUtils.CYAN + "╔══════════════════════════════════════════════════════╗" + CLIUtils.RESET);
         System.out
-                .println(CLIUtils.CYAN + "║" + CLIUtils.BOLD + "        🎾 TENNIS CLUB MANAGER 🎾                     "
-                        + CLIUtils.RESET + CLIUtils.CYAN + "║" + CLIUtils.RESET);
+                .println(CLIUtils.CYAN + "║" + CLIUtils.BOLD + "         TENNIS CLUB MANAGER                          "
+                        + CLIUtils.RESET
+                        + CLIUtils.CYAN + "║" + CLIUtils.RESET);
         System.out.println(CLIUtils.CYAN + "║                                                      ║" + CLIUtils.RESET);
         System.out.println(CLIUtils.CYAN + "║   Sistema di gestione prenotazioni campi             ║" + CLIUtils.RESET);
         System.out.println(CLIUtils.CYAN + "║   e accademia tennis                                 ║" + CLIUtils.RESET);
@@ -90,10 +91,10 @@ public class TennisClubCLI {
             CLIUtils.printHeader("ACCESSO RICHIESTO");
             CLIUtils.printWarning("Devi autenticarti per accedere al sistema.");
             System.out.println();
-            System.out.println("1. 🔑 Login");
-            System.out.println("2. 📝 Registrazione");
+            System.out.println("1. Login");
+            System.out.println("2. Registrazione");
             System.out.println("───────────────────────────────────");
-            System.out.println("0. 🚪 Esci");
+            System.out.println("0. Esci");
             System.out.println();
 
             int scelta = CLIUtils.readInt("Seleziona un'opzione: ");
@@ -132,7 +133,7 @@ public class TennisClubCLI {
         // Costruisci menu dinamico in base al ruolo
         int opzioneCorrente = 1;
 
-        // Opzione Prenotazioni (SOCIO, ALLIEVO, MAESTRO, ADMIN)
+        // Opzione Prenotazioni (SOCIO, ALLIEVO, MAESTRO, MANUTENTORE, ADMIN)
         boolean puoPrenotare = ruolo == Utente.Ruolo.SOCIO ||
                 ruolo == Utente.Ruolo.ALLIEVO ||
                 ruolo == Utente.Ruolo.MAESTRO ||
@@ -140,12 +141,12 @@ public class TennisClubCLI {
                 ruolo == Utente.Ruolo.ADMIN;
         int opzionePrenotazioni = puoPrenotare ? opzioneCorrente++ : -1;
         if (puoPrenotare) {
-            System.out.println(opzionePrenotazioni + ". 📅 Prenotazioni");
+            System.out.println(opzionePrenotazioni + ". Prenotazioni");
         }
 
         // Opzione Campi (tutti)
         int opzioneCampi = opzioneCorrente++;
-        System.out.println(opzioneCampi + ". 🏟️  Campi");
+        System.out.println(opzioneCampi + ". Campi");
 
         // Opzione Accademia (ALLIEVO, MAESTRO, ADMIN)
         boolean puoAccademia = ruolo == Utente.Ruolo.ALLIEVO ||
@@ -153,22 +154,22 @@ public class TennisClubCLI {
                 ruolo == Utente.Ruolo.ADMIN;
         int opzioneAccademia = puoAccademia ? opzioneCorrente++ : -1;
         if (puoAccademia) {
-            System.out.println(opzioneAccademia + ". 🎓 Accademia (Lezioni)");
+            System.out.println(opzioneAccademia + ". Accademia");
         }
 
         // Opzione Gestione Utenti (solo ADMIN)
         int opzioneAdmin = ruolo == Utente.Ruolo.ADMIN ? opzioneCorrente++ : -1;
         if (ruolo == Utente.Ruolo.ADMIN) {
-            System.out.println(opzioneAdmin + ". 👥 Gestione Utenti");
+            System.out.println(opzioneAdmin + ". Gestione Utenti");
         }
 
         // Opzione Logout
         int opzioneLogout = opzioneCorrente++;
-        System.out.println(opzioneLogout + ". 🔓 Logout");
+        System.out.println(opzioneLogout + ". Logout");
 
         System.out.println("───────────────────────────────────");
 
-        System.out.println("0. 🚪 Esci");
+        System.out.println("0. Esci");
         System.out.println();
 
         int scelta = CLIUtils.readInt("Seleziona un'opzione: ");
@@ -202,7 +203,7 @@ public class TennisClubCLI {
         System.out.println();
         System.out.println(CLIUtils.GREEN + "╔══════════════════════════════════════════╗" + CLIUtils.RESET);
         System.out.println(CLIUtils.GREEN + "║     Grazie per aver usato                ║" + CLIUtils.RESET);
-        System.out.println(CLIUtils.GREEN + "║     Tennis Club Manager! 🎾             ║" + CLIUtils.RESET);
+        System.out.println(CLIUtils.GREEN + "║     Tennis Club Manager!                 ║" + CLIUtils.RESET);
         System.out.println(CLIUtils.GREEN + "║                                          ║" + CLIUtils.RESET);
         System.out.println(CLIUtils.GREEN + "║     Arrivederci!                         ║" + CLIUtils.RESET);
         System.out.println(CLIUtils.GREEN + "╚══════════════════════════════════════════╝" + CLIUtils.RESET);

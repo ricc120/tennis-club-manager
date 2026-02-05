@@ -102,6 +102,10 @@ public class PrenotazioneService {
             throw new PrenotazioneException("La data non può essere null");
         }
 
+        if (data.isBefore(LocalDate.now())) {
+            throw new PrenotazioneException("Non è possibile ricercare la prenotazione per una data passata");
+        }
+
         try {
             return prenotazioneDAO.getPrenotazioniByData(data);
         } catch (SQLException e) {
@@ -163,6 +167,10 @@ public class PrenotazioneService {
             throw new PrenotazioneException("Data e campo non possono essere null");
         }
 
+        if (data.isBefore(LocalDate.now())) {
+            throw new PrenotazioneException("Non è possibile ricercare la prenotazione per una data passata");
+        }
+
         try {
             // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO
             return prenotazioneDAO.getPrenotazioniByDataAndCampo(data, campo.getId());
@@ -185,6 +193,14 @@ public class PrenotazioneService {
 
         if (data == null || oraInizio == null || campo == null || campo.getId() == null) {
             throw new PrenotazioneException("Tutti i parametri sono obbligatori");
+        }
+
+        if (data.isBefore(LocalDate.now())) {
+            throw new PrenotazioneException("Non è possibile ricercare la prenotazione per una data passata");
+        }
+
+        if (data.isEqual(LocalDate.now()) && oraInizio.isBefore(LocalTime.now())) {
+            throw new PrenotazioneException("Non è possibile ricercare la prenotazione per un orario passato");
         }
 
         try {

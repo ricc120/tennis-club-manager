@@ -152,6 +152,7 @@ public class AuthService {
             String sessionId = sessionManager.createSession(utente);
 
             // Log dell'accesso (opzionale)
+            System.out.println();
             System.out.println("Sessione creata per utente: " + utente.getEmail() +
                     " (Session ID: " + sessionId + ")");
 
@@ -204,23 +205,25 @@ public class AuthService {
         boolean success = sessionManager.logout();
 
         if (success) {
-            System.out.println("Logout effettuato per: " + utente.getEmail());
+            System.out.println("\n" + "Logout effettuato per: " + utente.getEmail());
+            System.out.println();
+
         }
 
         return success;
     }
 
-    public boolean deleteUtente(Utente utente) throws AuthenticationException {
+    public boolean deleteUtente(Integer id) throws AuthenticationException {
 
-        if (utente.getId() == null) {
+        if (id == null) {
             throw new AuthenticationException("L'ID dell'utente non può essere vuoto");
         }
 
         try {
 
-            boolean success = utenteDAO.deleteUtente(utente.getId());
+            boolean success = utenteDAO.deleteUtente(id);
             if (success) {
-                System.out.println("Cancellazione effettuata per: " + utente.getEmail());
+                System.out.println("Cancellazione effettuata per l'utente con ID: " + id);
 
             }
 

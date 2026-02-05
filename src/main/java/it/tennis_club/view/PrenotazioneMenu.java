@@ -50,12 +50,14 @@ public class PrenotazioneMenu {
 
                 System.out.println("1. Nuova prenotazione");
                 System.out.println("2. Le mie prenotazioni");
-                System.out.println("3. Prenotazioni per data");
-                System.out.println("4. Prenotazioni per campo");
-                System.out.println("5. Verifica disponibilità campo");
-                System.out.println("6. Cancella prenotazione");
+
+                System.out.println("3. Verifica disponibilità campo");
+                System.out.println("4. Cancella prenotazione");
                 if (puoVedereTutte) {
+                    System.out.println("5. Prenotazioni per data");
+                    System.out.println("6. Prenotazioni per campo");
                     System.out.println("7. Tutte le prenotazioni");
+
                 }
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
@@ -66,10 +68,10 @@ public class PrenotazioneMenu {
                 switch (scelta) {
                     case 1 -> nuovaPrenotazione();
                     case 2 -> miePrenotazioni();
-                    case 3 -> prenotazioniPerData();
-                    case 4 -> prenotazioniPerCampo();
-                    case 5 -> verificaDisponibilita();
-                    case 6 -> cancellaPrenotazione();
+                    case 5 -> prenotazioniPerData();
+                    case 6 -> prenotazioniPerCampo();
+                    case 3 -> verificaDisponibilita();
+                    case 4 -> cancellaPrenotazione();
                     case 7 -> {
                         if (puoVedereTutte) {
                             tutteLePrenotazioni();
@@ -81,14 +83,14 @@ public class PrenotazioneMenu {
                     default -> CLIUtils.printError("Opzione non valida");
                 }
             } else {
-                System.out.println("7. Tutte le prenotazioni");
+                System.out.println("1. Tutte le prenotazioni");
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
                 System.out.println();
 
                 int scelta = CLIUtils.readInt("Scelta: ");
                 switch (scelta) {
-                    case 7 -> tutteLePrenotazioni();
+                    case 1 -> tutteLePrenotazioni();
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
@@ -113,7 +115,9 @@ public class PrenotazioneMenu {
             // Mostra campi disponibili
             mostraCampiDisponibili();
 
-            int idCampo = CLIUtils.readInt("ID Campo: ");
+            Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
+            if (idCampo == null)
+                return;
             Campo campo = campoService.getCampoById(idCampo);
 
             LocalDate data = CLIUtils.readDate("Data prenotazione");
@@ -165,7 +169,9 @@ public class PrenotazioneMenu {
     private void prenotazioniPerData() {
         CLIUtils.printSubHeader("Prenotazioni per Data");
 
-        LocalDate data = CLIUtils.readDate("Data");
+        LocalDate data = CLIUtils.readDateOptional("Data");
+        if (data == null)
+            return;
 
         try {
             List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerData(data);
@@ -185,7 +191,9 @@ public class PrenotazioneMenu {
 
         try {
             mostraCampiDisponibili();
-            int idCampo = CLIUtils.readInt("ID Campo: ");
+            Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
+            if (idCampo == null)
+                return;
             Campo campo = campoService.getCampoById(idCampo);
 
             List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerCampo(campo);
@@ -205,7 +213,9 @@ public class PrenotazioneMenu {
 
         try {
             mostraCampiDisponibili();
-            int idCampo = CLIUtils.readInt("ID Campo: ");
+            Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
+            if (idCampo == null)
+                return;
             Campo campo = campoService.getCampoById(idCampo);
 
             LocalDate data = CLIUtils.readDate("Data");
@@ -216,7 +226,8 @@ public class PrenotazioneMenu {
                 CLIUtils.printSuccess("Il campo " + campo.getNome() + " è DISPONIBILE il " +
                         CLIUtils.formatDate(data) + " alle " + CLIUtils.formatTime(ora));
             } else {
-                CLIUtils.printWarning("Il campo " + campo.getNome() + " NON è disponibile in quella data/ora.");
+                CLIUtils.printWarning(
+                        "Il campo " + campo.getNome() + " NON è disponibile in quella data per quell'ora.");
             }
         } catch (CampoException | PrenotazioneException e) {
             CLIUtils.printError(e.getMessage());
@@ -249,7 +260,9 @@ public class PrenotazioneMenu {
 
             stampaListaPrenotazioni(miePrenotazioni);
 
-            int idPrenotazione = CLIUtils.readInt("ID Prenotazione da cancellare: ");
+            Integer idPrenotazione = CLIUtils.readIntOptional("ID Prenotazione da cancellare (vuoto per annullare): ");
+            if (idPrenotazione == null)
+                return;
 
             if (CLIUtils.readConfirm("Confermi la cancellazione?")) {
                 boolean success = prenotazioneService.cancellaPrenotazione(idPrenotazione);
