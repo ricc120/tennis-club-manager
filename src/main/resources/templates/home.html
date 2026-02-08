@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Tennis Club Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: white;
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #1a5f2a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-card h2 {
+            color: #1a5f2a;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .message {
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .message.success {
+            background: #e0ffe0;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-color: #1a5f2a;
+        }
+
+        .feature-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #1a5f2a;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .coming-soon {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .coming-soon::after {
+            content: "Prossimamente";
+            display: block;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>🎾</span>
+            <span>Tennis Club Manager</span>
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" th:text="${utente.nome + ' ' + utente.cognome}">Nome Utente</div>
+                <div class="user-role" th:text="${utente.ruolo}">RUOLO</div>
+            </div>
+            <a th:href="@{/logout}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Messaggio di successo -->
+        <div th:if="${success}" class="message success" th:text="${success}"></div>
+
+        <div class="welcome-card">
+            <div class="welcome-icon">👋</div>
+            <h2>Benvenuto, <span th:text="${utente.nome}">Nome</span>!</h2>
+            <p>Sei entrato nel sistema come <strong th:text="${utente.ruolo}">RUOLO</strong></p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card coming-soon">
+                <div class="feature-icon">📅</div>
+                <h3>Prenotazioni</h3>
+                <p>Prenota un campo da tennis per il tuo prossimo match o allenamento.</p>
+            </div>
+
+            <div class="feature-card coming-soon">
+                <div class="feature-icon">🏟️</div>
+                <h3>Campi</h3>
+                <p>Visualizza tutti i campi disponibili e il loro stato attuale.</p>
+            </div>
+
+            <div class="feature-card coming-soon">
+                <div class="feature-icon">🎓</div>
+                <h3>Lezioni</h3>
+                <p>Partecipa alle lezioni dell'accademia con i nostri maestri.</p>
+            </div>
+
+            <div class="feature-card coming-soon"
+                th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MANUTENTORE'}">
+                <div class="feature-icon">🔧</div>
+                <h3>Manutenzione</h3>
+                <p>Gestisci la manutenzione programmata dei campi.</p>
+            </div>
+
+            <div class="feature-card coming-soon" th:if="${utente.ruolo.name() == 'ADMIN'}">
+                <div class="feature-icon">👥</div>
+                <h3>Gestione Utenti</h3>
+                <p>Amministra gli utenti del sistema e i loro ruoli.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

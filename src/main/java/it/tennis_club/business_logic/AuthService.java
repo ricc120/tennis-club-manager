@@ -3,6 +3,9 @@ package it.tennis_club.business_logic;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.UtenteDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 
 /**
@@ -12,24 +15,26 @@ import java.sql.SQLException;
  * Questo servizio funge da intermediario tra il livello di presentazione (view)
  * e il livello di accesso ai dati (DAO).
  */
+@Service
 public class AuthService {
 
     private final UtenteDAO utenteDAO;
 
     /**
-     * Costruttore che inizializza il DAO.
+     * Costruttore per dependency injection (Spring).
+     * 
+     * @param utenteDAO istanza del DAO iniettata da Spring
      */
-    public AuthService() {
-        this.utenteDAO = new UtenteDAO();
+    @Autowired
+    public AuthService(UtenteDAO utenteDAO) {
+        this.utenteDAO = utenteDAO;
     }
 
     /**
-     * Costruttore per dependency injection (utile per i test).
-     * 
-     * @param utenteDAO istanza del DAO da utilizzare
+     * Costruttore senza argomenti per retrocompatibilità (test e CLI).
      */
-    public AuthService(UtenteDAO utenteDAO) {
-        this.utenteDAO = utenteDAO;
+    public AuthService() {
+        this.utenteDAO = new UtenteDAO();
     }
 
     /**

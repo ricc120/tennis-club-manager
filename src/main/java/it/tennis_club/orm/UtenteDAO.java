@@ -3,6 +3,8 @@ package it.tennis_club.orm;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.domain_model.Utente.Ruolo;
 
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +16,7 @@ import java.util.List;
 /**
  * Data Access Object per la gestione degli utenti nel database.
  */
+@Repository
 public class UtenteDAO {
 
     /**
