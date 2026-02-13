@@ -35,7 +35,7 @@ public class CampoMenu {
             Utente utenteCorrente = sessionManager.getCurrentUser();
             Utente.Ruolo ruolo = utenteCorrente != null ? utenteCorrente.getRuolo() : null;
 
-            if (ruolo == Utente.Ruolo.ADMIN || ruolo == Utente.Ruolo.MANUTENTORE) {
+            if (ruolo == Utente.Ruolo.MANUTENTORE) {
 
                 System.out.println("═══ CAMPI ═══");
                 System.out.println("1. Visualizza tutti i campi");
@@ -66,6 +66,28 @@ public class CampoMenu {
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
+            } else if (ruolo == Utente.Ruolo.ADMIN) {
+                System.out.println("1. Visualizza tutti i campi");
+                System.out.println("2. Cerca campo per ID");
+                System.out.println("3. Campi coperti");
+                System.out.println("4. Campi per tipo superficie");
+                System.out.println("5. Visualizza manutenzioni campo");
+                System.out.println();
+                System.out.println("0. Torna al menu principale");
+                System.out.println();
+
+                int scelta = CLIUtils.readInt("Scelta: ");
+
+                switch (scelta) {
+                    case 1 -> visualizzaTuttiCampi();
+                    case 2 -> cercaCampoPerID();
+                    case 3 -> campiCoperti();
+                    case 4 -> campiPerTipoSuperficie();
+                    case 5 -> visualizzaManutenzioni();
+                    case 0 -> running = false;
+                    default -> CLIUtils.printError("Opzione non valida");
+                }
+
             } else {
                 System.out.println("1. Visualizza tutti i campi");
                 System.out.println("2. Cerca campo per ID");
@@ -97,7 +119,7 @@ public class CampoMenu {
         CLIUtils.printSubHeader("Tutti i Campi");
 
         try {
-            List<Campo> campi = campoService.getAllCampi();
+            List<Campo> campi = campoService.getCampi();
             stampaListaCampi(campi);
         } catch (CampoException e) {
             CLIUtils.printError(e.getMessage());
@@ -113,11 +135,13 @@ public class CampoMenu {
         CLIUtils.printSubHeader("Cerca Campo per ID");
 
         Integer id = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
-        if (id == null)
+        if (id == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return;
+        }
 
         try {
-            Campo campo = campoService.getCampoById(id);
+            Campo campo = campoService.getCampoPerId(id);
             System.out.println();
             System.out.println("  ID:         " + campo.getId());
             System.out.println("  Nome:       " + campo.getNome());
@@ -154,11 +178,13 @@ public class CampoMenu {
 
         System.out.println("Tipi disponibili: Terra, Cemento, Erba, Sintetico");
         String tipo = CLIUtils.readStringOptional("Tipo superficie (vuoto per annullare): ");
-        if (tipo == null)
+        if (tipo == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return;
+        }
 
         try {
-            List<Campo> campi = campoService.getCampiByTipoSuperficie(tipo);
+            List<Campo> campi = campoService.getCampiPerTipoSuperficie(tipo);
             stampaListaCampi(campi);
         } catch (CampoException e) {
             CLIUtils.printError(e.getMessage());
@@ -182,12 +208,14 @@ public class CampoMenu {
 
         try {
             // Mostra campi
-            List<Campo> campi = campoService.getAllCampi();
+            List<Campo> campi = campoService.getCampi();
             stampaListaCampi(campi);
 
             Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
-            if (idCampo == null)
+            if (idCampo == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
+            }
             LocalDate dataInizio = CLIUtils.readDate("Data inizio manutenzione");
             String descrizione = CLIUtils.readString("Descrizione: ");
 
@@ -220,8 +248,10 @@ public class CampoMenu {
             stampaListaManutenzioni(manutenzioni);
 
             Integer idManutenzione = CLIUtils.readIntOptional("ID Manutenzione (vuoto per annullare): ");
-            if (idManutenzione == null)
+            if (idManutenzione == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
+            }
             LocalDate dataFine = CLIUtils.readDate("Data fine");
             campoService.completaManutenzione(utente, idManutenzione, dataFine);
             CLIUtils.printSuccess("Manutenzione completata.");
@@ -249,8 +279,10 @@ public class CampoMenu {
             List<Manutenzione> manutenzioni = campoService.getAllManutenzioni();
             stampaListaManutenzioni(manutenzioni);
             Integer idManutenzione = CLIUtils.readIntOptional("ID Manutenzione (vuoto per annullare): ");
-            if (idManutenzione == null)
+            if (idManutenzione == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
+            }
             if (CLIUtils.readConfirm("Confermi l'annullamento?")) {
 
                 campoService.annullaManutenzione(utente, idManutenzione);
@@ -265,9 +297,6 @@ public class CampoMenu {
         CLIUtils.waitForEnter();
     }
 
-    /**
-     * Helper per stampare lista manutenzioni.
-     */
     private void visualizzaManutenzioni() {
         CLIUtils.printSubHeader("Manutenzioni Campo");
 
@@ -310,33 +339,28 @@ public class CampoMenu {
         }
         CLIUtils.printTableFooter(4);
         CLIUtils.printInfo("Totale: " + campi.size() + " campi");
-        System.out.println();
     }
 
+    /**
+     * Helper per stampare lista manutenzioni.
+     */
     private void stampaListaManutenzioni(List<Manutenzione> manutenzioni) {
         if (manutenzioni.isEmpty()) {
             CLIUtils.printInfo("Nessuna manutenzione trovata per questo campo.");
         } else {
             System.out.println();
-            CLIUtils.printTableHeader("ID", "Data Inizio", "Data Fine", "Stato", "Descrizione");
+            CLIUtils.printTableHeader("ID", "ID_Campo", "Data Inizio", "Data Fine", "Stato", "Descrizione");
             for (Manutenzione m : manutenzioni) {
                 CLIUtils.printTableRow(
                         String.valueOf(m.getId()),
+                        String.valueOf(m.getCampo().getId()),
                         CLIUtils.formatDate(m.getDataInizio()),
                         CLIUtils.formatDate(m.getDataFine()),
                         m.getStato().toString(),
-                        truncate(m.getDescrizione(), 15));
+                        CLIUtils.truncate(m.getDescrizione(), 25));
             }
-            CLIUtils.printTableFooter(5);
+            CLIUtils.printTableFooter(6);
         }
     }
 
-    /**
-     * Tronca una stringa se troppo lunga.
-     */
-    private String truncate(String s, int maxLen) {
-        if (s == null)
-            return "-";
-        return s.length() > maxLen ? s.substring(0, maxLen - 2) + ".." : s;
-    }
 }

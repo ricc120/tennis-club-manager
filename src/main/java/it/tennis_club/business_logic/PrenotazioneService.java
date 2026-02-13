@@ -4,6 +4,7 @@ import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.PrenotazioneDAO;
+import it.tennis_club.orm.ManutenzioneDAO;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -18,12 +19,14 @@ import java.util.List;
 public class PrenotazioneService {
 
     private final PrenotazioneDAO prenotazioneDAO;
+    private final ManutenzioneDAO manutenzioneDAO;
 
     /**
      * Costruttore che inizializza il DAO.
      */
     public PrenotazioneService() {
         this.prenotazioneDAO = new PrenotazioneDAO();
+        this.manutenzioneDAO = new ManutenzioneDAO();
     }
 
     /**
@@ -61,8 +64,12 @@ public class PrenotazioneService {
         }
 
         try {
+            // Validazione manutenzione esistente in quella data
+            if (manutenzioneDAO.getManutenzioneAttivaByDataAndCampo(data, campo.getId()) != null) {
+                throw new PrenotazioneException(
+                        "Non è possibile prenotare il campo perché è in corso una manutenzione");
+            }
             // Verifica disponibilità del campo
-            // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO
             List<Prenotazione> prenotazioniEsistenti = prenotazioneDAO.getPrenotazioniByDataAndCampo(data,
                     campo.getId());
 
@@ -126,7 +133,6 @@ public class PrenotazioneService {
         }
 
         try {
-            // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO
             return prenotazioneDAO.getPrenotazioniByCampo(campo.getId());
         } catch (SQLException e) {
             throw new PrenotazioneException("Errore durante il recupero delle prenotazioni: " + e.getMessage(), e);
@@ -172,7 +178,6 @@ public class PrenotazioneService {
         }
 
         try {
-            // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO
             return prenotazioneDAO.getPrenotazioniByDataAndCampo(data, campo.getId());
         } catch (SQLException e) {
             throw new PrenotazioneException("Errore durante il recupero delle prenotazioni: " + e.getMessage(), e);
@@ -204,7 +209,6 @@ public class PrenotazioneService {
         }
 
         try {
-            // NOTA: Qui usiamo campo.getId() per passare l'Integer al DAO
             List<Prenotazione> prenotazioni = prenotazioneDAO.getPrenotazioniByDataAndCampo(data, campo.getId());
 
             // Controlla se esiste già una prenotazione alla stessa ora
@@ -254,7 +258,7 @@ public class PrenotazioneService {
      * @throws PrenotazioneException se la prenotazione non esiste o si verifica un
      *                               errore
      */
-    public Prenotazione getPrenotazioneById(Integer idPrenotazione) throws PrenotazioneException {
+    public Prenotazione getPrenotazionePerId(Integer idPrenotazione) throws PrenotazioneException {
         if (idPrenotazione == null || idPrenotazione <= 0) {
             throw new PrenotazioneException("L'ID della prenotazione non può essere null o negativo");
         }
@@ -276,7 +280,7 @@ public class PrenotazioneService {
      * @return lista di tutte le prenotazioni
      * @throws PrenotazioneException in caso di errore
      */
-    public List<Prenotazione> getAllPrenotazioni() throws PrenotazioneException {
+    public List<Prenotazione> getPrenotazioni() throws PrenotazioneException {
         try {
             return prenotazioneDAO.getAllPrenotazioni();
         } catch (SQLException e) {

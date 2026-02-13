@@ -1,8 +1,6 @@
 package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Prenotazione;
-import it.tennis_club.domain_model.Campo;
-import it.tennis_club.domain_model.Utente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -273,6 +271,53 @@ public class PrenotazioneDAO {
     }
 
     /**
+     * Recupera le prenotazioni in un range di date per un campo specifico.
+     * Utile per cancellare prenotazioni quando una manutenzione viene completata.
+     * 
+     * @param dataInizio la data di inizio del range (inclusa)
+     * @param dataFine   la data di fine del range (inclusa)
+     * @param idCampo    l'ID del campo
+     * @return una lista di prenotazioni nel range
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public List<Prenotazione> getPrenotazioniByDateRangeAndCampo(LocalDate dataInizio, LocalDate dataFine,
+            Integer idCampo) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Prenotazione> prenotazioni = new ArrayList<>();
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "SELECT id, data, ora_inizio, id_campo, id_socio " +
+                    "FROM prenotazione WHERE data >= ? AND data <= ? AND id_campo = ? ORDER BY data, ora_inizio";
+
+            statement = connection.prepareStatement(query);
+            statement.setDate(1, Date.valueOf(dataInizio));
+            statement.setDate(2, Date.valueOf(dataFine));
+            statement.setInt(3, idCampo);
+
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Prenotazione prenotazione = mapResultSetToPrenotazione(resultSet);
+                prenotazioni.add(prenotazione);
+            }
+
+        } catch (SQLException e) {
+            System.err
+                    .println("Errore durante il recupero delle prenotazioni per range date e campo: " + e.getMessage());
+            throw e;
+
+        } finally {
+            closeResources(resultSet, statement, connection);
+        }
+
+        return prenotazioni;
+    }
+
+    /**
      * Crea una nuova prenotazione nel database.
      * 
      * @param prenotazione l'oggetto Prenotazione da inserire (l'ID verrà generato
@@ -406,9 +451,8 @@ public class PrenotazioneDAO {
 
         try {
             connection = ConnectionManager.getConnection();
-            String query = "SELECT p.id, p.data, p.ora_inizio, p.id_campo, p.id_socio \r\n" + //
-                    "FROM prenotazione p \r\n" + //
-                    "JOIN lezione l ON l.id_prenotazione = p.id \r\n" + //
+            String query = "SELECT p.id, p.data, p.ora_inizio, p.id_campo, p.id_socio " +
+                    "FROM prenotazione p JOIN lezione l ON l.id_prenotazione = p.id " +
                     "WHERE l.id = ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, idLezione);
@@ -430,8 +474,9 @@ public class PrenotazioneDAO {
 
     /**
      * Metodo helper per mappare un ResultSet a un oggetto Prenotazione.
-     * QUESTO È IL PUNTO CHIAVE: Non fare cast da int a Campo o Utente!
-     * Invece, recupera gli ID e poi usa i DAO per ottenere gli oggetti completi.
+     * Per recuperare le entità Campo e Utente non si effettua un cast
+     * ma si recuperano gli ID e poi si usano i DAO per ottenere gli oggetti
+     * completi.
      * 
      * @param resultSet il ResultSet da mappare
      * @return l'oggetto Prenotazione
@@ -443,15 +488,12 @@ public class PrenotazioneDAO {
         prenotazione.setData(resultSet.getDate("data").toLocalDate());
         prenotazione.setOraInizio(resultSet.getTime("ora_inizio").toLocalTime());
 
-        // Recupera l'ID e poi usa il DAO per ottenere l'oggetto completo
+        // Recupero oggetti completi tramite gli ID
         int idCampo = resultSet.getInt("id_campo");
-        Campo campo = campoDAO.getCampoById(idCampo);
-        prenotazione.setCampo(campo);
+        prenotazione.setCampo(campoDAO.getCampoById(idCampo));
 
-        // Stesso procedimento per l'utente
         int idSocio = resultSet.getInt("id_socio");
-        Utente socio = utenteDAO.getUtenteById(idSocio);
-        prenotazione.setSocio(socio);
+        prenotazione.setSocio(utenteDAO.getUtenteById(idSocio));
 
         return prenotazione;
     }

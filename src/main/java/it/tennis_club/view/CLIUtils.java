@@ -265,13 +265,6 @@ public class CLIUtils {
     }
 
     /**
-     * Stampa un separatore.
-     */
-    public static void printSeparator() {
-        System.out.println("─".repeat(50));
-    }
-
-    /**
      * Pulisce lo schermo (tentativo - dipende dal terminale).
      */
     public static void clearScreen() {
@@ -301,13 +294,19 @@ public class CLIUtils {
         return time != null ? time.format(TIME_FORMATTER) : "-";
     }
 
+    // Larghezza fissa per le colonne delle tabelle
+    private static final int COLUMN_WIDTH = 20;
+
     /**
      * Stampa una riga di tabella formattata.
      */
     public static void printTableRow(String... columns) {
         StringBuilder sb = new StringBuilder("│");
         for (String col : columns) {
-            sb.append(" ").append(String.format("%-15s", col)).append(" │");
+            // Tronca il contenuto se supera COLUMN_WIDTH per non rompere la tabella
+            String content = col == null ? "-"
+                    : (col.length() > COLUMN_WIDTH ? col.substring(0, COLUMN_WIDTH - 3) + "..." : col);
+            sb.append(" ").append(String.format("%-" + COLUMN_WIDTH + "s", content)).append(" │");
         }
         System.out.println(sb.toString());
     }
@@ -316,7 +315,9 @@ public class CLIUtils {
      * Stampa l'header di una tabella.
      */
     public static void printTableHeader(String... columns) {
-        int totalWidth = (columns.length * 17) + 1;
+        // Calcolo esatto: 1 per il bordo iniziale + (larghezza_colonna + 3 spazi/bordi)
+        // * numero_colonne
+        int totalWidth = 1 + (columns.length * (COLUMN_WIDTH + 3));
         System.out.println("┌" + "─".repeat(totalWidth - 2) + "┐");
         printTableRow(columns);
         System.out.println("├" + "─".repeat(totalWidth - 2) + "┤");
@@ -326,8 +327,21 @@ public class CLIUtils {
      * Stampa il footer di una tabella.
      */
     public static void printTableFooter(int columnCount) {
-        int totalWidth = (columnCount * 17) + 1;
+        int totalWidth = 1 + (columnCount * (COLUMN_WIDTH + 3));
         System.out.println("└" + "─".repeat(totalWidth - 2) + "┘");
+    }
+
+    /**
+     * Tronca una stringa se supera l'ampiezza massima.
+     */
+    public static String truncate(String s, int maxLen) {
+        if (s == null) {
+            return "-";
+        }
+        if (s.length() <= maxLen) {
+            return s;
+        }
+        return s.substring(0, maxLen - 3) + "...";
     }
 
     /**

@@ -275,20 +275,20 @@ public class LezioneDAO {
     /**
      * Metodo helper per mappare un ResultSet a un oggetto Lezione.
      * 
-     * @param rs il ResultSet
+     * @param resultSet il ResultSet
      * @return l'oggetto Lezione
      * @throws SQLException se si verifica un errore durante l'accesso ai dati
      */
-    private Lezione mapResultSetToLezione(ResultSet rs) throws SQLException {
+    private Lezione mapResultSetToLezione(ResultSet resultSet) throws SQLException {
         Lezione lezione = new Lezione();
-        lezione.setId(rs.getInt("id"));
-        lezione.setDescrizione(rs.getString("descrizione"));
+        lezione.setId(resultSet.getInt("id"));
+        lezione.setDescrizione(resultSet.getString("descrizione"));
 
         // Recupero oggetti completi tramite gli ID
-        int idPrenotazione = rs.getInt("id_prenotazione");
+        int idPrenotazione = resultSet.getInt("id_prenotazione");
         lezione.setPrenotazione(prenotazioneDAO.getPrenotazioneById(idPrenotazione));
 
-        int idMaestro = rs.getInt("id_maestro");
+        int idMaestro = resultSet.getInt("id_maestro");
         lezione.setMaestro(utenteDAO.getUtenteById(idMaestro));
 
         return lezione;
@@ -297,19 +297,21 @@ public class LezioneDAO {
     /**
      * Metodo helper per chiudere le risorse JDBC.
      */
-    private void closeResources(ResultSet rs, PreparedStatement stmt, Connection conn) {
-        if (rs != null) {
+    private void closeResources(ResultSet resultSet, PreparedStatement statement, Connection connection) {
+        if (resultSet != null) {
             try {
-                rs.close();
+                resultSet.close();
             } catch (SQLException e) {
-                /* ignorato */ }
+                System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+            }
         }
-        if (stmt != null) {
+        if (statement != null) {
             try {
-                stmt.close();
+                statement.close();
             } catch (SQLException e) {
-                /* ignorato */ }
+                System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+            }
         }
-        ConnectionManager.closeConnection(conn);
+        ConnectionManager.closeConnection(connection);
     }
 }

@@ -72,7 +72,7 @@ public class CampoServiceTest {
         @Order(1)
         @DisplayName("Test recupero di tutti i campi")
         public void testGetAllCampi() throws CampoException {
-                List<Campo> campi = campoService.getAllCampi();
+                List<Campo> campi = campoService.getCampi();
 
                 assertNotNull(campi, "La lista dei campi non dovrebbe essere null");
                 assertFalse(campi.isEmpty(), "Dovrebbero esserci almeno alcuni campi nel database");
@@ -91,7 +91,7 @@ public class CampoServiceTest {
         @Order(2)
         @DisplayName("Test recupero campo per ID")
         public void testGetCampoById() throws CampoException {
-                Campo campo = campoService.getCampoById(campoTest.getId());
+                Campo campo = campoService.getCampoPerId(campoTest.getId());
 
                 assertNotNull(campo, "Il campo dovrebbe essere trovato");
                 assertEquals(campoTest.getId(), campo.getId(), "L'ID dovrebbe corrispondere");
@@ -106,7 +106,7 @@ public class CampoServiceTest {
         public void testGetCampoByIdNotFound() {
                 CampoException exception = assertThrows(
                                 CampoException.class,
-                                () -> campoService.getCampoById(9999),
+                                () -> campoService.getCampoPerId(9999),
                                 "Dovrebbe lanciare un'eccezione per ID inesistente");
 
                 assertTrue(exception.getMessage().contains("non trovato"),
@@ -135,7 +135,7 @@ public class CampoServiceTest {
         @Order(5)
         @DisplayName("Test recupero campi per tipo superficie")
         public void testGetCampiByTipoSuperficie() throws CampoException {
-                List<Campo> campiTerra = campoService.getCampiByTipoSuperficie("Terra");
+                List<Campo> campiTerra = campoService.getCampiPerTipoSuperficie("Terra");
 
                 assertNotNull(campiTerra, "La lista non dovrebbe essere null");
 
@@ -154,19 +154,19 @@ public class CampoServiceTest {
                 // Test con ID null
                 CampoException exceptionNull = assertThrows(
                                 CampoException.class,
-                                () -> campoService.getCampoById(null));
+                                () -> campoService.getCampoPerId(null));
                 assertTrue(exceptionNull.getMessage().contains("non valido"));
 
                 // Test con ID negativo
                 CampoException exceptionNegativo = assertThrows(
                                 CampoException.class,
-                                () -> campoService.getCampoById(-1));
+                                () -> campoService.getCampoPerId(-1));
                 assertTrue(exceptionNegativo.getMessage().contains("non valido"));
 
                 // Test con ID zero
                 CampoException exceptionZero = assertThrows(
                                 CampoException.class,
-                                () -> campoService.getCampoById(0));
+                                () -> campoService.getCampoPerId(0));
                 assertTrue(exceptionZero.getMessage().contains("non valido"));
 
                 System.out.println("Validazione ID campo funziona correttamente");
@@ -256,7 +256,7 @@ public class CampoServiceTest {
                 idsManutenzioniTest.add(id1);
                 idsManutenzioniTest.add(id2);
 
-                List<Manutenzione> manutenzioni = campoService.getManutenzioniCampo(utenteTest, campoTest.getId());
+                List<Manutenzione> manutenzioni = campoService.getManutenzioniPerCampo(utenteTest, campoTest.getId());
 
                 assertNotNull(manutenzioni);
                 assertTrue(manutenzioni.size() >= 2, "Dovrebbero esserci almeno 2 manutenzioni");
@@ -278,7 +278,7 @@ public class CampoServiceTest {
 
                 CampoException exception = assertThrows(
                                 CampoException.class,
-                                () -> campoService.getManutenzioniCampo(utenteTest, campoTest.getId()),
+                                () -> campoService.getManutenzioniPerCampo(utenteTest, campoTest.getId()),
                                 "Un socio non dovrebbe poter visualizzare le manutenzioni");
 
                 assertTrue(exception.getMessage().contains("Permessi insufficienti"));
@@ -345,15 +345,15 @@ public class CampoServiceTest {
         public void testValidazioneTipoSuperficie() {
                 // Test con tipo superficie null
                 assertThrows(CampoException.class,
-                                () -> campoService.getCampiByTipoSuperficie(null));
+                                () -> campoService.getCampiPerTipoSuperficie(null));
 
                 // Test con tipo superficie vuoto
                 assertThrows(CampoException.class,
-                                () -> campoService.getCampiByTipoSuperficie(""));
+                                () -> campoService.getCampiPerTipoSuperficie(""));
 
                 // Test con tipo superficie solo spazi
                 assertThrows(CampoException.class,
-                                () -> campoService.getCampiByTipoSuperficie("   "));
+                                () -> campoService.getCampiPerTipoSuperficie("   "));
 
                 System.out.println("Validazione tipo superficie funziona correttamente");
         }

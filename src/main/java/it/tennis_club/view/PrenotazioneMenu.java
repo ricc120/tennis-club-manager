@@ -41,24 +41,13 @@ public class PrenotazioneMenu {
             Utente utenteCorrente = sessionManager.getCurrentUser();
             Utente.Ruolo ruolo = utenteCorrente != null ? utenteCorrente.getRuolo() : null;
 
-            if (!ruolo.equals(Utente.Ruolo.MANUTENTORE)) {
-
-                // Verifica se l'utente può vedere tutte le prenotazioni
-                // Solo ADMIN, MAESTRO, MANUTENTORE possono visualizzare tutte le prenotazioni
-                boolean puoVedereTutte = ruolo == Utente.Ruolo.ADMIN ||
-                        ruolo == Utente.Ruolo.MAESTRO;
+            if (ruolo.equals(Utente.Ruolo.ALLIEVO) || ruolo.equals(Utente.Ruolo.SOCIO)) {
 
                 System.out.println("1. Nuova prenotazione");
                 System.out.println("2. Le mie prenotazioni");
-
                 System.out.println("3. Verifica disponibilità campo");
                 System.out.println("4. Cancella prenotazione");
-                if (puoVedereTutte) {
-                    System.out.println("5. Prenotazioni per data");
-                    System.out.println("6. Prenotazioni per campo");
-                    System.out.println("7. Tutte le prenotazioni");
 
-                }
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
                 System.out.println();
@@ -68,29 +57,27 @@ public class PrenotazioneMenu {
                 switch (scelta) {
                     case 1 -> nuovaPrenotazione();
                     case 2 -> miePrenotazioni();
-                    case 5 -> prenotazioniPerData();
-                    case 6 -> prenotazioniPerCampo();
                     case 3 -> verificaDisponibilita();
                     case 4 -> cancellaPrenotazione();
-                    case 7 -> {
-                        if (puoVedereTutte) {
-                            tutteLePrenotazioni();
-                        } else {
-                            CLIUtils.printError("Accesso negato. Non hai i permessi per questa funzione.");
-                        }
-                    }
+
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
             } else {
-                System.out.println("1. Tutte le prenotazioni");
+
+                System.out.println("1. Prenotazioni per data");
+                System.out.println("2. Prenotazioni per campo");
+                System.out.println("3. Tutte le prenotazioni");
                 System.out.println();
                 System.out.println("0. Torna al menu principale");
                 System.out.println();
 
                 int scelta = CLIUtils.readInt("Scelta: ");
                 switch (scelta) {
-                    case 1 -> tutteLePrenotazioni();
+                    case 1 -> prenotazioniPerData();
+                    case 2 -> prenotazioniPerCampo();
+                    case 3 -> tutteLePrenotazioni();
+
                     case 0 -> running = false;
                     default -> CLIUtils.printError("Opzione non valida");
                 }
@@ -113,12 +100,15 @@ public class PrenotazioneMenu {
 
         try {
             // Mostra campi disponibili
-            mostraCampiDisponibili();
+            List<Campo> campi = campoService.getCampi();
+            stampaListaCampi(campi);
 
             Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
-            if (idCampo == null)
+            if (idCampo == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
-            Campo campo = campoService.getCampoById(idCampo);
+            }
+            Campo campo = campoService.getCampoPerId(idCampo);
 
             LocalDate data = CLIUtils.readDate("Data prenotazione");
             LocalTime ora = CLIUtils.readTime("Ora inizio");
@@ -170,8 +160,10 @@ public class PrenotazioneMenu {
         CLIUtils.printSubHeader("Prenotazioni per Data");
 
         LocalDate data = CLIUtils.readDateOptional("Data");
-        if (data == null)
+        if (data == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return;
+        }
 
         try {
             List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerData(data);
@@ -190,11 +182,14 @@ public class PrenotazioneMenu {
         CLIUtils.printSubHeader("Prenotazioni per Campo");
 
         try {
-            mostraCampiDisponibili();
+            List<Campo> campi = campoService.getCampi();
+            stampaListaCampi(campi);
             Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
-            if (idCampo == null)
+            if (idCampo == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
-            Campo campo = campoService.getCampoById(idCampo);
+            }
+            Campo campo = campoService.getCampoPerId(idCampo);
 
             List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioniPerCampo(campo);
             stampaListaPrenotazioni(prenotazioni);
@@ -212,11 +207,14 @@ public class PrenotazioneMenu {
         CLIUtils.printSubHeader("Verifica Disponibilità");
 
         try {
-            mostraCampiDisponibili();
+            List<Campo> campi = campoService.getCampi();
+            stampaListaCampi(campi);
             Integer idCampo = CLIUtils.readIntOptional("ID Campo (vuoto per annullare): ");
-            if (idCampo == null)
+            if (idCampo == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
-            Campo campo = campoService.getCampoById(idCampo);
+            }
+            Campo campo = campoService.getCampoPerId(idCampo);
 
             LocalDate data = CLIUtils.readDate("Data");
             LocalTime ora = CLIUtils.readTime("Ora");
@@ -261,8 +259,10 @@ public class PrenotazioneMenu {
             stampaListaPrenotazioni(miePrenotazioni);
 
             Integer idPrenotazione = CLIUtils.readIntOptional("ID Prenotazione da cancellare (vuoto per annullare): ");
-            if (idPrenotazione == null)
+            if (idPrenotazione == null) {
+                CLIUtils.printWarning("Operazione annullata.");
                 return;
+            }
 
             if (CLIUtils.readConfirm("Confermi la cancellazione?")) {
                 boolean success = prenotazioneService.cancellaPrenotazione(idPrenotazione);
@@ -286,7 +286,7 @@ public class PrenotazioneMenu {
         CLIUtils.printSubHeader("Tutte le Prenotazioni");
 
         try {
-            List<Prenotazione> prenotazioni = prenotazioneService.getAllPrenotazioni();
+            List<Prenotazione> prenotazioni = prenotazioneService.getPrenotazioni();
             stampaListaPrenotazioni(prenotazioni);
         } catch (PrenotazioneException e) {
             CLIUtils.printError(e.getMessage());
@@ -296,17 +296,25 @@ public class PrenotazioneMenu {
     }
 
     /**
-     * Helper per mostrare i campi disponibili.
+     * Helper per stampare una lista di campi.
      */
-    private void mostraCampiDisponibili() throws CampoException {
-        List<Campo> campi = campoService.getAllCampi();
-        System.out.println("\nCampi disponibili:");
-        for (Campo c : campi) {
-            System.out.println("  [" + c.getId() + "] " + c.getNome() +
-                    " (" + c.getTipoSuperficie() + ", " +
-                    (c.getIsCoperto() ? "coperto" : "scoperto") + ")");
+    private void stampaListaCampi(List<Campo> campi) {
+        if (campi.isEmpty()) {
+            CLIUtils.printInfo("Nessun campo trovato.");
+            return;
         }
+
         System.out.println();
+        CLIUtils.printTableHeader("ID", "Nome", "Superficie", "Tipologia");
+        for (Campo c : campi) {
+            CLIUtils.printTableRow(
+                    String.valueOf(c.getId()),
+                    c.getNome(),
+                    c.getTipoSuperficie(),
+                    c.getIsCoperto() ? "Coperto" : "Scoperto");
+        }
+        CLIUtils.printTableFooter(4);
+        CLIUtils.printInfo("Totale: " + campi.size() + " campi");
     }
 
     /**

@@ -193,35 +193,19 @@ public class SessionManager {
      * Classe interna che rappresenta una sessione utente.
      */
     private static class Session {
-        private final String sessionId;
         private final Utente utente;
-        private final LocalDateTime createdAt;
         private LocalDateTime lastAccessedAt;
 
         // Timeout della sessione in minuti (default: 30 minuti)
         private static final long SESSION_TIMEOUT_MINUTES = 30;
 
         public Session(String sessionId, Utente utente) {
-            this.sessionId = sessionId;
             this.utente = utente;
-            this.createdAt = LocalDateTime.now();
             this.lastAccessedAt = LocalDateTime.now();
-        }
-
-        public String getSessionId() {
-            return sessionId;
         }
 
         public Utente getUtente() {
             return utente;
-        }
-
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
-
-        public LocalDateTime getLastAccessedAt() {
-            return lastAccessedAt;
         }
 
         public void updateLastAccess() {

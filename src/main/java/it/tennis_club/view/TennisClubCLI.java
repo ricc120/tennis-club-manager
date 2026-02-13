@@ -133,16 +133,9 @@ public class TennisClubCLI {
         // Costruisci menu dinamico in base al ruolo
         int opzioneCorrente = 1;
 
-        // Opzione Prenotazioni (SOCIO, ALLIEVO, MAESTRO, MANUTENTORE, ADMIN)
-        boolean puoPrenotare = ruolo == Utente.Ruolo.SOCIO ||
-                ruolo == Utente.Ruolo.ALLIEVO ||
-                ruolo == Utente.Ruolo.MAESTRO ||
-                ruolo == Utente.Ruolo.MANUTENTORE ||
-                ruolo == Utente.Ruolo.ADMIN;
-        int opzionePrenotazioni = puoPrenotare ? opzioneCorrente++ : -1;
-        if (puoPrenotare) {
-            System.out.println(opzionePrenotazioni + ". Prenotazioni");
-        }
+        // Opzione Prenotazioni (tutti)
+        int opzionePrenotazioni = opzioneCorrente++;
+        System.out.println(opzionePrenotazioni + ". Prenotazioni");
 
         // Opzione Campi (tutti)
         int opzioneCampi = opzioneCorrente++;
@@ -179,7 +172,7 @@ public class TennisClubCLI {
             if (CLIUtils.readConfirm("Vuoi davvero uscire?")) {
                 return false;
             }
-        } else if (scelta == opzionePrenotazioni && puoPrenotare) {
+        } else if (scelta == opzionePrenotazioni) {
             prenotazioneMenu.show();
         } else if (scelta == opzioneCampi) {
             campoMenu.show();

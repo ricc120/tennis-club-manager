@@ -1,5 +1,6 @@
 package it.tennis_club.business_logic;
 
+import it.tennis_club.domain_model.AllievoLezione;
 import it.tennis_club.domain_model.Lezione;
 import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Campo;
@@ -14,6 +15,11 @@ import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Servizio per la gestione delle attività dell'accademia di tennis.
+ * Gestisce la creazione di lezioni, l'iscrizione degli allievi,
+ * le presenze e i feedback didattici.
+ */
 public class AccademiaService {
 
     private final LezioneDAO lezioneDAO;
@@ -23,7 +29,7 @@ public class AccademiaService {
     private static final int MAX_ALLIEVI_PER_LEZIONE = 8;
 
     /**
-     * Costruttore che inzializza il DAO
+     * Costruttore che inizializza i DAO e i servizi necessari.
      */
     public AccademiaService() {
         this.lezioneDAO = new LezioneDAO();
@@ -50,7 +56,7 @@ public class AccademiaService {
      *                               errore
      * @throws PrenotazioneException se la prenotazione non può essere creata
      */
-    public Integer createLezione(LocalDate data, LocalTime ora, Campo campo, Utente maestro, String descrizione)
+    public Integer creaLezione(LocalDate data, LocalTime ora, Campo campo, Utente maestro, String descrizione)
             throws AccademiaException, PrenotazioneException {
 
         // Validazione input PRIMA di creare la prenotazione
@@ -75,7 +81,7 @@ public class AccademiaService {
             }
 
             // Recupera l'oggetto Prenotazione completo
-            Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(idPrenotazione);
+            Prenotazione prenotazione = prenotazioneService.getPrenotazionePerId(idPrenotazione);
 
             // Crea la lezione
             Lezione lezione = new Lezione();
@@ -125,7 +131,7 @@ public class AccademiaService {
      * @return true se la cancellazione è andata a buon fine
      * @throws AccademiaException se la lezione non esiste o si verifica un errore
      */
-    public boolean deleteLezione(Integer idLezione) throws AccademiaException {
+    public boolean cancellaLezione(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
             throw new AccademiaException("ID della lezione non valido");
         }
@@ -144,7 +150,7 @@ public class AccademiaService {
      * @return la lezione richiesta
      * @throws AccademiaException se la lezione non esiste o si verifica un errore
      */
-    public Lezione getLezioneById(Integer idLezione) throws AccademiaException {
+    public Lezione getLezionePerId(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
             throw new AccademiaException("ID della lezione non valido");
         }
@@ -166,7 +172,7 @@ public class AccademiaService {
      * @return lista di tutte le lezioni
      * @throws AccademiaException se si verifica un errore durante il recupero
      */
-    public List<Lezione> getAllLezioni() throws AccademiaException {
+    public List<Lezione> getLezioni() throws AccademiaException {
         try {
             return lezioneDAO.getAllLezioni();
         } catch (SQLException e) {
@@ -181,7 +187,7 @@ public class AccademiaService {
      * @return lista di lezioni del maestro
      * @throws AccademiaException se il maestro non è valido o si verifica un errore
      */
-    public List<Lezione> getLezioneByMaestro(Utente maestro) throws AccademiaException {
+    public List<Lezione> getLezionePerMaestro(Utente maestro) throws AccademiaException {
 
         if (maestro == null) {
             throw new AccademiaException("Il maestro non può essere null");
@@ -214,7 +220,7 @@ public class AccademiaService {
      * @throws AccademiaException se la prenotazione non è valida o si verifica un
      *                            errore
      */
-    public Lezione getLezioneByPrenotazione(Prenotazione prenotazione) throws AccademiaException {
+    public Lezione getLezionePerPrenotazione(Prenotazione prenotazione) throws AccademiaException {
 
         if (prenotazione == null) {
             throw new AccademiaException("La prenotazione non può essere null");
@@ -266,7 +272,7 @@ public class AccademiaService {
             }
 
             // Aggiunge l'allievo
-            allievoLezioneDAO.aggiungiAllievoALezione(idLezione, allievo.getId());
+            allievoLezioneDAO.aggiungiAllievoLezione(idLezione, allievo.getId());
 
         } catch (SQLException e) {
             if (e.getMessage().contains("duplicate key") || e.getMessage().contains("UNIQUE")) {
@@ -278,6 +284,12 @@ public class AccademiaService {
 
     /**
      * Rimuove un allievo da una lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @param idAllievo l'ID dell'allievo da rimuovere
+     * @return true se la rimozione è andata a buon fine
+     * @throws AccademiaException se l'allievo non è iscritto o si verifica un
+     *                            errore durante la rimozione
      */
     public boolean rimuoviAllievo(Integer idLezione, Integer idAllievo) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
@@ -302,6 +314,10 @@ public class AccademiaService {
      * Recupera tutti gli allievi di una lezione.
      * Questo metodo è separato da getLezioneById per performance:
      * puoi recuperare la lezione senza caricare gli allievi se non servono.
+     * 
+     * @param idLezione l'ID della lezione
+     * @return lista di utenti iscritti alla lezione
+     * @throws AccademiaException se si verifica un errore durante il recupero
      */
     public List<Utente> getAllievi(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
@@ -316,7 +332,11 @@ public class AccademiaService {
     }
 
     /**
-     * Recupera tutte le lezioni di un allievo.
+     * Recupera tutte le lezioni a cui è iscritto un allievo.
+     * 
+     * @param allievo l'allievo di cui recuperare le lezioni
+     * @return lista di lezioni dell'allievo
+     * @throws AccademiaException se l'allievo non è valido o si verifica un errore
      */
     public List<Lezione> getLezioniAllievo(Utente allievo) throws AccademiaException {
         if (allievo == null || allievo.getId() == null) {
@@ -331,7 +351,11 @@ public class AccademiaService {
     }
 
     /**
-     * Conta il numero di allievi in una lezione.
+     * Conta il numero di allievi iscritti a una lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @return il numero di allievi iscritti
+     * @throws AccademiaException se si verifica un errore durante il conteggio
      */
     public int contaAllievi(Integer idLezione) throws AccademiaException {
         if (idLezione == null || idLezione <= 0) {
@@ -346,16 +370,24 @@ public class AccademiaService {
     }
 
     /**
-     * Verifica se una lezione ha ancora posti disponibili.
+     * Verifica se una lezione ha ancora posti disponibili (max 8 allievi).
+     * 
+     * @param idLezione l'ID della lezione
+     * @return true se ci sono posti disponibili, false altrimenti
+     * @throws AccademiaException se si verifica un errore durante la verifica
      */
     public boolean haPostiDisponibili(Integer idLezione) throws AccademiaException {
         return contaAllievi(idLezione) < MAX_ALLIEVI_PER_LEZIONE;
     }
 
-    // ========== GESTIONE PRESENZE E NOTE ==========
-
     /**
      * Segna la presenza o assenza di un allievo a una lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @param idAllievo l'ID dell'allievo
+     * @param presente  true per segnare presente, false per assente
+     * @return true se l'operazione è andata a buon fine
+     * @throws AccademiaException se si verifica un errore durante l'aggiornamento
      */
     public boolean segnaPresenza(Integer idLezione, Integer idAllievo, boolean presente)
             throws AccademiaException {
@@ -374,7 +406,13 @@ public class AccademiaService {
     }
 
     /**
-     * Aggiunge note specifiche per un allievo in una lezione.
+     * Aggiunge un feedback specifico per un allievo in una lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @param idAllievo l'ID dell'allievo
+     * @param feedback  il testo del feedback/nota
+     * @return true se l'inserimento è andato a buon fine
+     * @throws AccademiaException se si verifica un errore durante l'inserimento
      */
     public boolean aggiungiFeedback(Integer idLezione, Integer idAllievo, String feedback)
             throws AccademiaException {
@@ -389,6 +427,31 @@ public class AccademiaService {
             return allievoLezioneDAO.aggiungiFeedback(idLezione, idAllievo, feedback);
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante l'aggiunta del feedback: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera i dettagli completi di un allievo in una lezione specifica.
+     * Include informazioni su presenza e feedback.
+     * 
+     * @param idLezione l'ID della lezione
+     * @param idAllievo l'ID dell'allievo
+     * @return l'oggetto AllievoLezione con i dettagli, null se non trovato
+     * @throws AccademiaException se si verifica un errore durante il recupero
+     */
+    public AllievoLezione getAllievoLezione(Integer idLezione, Integer idAllievo)
+            throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("ID della lezione non valido");
+        }
+        if (idAllievo == null || idAllievo <= 0) {
+            throw new AccademiaException("ID dell'allievo non valido");
+        }
+
+        try {
+            return allievoLezioneDAO.getAllievoLezione(idLezione, idAllievo);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero dei dettagli: " + e.getMessage(), e);
         }
     }
 
@@ -416,7 +479,7 @@ public class AccademiaService {
      * @return l'utente richiesto
      * @throws AccademiaException se l'utente non esiste o si verifica un errore
      */
-    public Utente getUtenteById(Integer idUtente) throws AccademiaException {
+    public Utente getUtentePerId(Integer idUtente) throws AccademiaException {
         if (idUtente == null || idUtente <= 0) {
             throw new AccademiaException("ID dell'utente non valido");
         }
