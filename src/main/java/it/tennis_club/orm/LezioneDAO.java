@@ -2,6 +2,9 @@ package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Lezione;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +17,7 @@ import java.util.List;
  * Implementa le operazioni CRUD e query specifiche per recuperare lezioni per
  * maestro o prenotazione.
  */
+@Repository
 public class LezioneDAO {
 
     private final UtenteDAO utenteDAO;
@@ -25,6 +29,15 @@ public class LezioneDAO {
     public LezioneDAO() {
         this.utenteDAO = new UtenteDAO();
         this.prenotazioneDAO = new PrenotazioneDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public LezioneDAO(UtenteDAO utenteDAO, PrenotazioneDAO prenotazioneDAO) {
+        this.utenteDAO = utenteDAO;
+        this.prenotazioneDAO = prenotazioneDAO;
     }
 
     /**

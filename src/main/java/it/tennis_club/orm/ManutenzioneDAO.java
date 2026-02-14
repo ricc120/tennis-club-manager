@@ -4,6 +4,9 @@ import it.tennis_club.domain_model.Manutenzione;
 import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Utente;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,10 +15,28 @@ import java.util.List;
 /**
  * Data Access Object per la gestione delle manutenzioni nel database.
  */
+@Repository
 public class ManutenzioneDAO {
 
-    private CampoDAO campoDAO = new CampoDAO();
-    private UtenteDAO utenteDAO = new UtenteDAO();
+    private final CampoDAO campoDAO;
+    private final UtenteDAO utenteDAO;
+
+    /**
+     * Costruttore predefinito per compatibilità con CLI e test.
+     */
+    public ManutenzioneDAO() {
+        this.campoDAO = new CampoDAO();
+        this.utenteDAO = new UtenteDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public ManutenzioneDAO(CampoDAO campoDAO, UtenteDAO utenteDAO) {
+        this.campoDAO = campoDAO;
+        this.utenteDAO = utenteDAO;
+    }
 
     /**
      * Crea una nuova manutenzione nel database.

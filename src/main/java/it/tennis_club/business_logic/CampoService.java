@@ -6,6 +6,9 @@ import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.CampoDAO;
 import it.tennis_club.orm.ManutenzioneDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,14 +17,24 @@ import java.util.List;
  * Servizio per la gestione dei campi da tennis e delle loro manutenzioni.
  * Implementa la business logic e il controllo dei permessi.
  */
+@Service
 public class CampoService {
 
-    private CampoDAO campoDAO;
-    private ManutenzioneDAO manutenzioneDAO;
+    private final CampoDAO campoDAO;
+    private final ManutenzioneDAO manutenzioneDAO;
 
     public CampoService() {
         this.campoDAO = new CampoDAO();
         this.manutenzioneDAO = new ManutenzioneDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public CampoService(CampoDAO campoDAO, ManutenzioneDAO manutenzioneDAO) {
+        this.campoDAO = campoDAO;
+        this.manutenzioneDAO = manutenzioneDAO;
     }
 
     // ========== OPERAZIONI PUBBLICHE (accessibili a tutti) ==========

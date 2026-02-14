@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazioni - Tennis Club Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: white;
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            color: #1a5f2a;
+            font-size: 28px;
+        }
+
+        .btn-back {
+            color: #1a5f2a;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #e0ffe0;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .message.error {
+            background: #ffe0e0;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        /* Form */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .form-card h2 {
+            color: #1a5f2a;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a5f2a;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 95, 42, 0.3);
+        }
+
+        /* Table */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-card h2 {
+            color: #1a5f2a;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f0f7f0;
+            color: #1a5f2a;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fdf8;
+        }
+
+        .btn-danger {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">
+            <span>🎾</span>
+            <span>Tennis Club Manager</span>
+        </a>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" th:text="${utente.nome + ' ' + utente.cognome}">Nome Utente</div>
+                <div class="user-role" th:text="${utente.ruolo}">RUOLO</div>
+            </div>
+            <a th:href="@{/logout}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📅 Prenotazioni</h1>
+            <a th:href="@{/}" class="btn-back">← Torna alla Home</a>
+        </div>
+
+        <div th:if="${successo}" class="message success" th:text="${successo}"></div>
+        <div th:if="${errore}" class="message error" th:text="${errore}"></div>
+
+        <!-- Form nuova prenotazione -->
+        <div class="form-card">
+            <h2>Nuova Prenotazione</h2>
+            <form th:action="@{/prenotazioni/nuova}" method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" name="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="oraInizio">Ora Inizio</label>
+                        <input type="time" id="oraInizio" name="oraInizio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="idCampo">Campo</label>
+                        <select id="idCampo" name="idCampo" required>
+                            <option value="">Seleziona...</option>
+                            <option th:each="campo : ${campi}" th:value="${campo.id}"
+                                th:text="${campo.nome + ' (' + campo.tipoSuperficie + ')'}">Campo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Prenota</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabella prenotazioni -->
+        <div class="table-card">
+            <h2>Le tue prenotazioni</h2>
+            <table th:if="${prenotazioni != null and !prenotazioni.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Ora</th>
+                        <th>Campo</th>
+                        <th th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MAESTRO'}">Socio</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${prenotazioni}">
+                        <td th:text="${p.id}">1</td>
+                        <td th:text="${p.data}">2024-01-01</td>
+                        <td th:text="${p.oraInizio}">10:00</td>
+                        <td th:text="${p.campo.nome}">Campo 1</td>
+                        <td th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MAESTRO'}"
+                            th:text="${p.socio.nome + ' ' + p.socio.cognome}">Mario Rossi</td>
+                        <td>
+                            <form th:action="@{'/prenotazioni/' + ${p.id} + '/cancella'}" method="post"
+                                style="display:inline;">
+                                <button type="submit" class="btn-danger"
+                                    onclick="return confirm('Sei sicuro di voler cancellare questa prenotazione?')">Cancella</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div th:if="${prenotazioni == null or prenotazioni.isEmpty()}" class="empty-state">
+                <div class="icon">📭</div>
+                <p>Nessuna prenotazione trovata.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

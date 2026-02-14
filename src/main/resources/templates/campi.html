@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campi - Tennis Club Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: white;
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            color: #1a5f2a;
+            font-size: 28px;
+        }
+
+        .btn-back {
+            color: #1a5f2a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #e0ffe0;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .message.error {
+            background: #ffe0e0;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        /* Campi grid */
+        .campi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .campo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .campo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .campo-nome {
+            color: #1a5f2a;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .campo-info {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-superficie {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-coperto {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge-scoperto {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* Form & Table */
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .section-card h2 {
+            color: #1a5f2a;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a5f2a;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 95, 42, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f0f7f0;
+            color: #1a5f2a;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fdf8;
+        }
+
+        .btn-success {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .btn-warning {
+            background: #fb8c00;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .stato {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stato-in_corso {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .stato-completata {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .stato-annullata {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand"><span>🎾</span><span>Tennis Club Manager</span></a>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" th:text="${utente.nome + ' ' + utente.cognome}">Nome Utente</div>
+                <div class="user-role" th:text="${utente.ruolo}">RUOLO</div>
+            </div>
+            <a th:href="@{/logout}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🏟️ Campi</h1>
+            <a th:href="@{/}" class="btn-back">← Torna alla Home</a>
+        </div>
+
+        <div th:if="${successo}" class="message success" th:text="${successo}"></div>
+        <div th:if="${errore}" class="message error" th:text="${errore}"></div>
+
+        <!-- Griglia campi -->
+        <div class="campi-grid" th:if="${campi != null and !campi.isEmpty()}">
+            <div class="campo-card" th:each="campo : ${campi}">
+                <div class="campo-nome" th:text="${campo.nome}">Campo 1</div>
+                <div class="campo-info">
+                    <span class="badge badge-superficie" th:text="${campo.tipoSuperficie}">Terra</span>
+                    <span class="badge badge-coperto" th:if="${campo.isCoperto}">Coperto</span>
+                    <span class="badge badge-scoperto" th:unless="${campo.isCoperto}">Scoperto</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Manutenzioni (solo ADMIN/MANUTENTORE) -->
+        <div th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MANUTENTORE'}">
+            <!-- Form nuova manutenzione -->
+            <div class="section-card">
+                <h2>🔧 Nuova Manutenzione</h2>
+                <form th:action="@{/manutenzioni/nuova}" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="idCampo">Campo</label>
+                            <select id="idCampo" name="idCampo" required>
+                                <option value="">Seleziona...</option>
+                                <option th:each="campo : ${campi}" th:value="${campo.id}" th:text="${campo.nome}">Campo
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataInizio">Data Inizio</label>
+                            <input type="date" id="dataInizio" name="dataInizio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descrizione">Descrizione</label>
+                            <input type="text" id="descrizione" name="descrizione"
+                                placeholder="Descrivi la manutenzione..." required>
+                        </div>
+                        <button type="submit" class="btn-primary">Crea</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabella manutenzioni -->
+            <div class="section-card">
+                <h2>Manutenzioni Programmate</h2>
+                <table th:if="${manutenzioni != null and !manutenzioni.isEmpty()}">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Campo</th>
+                            <th>Manutentore</th>
+                            <th>Data Inizio</th>
+                            <th>Data Fine</th>
+                            <th>Descrizione</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${manutenzioni}">
+                            <td th:text="${m.id}">1</td>
+                            <td th:text="${m.campo.nome}">Campo 1</td>
+                            <td th:text="${m.manutentore.nome + ' ' + m.manutentore.cognome}">Mario</td>
+                            <td th:text="${m.dataInizio}">2024-01-01</td>
+                            <td th:text="${m.dataFine != null ? m.dataFine : '-'}">-</td>
+                            <td th:text="${m.descrizione}">Manutenzione</td>
+                            <td>
+                                <span class="stato" th:classappend="${'stato-' + m.stato.name().toLowerCase()}"
+                                    th:text="${m.stato}">IN_CORSO</span>
+                            </td>
+                            <td th:if="${m.stato.name() == 'IN_CORSO'}">
+                                <form th:action="@{'/manutenzioni/' + ${m.id} + '/completa'}" method="post"
+                                    style="display:inline;">
+                                    <button type="submit" class="btn-success">✓ Completa</button>
+                                </form>
+                                <form th:action="@{'/manutenzioni/' + ${m.id} + '/annulla'}" method="post"
+                                    style="display:inline;">
+                                    <button type="submit" class="btn-warning">✗ Annulla</button>
+                                </form>
+                            </td>
+                            <td th:unless="${m.stato.name() == 'IN_CORSO'}">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${manutenzioni == null or manutenzioni.isEmpty()}" class="empty-state">
+                    <div class="icon">🔧</div>
+                    <p>Nessuna manutenzione programmata.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -4,6 +4,9 @@ import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Utente;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +21,7 @@ import java.util.List;
  * Data Access Object per la gestione delle prenotazioni nel database.
  * Implementa le operazioni CRUD complete e query specifiche per il business.
  */
+@Repository
 public class PrenotazioneDAO {
 
     // Istanze dei DAO necessari per recuperare oggetti completi
@@ -30,6 +34,15 @@ public class PrenotazioneDAO {
     public PrenotazioneDAO() {
         this.campoDAO = new CampoDAO();
         this.utenteDAO = new UtenteDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public PrenotazioneDAO(CampoDAO campoDAO, UtenteDAO utenteDAO) {
+        this.campoDAO = campoDAO;
+        this.utenteDAO = utenteDAO;
     }
 
     /**

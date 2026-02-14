@@ -4,6 +4,9 @@ import it.tennis_club.domain_model.AllievoLezione;
 import it.tennis_club.domain_model.Lezione;
 import it.tennis_club.domain_model.Utente;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +18,7 @@ import java.util.List;
  * Data Access Object per la gestione della partecipazione degli allievi alle
  * lezioni.
  */
+@Repository
 public class AllievoLezioneDAO {
 
     private final LezioneDAO lezioneDAO;
@@ -23,6 +27,15 @@ public class AllievoLezioneDAO {
     public AllievoLezioneDAO() {
         this.lezioneDAO = new LezioneDAO();
         this.utenteDAO = new UtenteDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public AllievoLezioneDAO(LezioneDAO lezioneDAO, UtenteDAO utenteDAO) {
+        this.lezioneDAO = lezioneDAO;
+        this.utenteDAO = utenteDAO;
     }
 
     /**

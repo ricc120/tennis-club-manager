@@ -205,36 +205,36 @@
         </div>
 
         <div class="features-grid">
-            <div class="feature-card coming-soon">
+            <a th:href="@{/prenotazioni}" class="feature-card">
                 <div class="feature-icon">📅</div>
                 <h3>Prenotazioni</h3>
                 <p>Prenota un campo da tennis per il tuo prossimo match o allenamento.</p>
-            </div>
+            </a>
 
-            <div class="feature-card coming-soon">
+            <a th:href="@{/campi}" class="feature-card">
                 <div class="feature-icon">🏟️</div>
                 <h3>Campi</h3>
                 <p>Visualizza tutti i campi disponibili e il loro stato attuale.</p>
-            </div>
+            </a>
 
-            <div class="feature-card coming-soon">
+            <a th:href="@{/lezioni}" class="feature-card">
                 <div class="feature-icon">🎓</div>
                 <h3>Lezioni</h3>
                 <p>Partecipa alle lezioni dell'accademia con i nostri maestri.</p>
-            </div>
+            </a>
 
-            <div class="feature-card coming-soon"
+            <a th:href="@{/campi}" class="feature-card"
                 th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MANUTENTORE'}">
                 <div class="feature-icon">🔧</div>
                 <h3>Manutenzione</h3>
                 <p>Gestisci la manutenzione programmata dei campi.</p>
-            </div>
+            </a>
 
-            <div class="feature-card coming-soon" th:if="${utente.ruolo.name() == 'ADMIN'}">
+            <a th:href="@{/admin/utenti}" class="feature-card" th:if="${utente.ruolo.name() == 'ADMIN'}">
                 <div class="feature-icon">👥</div>
                 <h3>Gestione Utenti</h3>
                 <p>Amministra gli utenti del sistema e i loro ruoli.</p>
-            </div>
+            </a>
         </div>
     </div>
 </body>

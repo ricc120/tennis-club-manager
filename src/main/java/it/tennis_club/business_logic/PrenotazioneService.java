@@ -5,6 +5,9 @@ import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.PrenotazioneDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,6 +18,7 @@ import java.util.List;
  * Questo layer si occupa di validare i dati e gestire le regole di business
  * prima di delegare le operazioni al DAO.
  */
+@Service
 public class PrenotazioneService {
 
     private final PrenotazioneDAO prenotazioneDAO;
@@ -24,6 +28,14 @@ public class PrenotazioneService {
      */
     public PrenotazioneService() {
         this.prenotazioneDAO = new PrenotazioneDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public PrenotazioneService(PrenotazioneDAO prenotazioneDAO) {
+        this.prenotazioneDAO = prenotazioneDAO;
     }
 
     /**

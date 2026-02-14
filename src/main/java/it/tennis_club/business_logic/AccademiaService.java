@@ -9,11 +9,15 @@ import it.tennis_club.orm.LezioneDAO;
 import it.tennis_club.orm.AllievoLezioneDAO;
 import it.tennis_club.orm.UtenteDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Service
 public class AccademiaService {
 
     private final LezioneDAO lezioneDAO;
@@ -30,6 +34,18 @@ public class AccademiaService {
         this.prenotazioneService = new PrenotazioneService();
         this.allievoLezioneDAO = new AllievoLezioneDAO();
         this.utenteDAO = new UtenteDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public AccademiaService(LezioneDAO lezioneDAO, PrenotazioneService prenotazioneService,
+            AllievoLezioneDAO allievoLezioneDAO, UtenteDAO utenteDAO) {
+        this.lezioneDAO = lezioneDAO;
+        this.prenotazioneService = prenotazioneService;
+        this.allievoLezioneDAO = allievoLezioneDAO;
+        this.utenteDAO = utenteDAO;
     }
 
     /**
