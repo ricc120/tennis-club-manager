@@ -4,6 +4,7 @@ import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.UtenteDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -19,15 +20,18 @@ import java.sql.SQLException;
 public class AuthService {
 
     private final UtenteDAO utenteDAO;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     /**
      * Costruttore per dependency injection (Spring).
      * 
-     * @param utenteDAO istanza del DAO iniettata da Spring
+     * @param utenteDAO       istanza del DAO iniettata da Spring
+     * @param passwordEncoder istanza di BCryptPasswordEncoder iniettata da Spring
      */
     @Autowired
-    public AuthService(UtenteDAO utenteDAO) {
+    public AuthService(UtenteDAO utenteDAO, BCryptPasswordEncoder passwordEncoder) {
         this.utenteDAO = utenteDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -35,6 +39,7 @@ public class AuthService {
      */
     public AuthService() {
         this.utenteDAO = new UtenteDAO();
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     /**
@@ -98,6 +103,10 @@ public class AuthService {
         }
 
         try {
+            // Encode della password con BCrypt prima del salvataggio
+            String encodedPassword = passwordEncoder.encode(nuovoUtente.getPassword());
+            nuovoUtente.setPassword(encodedPassword);
+
             // Salva l'utente nel database
             Integer idGenerato = utenteDAO.registrazione(nuovoUtente);
 
@@ -144,11 +153,42 @@ public class AuthService {
         }
 
         try {
-            // Delega al DAO la ricerca dell'utente
-            Utente utente = utenteDAO.login(email.trim(), password);
+            // Recupera l'utente per email (senza confronto password nella query)
+            Utente utente = utenteDAO.getUtenteByEmail(email.trim());
 
             if (utente == null) {
-                // Credenziali non valide
+                // Utente non trovato
+                return null;
+            }
+
+            // Verifica la password con supporto per migrazione lazy da plaintext a BCrypt
+            String storedPassword = utente.getPassword();
+            boolean passwordValida = false;
+
+            if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$")) {
+                // Password già hashata con BCrypt: usa il matcher
+                passwordValida = passwordEncoder.matches(password, storedPassword);
+            } else {
+                // Password ancora in plaintext: confronto diretto
+                passwordValida = password.equals(storedPassword);
+
+                if (passwordValida) {
+                    // Migrazione lazy: hasha la password e aggiorna il database
+                    String hashedPassword = passwordEncoder.encode(password);
+                    try {
+                        utenteDAO.updatePassword(utente.getId(), hashedPassword);
+                        utente.setPassword(hashedPassword);
+                        System.out.println("Migrazione password BCrypt completata per utente: " + utente.getEmail());
+                    } catch (Exception ex) {
+                        // Non blocchiamo il login se la migrazione fallisce
+                        System.err.println("Attenzione: migrazione password fallita per " + utente.getEmail()
+                                + ": " + ex.getMessage());
+                    }
+                }
+            }
+
+            if (!passwordValida) {
+                // Password non corrisponde
                 return null;
             }
 

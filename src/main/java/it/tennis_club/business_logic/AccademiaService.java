@@ -1,5 +1,6 @@
 package it.tennis_club.business_logic;
 
+import it.tennis_club.domain_model.AllievoLezione;
 import it.tennis_club.domain_model.Lezione;
 import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Campo;
@@ -445,6 +446,26 @@ public class AccademiaService {
             return utente;
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante il recupero dell'utente: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera tutti gli allievi di una lezione con i dettagli completi
+     * (presenza, feedback). Usato dalla pagina web di dettaglio lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @return lista di AllievoLezione con i dettagli completi
+     * @throws AccademiaException se si verifica un errore
+     */
+    public List<AllievoLezione> getAllieviLezioneConDettagli(Integer idLezione) throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("ID della lezione non valido");
+        }
+
+        try {
+            return allievoLezioneDAO.getAllieviLezioneConDettagli(idLezione);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero dei dettagli allievi: " + e.getMessage(), e);
         }
     }
 }

@@ -28,7 +28,8 @@ CREATE TABLE prenotazione (
     data DATE NOT NULL,
     ora_inizio TIME NOT NULL,
     id_campo INTEGER NOT NULL REFERENCES campo(id) ON DELETE CASCADE,
-    id_socio INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE
+    id_socio INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
+    CONSTRAINT unique_booking_slot UNIQUE (id_campo, data, ora_inizio)
 );
 
 -- Tabella Manutenzione

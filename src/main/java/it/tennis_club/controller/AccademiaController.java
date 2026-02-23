@@ -91,10 +91,12 @@ public class AccademiaController {
 
             List<Utente> allievi = accademiaService.getAllievi(id);
             List<Utente> allieviDisponibili = accademiaService.getUtentiAllievi();
+            List<AllievoLezione> allieviLezione = accademiaService.getAllieviLezioneConDettagli(id);
 
             model.addAttribute("lezione", lezione);
             model.addAttribute("allievi", allievi);
             model.addAttribute("allieviDisponibili", allieviDisponibili);
+            model.addAttribute("allieviLezione", allieviLezione);
             model.addAttribute("utente", utente);
 
         } catch (AccademiaException e) {
@@ -189,6 +191,61 @@ public class AccademiaController {
         try {
             accademiaService.rimuoviAllievo(id, idAllievo);
             redirectAttributes.addFlashAttribute("successo", "Allievo rimosso con successo!");
+
+        } catch (AccademiaException e) {
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+        }
+
+        return "redirect:/lezioni/" + id;
+    }
+
+    /**
+     * Segna la presenza di un allievo in una lezione.
+     */
+    @PostMapping("/lezioni/{id}/allievo/{idAllievo}/presenza")
+    public String segnaPresenza(
+            @PathVariable Integer id,
+            @PathVariable Integer idAllievo,
+            @RequestParam boolean presente,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Utente utente = (Utente) session.getAttribute("utente");
+        if (utente == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            accademiaService.segnaPresenza(id, idAllievo, presente);
+            redirectAttributes.addFlashAttribute("successo",
+                    presente ? "Presenza registrata!" : "Assenza registrata!");
+
+        } catch (AccademiaException e) {
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+        }
+
+        return "redirect:/lezioni/" + id;
+    }
+
+    /**
+     * Aggiunge un feedback per un allievo in una lezione.
+     */
+    @PostMapping("/lezioni/{id}/allievo/{idAllievo}/feedback")
+    public String inserisciFeedback(
+            @PathVariable Integer id,
+            @PathVariable Integer idAllievo,
+            @RequestParam String feedback,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Utente utente = (Utente) session.getAttribute("utente");
+        if (utente == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            accademiaService.aggiungiFeedback(id, idAllievo, feedback);
+            redirectAttributes.addFlashAttribute("successo", "Feedback aggiunto con successo!");
 
         } catch (AccademiaException e) {
             redirectAttributes.addFlashAttribute("errore", e.getMessage());

@@ -108,6 +108,7 @@ public class PrenotazioneController {
 
     /**
      * Cancella una prenotazione.
+     * Solo l'ADMIN o il proprietario della prenotazione (socio) possono cancellare.
      */
     @PostMapping("/prenotazioni/{id}/cancella")
     public String cancellaPrenotazione(
@@ -121,6 +122,18 @@ public class PrenotazioneController {
         }
 
         try {
+            // Verifica permessi: solo ADMIN o proprietario
+            Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(id);
+            boolean isAdmin = utente.getRuolo() == Utente.Ruolo.ADMIN;
+            boolean isOwner = prenotazione.getSocio() != null
+                    && prenotazione.getSocio().getId().equals(utente.getId());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("errore",
+                        "Non hai i permessi per cancellare questa prenotazione.");
+                return "redirect:/prenotazioni";
+            }
+
             prenotazioneService.cancellaPrenotazione(id);
             redirectAttributes.addFlashAttribute("successo", "Prenotazione cancellata con successo!");
 

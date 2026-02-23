@@ -320,24 +320,54 @@
                 </form>
             </div>
 
-            <table th:if="${allievi != null and !allievi.isEmpty()}">
+            <table th:if="${allieviLezione != null and !allieviLezione.isEmpty()}">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Cognome</th>
                         <th>Email</th>
+                        <th>Presenza</th>
+                        <th>Feedback</th>
                         <th th:if="${utente.ruolo.name() == 'MAESTRO'}">Azioni</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="a : ${allievi}">
-                        <td th:text="${a.id}">1</td>
-                        <td th:text="${a.nome}">Nome</td>
-                        <td th:text="${a.cognome}">Cognome</td>
-                        <td th:text="${a.email}">email@test.com</td>
+                    <tr th:each="al : ${allieviLezione}">
+                        <td th:text="${al.allievo.id}">1</td>
+                        <td th:text="${al.allievo.nome}">Nome</td>
+                        <td th:text="${al.allievo.cognome}">Cognome</td>
+                        <td th:text="${al.allievo.email}">email@test.com</td>
+                        <td>
+                            <span th:if="${al.presente}" style="color: #2d8a3e; font-weight: 600;">✅ Presente</span>
+                            <span th:unless="${al.presente}" style="color: #e53935; font-weight: 600;">❌ Assente</span>
+                            <!-- Form per cambiare presenza (solo MAESTRO) -->
+                            <form th:if="${utente.ruolo.name() == 'MAESTRO'}"
+                                th:action="@{'/lezioni/' + ${lezione.id} + '/allievo/' + ${al.allievo.id} + '/presenza'}"
+                                method="post" style="display:inline; margin-left: 8px;">
+                                <input type="hidden" name="presente" th:value="${!al.presente}" />
+                                <button type="submit" class="btn-primary"
+                                    style="padding: 4px 10px; font-size: 12px;"
+                                    th:text="${al.presente ? 'Segna Assente' : 'Segna Presente'}">Toggle</button>
+                            </form>
+                        </td>
+                        <td>
+                            <span th:if="${al.feedback != null and !al.feedback.isEmpty()}" th:text="${al.feedback}">-</span>
+                            <span th:unless="${al.feedback != null and !al.feedback.isEmpty()}" style="color: #999;">Nessun feedback</span>
+                            <!-- Form per aggiungere feedback (solo MAESTRO) -->
+                            <form th:if="${utente.ruolo.name() == 'MAESTRO'}"
+                                th:action="@{'/lezioni/' + ${lezione.id} + '/allievo/' + ${al.allievo.id} + '/feedback'}"
+                                method="post" style="margin-top: 6px;">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="text" name="feedback" placeholder="Scrivi feedback..."
+                                        th:value="${al.feedback}" style="padding: 4px 8px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1;" />
+                                    <button type="submit" class="btn-primary"
+                                        style="padding: 4px 10px; font-size: 12px;">Salva</button>
+                                </div>
+                            </form>
+                        </td>
                         <td th:if="${utente.ruolo.name() == 'MAESTRO'}">
-                            <form th:action="@{'/lezioni/' + ${lezione.id} + '/allievo/' + ${a.id} + '/rimuovi'}"
+                            <form th:action="@{'/lezioni/' + ${lezione.id} + '/allievo/' + ${al.allievo.id} + '/rimuovi'}"
                                 method="post" style="display:inline;">
                                 <button type="submit" class="btn-danger"
                                     onclick="return confirm('Rimuovere questo allievo?')">Rimuovi</button>
@@ -346,7 +376,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div th:if="${allievi == null or allievi.isEmpty()}" class="empty-state">
+            <div th:if="${allieviLezione == null or allieviLezione.isEmpty()}" class="empty-state">
                 <p>Nessun allievo iscritto a questa lezione.</p>
             </div>
         </div>

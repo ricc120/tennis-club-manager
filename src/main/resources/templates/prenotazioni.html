@@ -333,11 +333,15 @@
                         <td th:if="${utente.ruolo.name() == 'ADMIN' or utente.ruolo.name() == 'MAESTRO'}"
                             th:text="${p.socio.nome + ' ' + p.socio.cognome}">Mario Rossi</td>
                         <td>
-                            <form th:action="@{'/prenotazioni/' + ${p.id} + '/cancella'}" method="post"
+                            <!-- Mostra il pulsante solo per ADMIN o proprietario della prenotazione -->
+                            <form th:if="${utente.ruolo.name() == 'ADMIN' or p.socio.id == utente.id}"
+                                th:action="@{'/prenotazioni/' + ${p.id} + '/cancella'}" method="post"
                                 style="display:inline;">
                                 <button type="submit" class="btn-danger"
                                     onclick="return confirm('Sei sicuro di voler cancellare questa prenotazione?')">Cancella</button>
                             </form>
+                            <span th:unless="${utente.ruolo.name() == 'ADMIN' or p.socio.id == utente.id}"
+                                style="color: #999; font-size: 12px;">-</span>
                         </td>
                     </tr>
                 </tbody>
