@@ -44,6 +44,11 @@ public class AccademiaController {
             return "redirect:/login";
         }
 
+        if (utente.getRuolo() == Ruolo.SOCIO) {
+            redirectAttributes.addFlashAttribute("errore", "Non hai i permessi per accedere alle lezioni.");
+            return "redirect:/home";
+        }
+
         try {
             List<Lezione> lezioni;
             if (utente.getRuolo() == Ruolo.MAESTRO) {
@@ -80,6 +85,11 @@ public class AccademiaController {
         Utente utente = (Utente) session.getAttribute("utente");
         if (utente == null) {
             return "redirect:/login";
+        }
+
+        if (utente.getRuolo() == Ruolo.SOCIO) {
+            redirectAttributes.addFlashAttribute("errore", "Non hai i permessi per accedere alle lezioni.");
+            return "redirect:/home";
         }
 
         try {

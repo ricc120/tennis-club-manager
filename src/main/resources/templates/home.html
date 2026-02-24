@@ -217,7 +217,8 @@
                 <p>Visualizza tutti i campi disponibili e il loro stato attuale.</p>
             </a>
 
-            <a th:href="@{/lezioni}" class="feature-card">
+            <a th:href="@{/lezioni}" class="feature-card"
+                th:if="${utente.ruolo.name() != 'SOCIO'}">
                 <div class="feature-icon">🎓</div>
                 <h3>Lezioni</h3>
                 <p>Partecipa alle lezioni dell'accademia con i nostri maestri.</p>
