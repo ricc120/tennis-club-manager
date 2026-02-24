@@ -1,3 +1,16 @@
+# STAGE 1: Build dell'applicazione
+FROM maven:3.8.4-openjdk-17-slim AS build
+WORKDIR /app
+
+# Copia il file pom.xml e scarica le dipendenze (cache)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copia il codice sorgente e crea il pacchetto .jar
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# STAGE 2: Esecuzione dell'applicazione
 # Usa un'immagine base leggera con Java 17 (versione Alpine)
 FROM eclipse-temurin:17-jdk-alpine
 
