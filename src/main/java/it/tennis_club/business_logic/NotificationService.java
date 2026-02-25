@@ -30,7 +30,7 @@ public class NotificationService {
     @Value("${spring.mail.username:noreply@tennisclub.it}")
     private String fromAddress;
 
-    @Autowired
+    @Autowired(required = false)
     public NotificationService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
