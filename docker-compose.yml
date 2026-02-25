@@ -25,9 +25,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tennis_club
       SPRING_DATASOURCE_USERNAME: tennis_admin
       SPRING_DATASOURCE_PASSWORD: br0do26_
-      DB_URL: jdbc:postgresql://db:5432/tennis_club
-      DB_USER: tennis_admin
-      DB_PASSWORD: br0do26_
     depends_on:
       db:
         condition: service_healthy
