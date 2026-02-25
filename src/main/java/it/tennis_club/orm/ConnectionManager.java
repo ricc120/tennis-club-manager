@@ -92,6 +92,7 @@ public class ConnectionManager {
                     .locations("classpath:db/migration")
                     .baselineOnMigrate(true)
                     .load();
+            flyway.repair();
             flyway.migrate();
             flywayExecuted = true;
             System.out.println("[Flyway] Migrazioni completate con successo.");
