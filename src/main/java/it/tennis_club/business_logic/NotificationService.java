@@ -30,6 +30,14 @@ public class NotificationService {
     @Value("${spring.mail.username:noreply@tennisclub.it}")
     private String fromAddress;
 
+    /**
+     * Costruttore di default per quando JavaMailSender non è disponibile.
+     * Le notifiche verranno solo loggate, non inviate via email.
+     */
+    public NotificationService() {
+        this.mailSender = null;
+    }
+
     @Autowired(required = false)
     public NotificationService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
