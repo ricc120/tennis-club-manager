@@ -11,7 +11,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -20,18 +19,21 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Test di integrazione per i DAO.
- * Usa Testcontainers per avviare un container PostgreSQL reale,
+ * Si connette al PostgreSQL avviato da docker-compose (localhost:5432),
  * consentendo di verificare le query SQL su un database identico a quello di
  * produzione.
  * Le migrazioni Flyway vengono applicate automaticamente.
+ * 
+ * Prerequisito: docker-compose up -d
  */
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("DAO - Test di Integrazione con Testcontainers")
+@DisplayName("DAO - Test di Integrazione con PostgreSQL")
 class DAOIntegrationTest {
 
     @Autowired
@@ -46,13 +48,20 @@ class DAOIntegrationTest {
     @Autowired
     private ManutenzioneDAO manutenzioneDAO;
 
+    // Contatore per generare email uniche
+    private static final AtomicInteger counter = new AtomicInteger((int) (System.nanoTime() % 100000));
+
+    private String uniqueEmail(String prefix) {
+        return prefix + counter.incrementAndGet() + "@test.tennis.it";
+    }
+
     // ========== UtenteDAO ==========
 
     @Test
     @Order(1)
     @DisplayName("UtenteDAO - Registrazione nuovo utente con successo")
     void testRegistrazioneUtente() throws SQLException {
-        Utente utente = creaUtente("Test", "User", "test.integration@tennis.it", "password123", Ruolo.SOCIO);
+        Utente utente = creaUtente("Test", "User", uniqueEmail("reg"), "password123", Ruolo.SOCIO);
         Integer id = utenteDAO.registrazione(utente);
 
         assertNotNull(id, "L'ID generato non dovrebbe essere null");
@@ -66,10 +75,11 @@ class DAOIntegrationTest {
     @Order(2)
     @DisplayName("UtenteDAO - Registrazione con email duplicata lancia eccezione")
     void testRegistrazioneEmailDuplicata() throws SQLException {
-        Utente utente1 = creaUtente("Primo", "Utente", "duplicata@tennis.it", "pwd1", Ruolo.SOCIO);
+        String email = uniqueEmail("dup");
+        Utente utente1 = creaUtente("Primo", "Utente", email, "pwd1", Ruolo.SOCIO);
         Integer id1 = utenteDAO.registrazione(utente1);
 
-        Utente utente2 = creaUtente("Secondo", "Utente", "duplicata@tennis.it", "pwd2", Ruolo.SOCIO);
+        Utente utente2 = creaUtente("Secondo", "Utente", email, "pwd2", Ruolo.SOCIO);
         assertThrows(SQLException.class, () -> utenteDAO.registrazione(utente2));
 
         // Pulizia
@@ -80,7 +90,7 @@ class DAOIntegrationTest {
     @Order(3)
     @DisplayName("UtenteDAO - Recupera utente per ID")
     void testGetUtenteById() throws SQLException {
-        Utente utente = creaUtente("Mario", "Rossi", "mario.byid@tennis.it", "pwd", Ruolo.SOCIO);
+        Utente utente = creaUtente("Mario", "Rossi", uniqueEmail("byid"), "pwd", Ruolo.SOCIO);
         Integer id = utenteDAO.registrazione(utente);
 
         Utente recuperato = utenteDAO.getUtenteById(id);
@@ -103,12 +113,12 @@ class DAOIntegrationTest {
     @Order(5)
     @DisplayName("UtenteDAO - Recupera utenti per ruolo")
     void testGetUtentiByRuolo() throws SQLException {
-        Utente maestro = creaUtente("Prof", "Tennis", "maestro.ruolo@tennis.it", "pwd", Ruolo.MAESTRO);
+        Utente maestro = creaUtente("Prof", "Tennis", uniqueEmail("maestro"), "pwd", Ruolo.MAESTRO);
         Integer id = utenteDAO.registrazione(maestro);
 
         List<Utente> maestri = utenteDAO.getUtentiByRuolo(Ruolo.MAESTRO);
         assertNotNull(maestri);
-        assertTrue(maestri.stream().anyMatch(u -> u.getEmail().equals("maestro.ruolo@tennis.it")));
+        assertTrue(maestri.stream().anyMatch(u -> u.getId().equals(id)));
 
         // Pulizia
         utenteDAO.deleteUtente(id);
@@ -118,7 +128,7 @@ class DAOIntegrationTest {
     @Order(6)
     @DisplayName("UtenteDAO - Cancellazione utente")
     void testDeleteUtente() throws SQLException {
-        Utente utente = creaUtente("Da", "Cancellare", "cancellare@tennis.it", "pwd", Ruolo.SOCIO);
+        Utente utente = creaUtente("Da", "Cancellare", uniqueEmail("del"), "pwd", Ruolo.SOCIO);
         Integer id = utenteDAO.registrazione(utente);
 
         assertTrue(utenteDAO.deleteUtente(id));
@@ -157,7 +167,7 @@ class DAOIntegrationTest {
     @DisplayName("PrenotazioneDAO - Crea e recupera prenotazione")
     void testCreaPrenotazione() throws SQLException {
         // Setup: crea un utente socio
-        Utente socio = creaUtente("Socio", "Prenota", "socio.prenota@tennis.it", "pwd", Ruolo.SOCIO);
+        Utente socio = creaUtente("Socio", "Prenota", uniqueEmail("prenota"), "pwd", Ruolo.SOCIO);
         Integer idSocio = utenteDAO.registrazione(socio);
         socio.setId(idSocio);
 
@@ -186,7 +196,7 @@ class DAOIntegrationTest {
     @Order(21)
     @DisplayName("PrenotazioneDAO - Query per data e campo")
     void testGetPrenotazioniByDataAndCampo() throws SQLException {
-        Utente socio = creaUtente("Socio", "Query", "socio.query@tennis.it", "pwd", Ruolo.SOCIO);
+        Utente socio = creaUtente("Socio", "Query", uniqueEmail("query"), "pwd", Ruolo.SOCIO);
         Integer idSocio = utenteDAO.registrazione(socio);
         socio.setId(idSocio);
 
@@ -215,7 +225,7 @@ class DAOIntegrationTest {
     @Order(30)
     @DisplayName("ManutenzioneDAO - Crea e recupera manutenzione")
     void testCreaManutenzione() throws SQLException {
-        Utente manutentore = creaUtente("Man", "Utore", "manutentore@tennis.it", "pwd", Ruolo.MANUTENTORE);
+        Utente manutentore = creaUtente("Man", "Utore", uniqueEmail("man"), "pwd", Ruolo.MANUTENTORE);
         Integer idManutentore = utenteDAO.registrazione(manutentore);
         manutentore.setId(idManutentore);
 
@@ -244,7 +254,7 @@ class DAOIntegrationTest {
     @Order(31)
     @DisplayName("ManutenzioneDAO - Verifica manutenzione attiva per data e campo")
     void testGetManutenzioneAttivaByDataAndCampo() throws SQLException {
-        Utente manutentore = creaUtente("Man2", "Utore2", "man2@tennis.it", "pwd", Ruolo.MANUTENTORE);
+        Utente manutentore = creaUtente("Man2", "Utore2", uniqueEmail("man2"), "pwd", Ruolo.MANUTENTORE);
         Integer idManutentore = utenteDAO.registrazione(manutentore);
         manutentore.setId(idManutentore);
 
