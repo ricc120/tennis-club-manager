@@ -46,12 +46,6 @@ class DAOIntegrationTest {
     @Autowired
     private ManutenzioneDAO manutenzioneDAO;
 
-    @Autowired
-    private LezioneDAO lezioneDAO;
-
-    @Autowired
-    private AllievoLezioneDAO allievoLezioneDAO;
-
     // ========== UtenteDAO ==========
 
     @Test

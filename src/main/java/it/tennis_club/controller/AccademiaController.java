@@ -52,16 +52,16 @@ public class AccademiaController {
         try {
             List<Lezione> lezioni;
             if (utente.getRuolo() == Ruolo.MAESTRO) {
-                lezioni = accademiaService.getLezioneByMaestro(utente);
+                lezioni = accademiaService.getLezionePerMaestro(utente);
             } else {
-                lezioni = accademiaService.getAllLezioni();
+                lezioni = accademiaService.getLezioni();
             }
             model.addAttribute("lezioni", lezioni);
             model.addAttribute("utente", utente);
 
             // Carica i campi per il form di creazione (solo per MAESTRO)
             if (utente.getRuolo() == Ruolo.MAESTRO) {
-                List<Campo> campi = campoService.getAllCampi();
+                List<Campo> campi = campoService.getCampi();
                 model.addAttribute("campi", campi);
             }
 
@@ -93,7 +93,7 @@ public class AccademiaController {
         }
 
         try {
-            Lezione lezione = accademiaService.getLezioneById(id);
+            Lezione lezione = accademiaService.getLezionePerId(id);
             if (lezione == null) {
                 redirectAttributes.addFlashAttribute("errore", "Lezione non trovata.");
                 return "redirect:/lezioni";
@@ -138,13 +138,13 @@ public class AccademiaController {
             LocalDate date = LocalDate.parse(data);
             LocalTime time = LocalTime.parse(oraInizio);
 
-            Campo campo = campoService.getCampoById(idCampo);
+            Campo campo = campoService.getCampoPerId(idCampo);
             if (campo == null) {
                 redirectAttributes.addFlashAttribute("errore", "Campo non trovato.");
                 return "redirect:/lezioni";
             }
 
-            accademiaService.createLezione(date, time, campo, utente, descrizione);
+            accademiaService.creaLezione(date, time, campo, utente, descrizione);
             redirectAttributes.addFlashAttribute("successo", "Lezione creata con successo!");
 
         } catch (AccademiaException | PrenotazioneException | CampoException e) {
@@ -172,7 +172,7 @@ public class AccademiaController {
         }
 
         try {
-            Utente allievo = accademiaService.getUtenteById(idAllievo);
+            Utente allievo = accademiaService.getUtentePerId(idAllievo);
             accademiaService.aggiungiAllievo(id, allievo);
             redirectAttributes.addFlashAttribute("successo", "Allievo aggiunto con successo!");
 

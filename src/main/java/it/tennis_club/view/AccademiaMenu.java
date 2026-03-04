@@ -622,8 +622,4 @@ public class AccademiaMenu {
         }
         CLIUtils.printTableFooter(4);
     }
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 }

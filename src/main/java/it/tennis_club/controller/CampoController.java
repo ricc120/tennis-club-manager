@@ -41,7 +41,7 @@ public class CampoController {
         }
 
         try {
-            List<Campo> campi = campoService.getAllCampi();
+            List<Campo> campi = campoService.getCampi();
             model.addAttribute("campi", campi);
             model.addAttribute("utente", utente);
 

@@ -49,7 +49,7 @@ public class PrenotazioneController {
         try {
             List<Prenotazione> prenotazioni;
             if (utente.getRuolo() == Ruolo.ADMIN || utente.getRuolo() == Ruolo.MAESTRO) {
-                prenotazioni = prenotazioneService.getAllPrenotazioni();
+                prenotazioni = prenotazioneService.getPrenotazioni();
             } else {
                 prenotazioni = prenotazioneService.getPrenotazioniPerSocio(utente);
             }
@@ -57,7 +57,7 @@ public class PrenotazioneController {
             model.addAttribute("utente", utente);
 
             // Carica i campi per il form di creazione
-            List<Campo> campi = campoService.getAllCampi();
+            List<Campo> campi = campoService.getCampi();
             model.addAttribute("campi", campi);
 
         } catch (PrenotazioneException | CampoException e) {
@@ -88,7 +88,7 @@ public class PrenotazioneController {
             LocalTime time = LocalTime.parse(oraInizio);
 
             // Recupera il campo
-            Campo campo = campoService.getCampoById(idCampo);
+            Campo campo = campoService.getCampoPerId(idCampo);
             if (campo == null) {
                 redirectAttributes.addFlashAttribute("errore", "Campo non trovato.");
                 return "redirect:/prenotazioni";
@@ -123,7 +123,7 @@ public class PrenotazioneController {
 
         try {
             // Verifica permessi: solo ADMIN o proprietario
-            Prenotazione prenotazione = prenotazioneService.getPrenotazioneById(id);
+            Prenotazione prenotazione = prenotazioneService.getPrenotazionePerId(id);
             boolean isAdmin = utente.getRuolo() == Utente.Ruolo.ADMIN;
             boolean isOwner = prenotazione.getSocio() != null
                     && prenotazione.getSocio().getId().equals(utente.getId());

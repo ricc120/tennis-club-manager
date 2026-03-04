@@ -525,7 +525,7 @@ public class AccademiaService {
         }
 
         try {
-            return allievoLezioneDAO.getAllieviLezioneConDettagli(idLezione);
+            return allievoLezioneDAO.getAllieviLezione(idLezione);
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante il recupero dei dettagli allievi: " + e.getMessage(), e);
         }
