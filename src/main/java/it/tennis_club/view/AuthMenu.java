@@ -2,8 +2,11 @@ package it.tennis_club.view;
 
 import it.tennis_club.business_logic.AuthService;
 import it.tennis_club.business_logic.AuthenticationException;
+import it.tennis_club.business_logic.NotificationService;
 import it.tennis_club.business_logic.SessionManager;
 import it.tennis_club.domain_model.Utente;
+
+import java.util.List;
 
 /**
  * Menu CLI per la gestione dell'autenticazione.
@@ -13,50 +16,12 @@ public class AuthMenu {
 
     private final AuthService authService;
     private final SessionManager sessionManager;
+    private final NotificationService notificationService;
 
     public AuthMenu() {
         this.authService = new AuthService();
         this.sessionManager = SessionManager.getInstance();
-    }
-
-    /**
-     * Mostra il menu di autenticazione (versione legacy, non più usata dal menu
-     * principale).
-     */
-    public void show() {
-        boolean running = true;
-
-        while (running) {
-            CLIUtils.printHeader("AUTENTICAZIONE");
-
-            Utente utenteCorrente = sessionManager.getCurrentUser();
-            if (utenteCorrente != null) {
-                CLIUtils.printInfo("Utente connesso: " + utenteCorrente.getNome() + " " +
-                        utenteCorrente.getCognome() + " (" + utenteCorrente.getRuolo() + ")");
-            } else {
-                CLIUtils.printWarning("Nessun utente connesso");
-            }
-
-            System.out.println();
-            System.out.println("1. Login");
-            System.out.println("2. Registrazione");
-            System.out.println("3. Logout");
-            System.out.println("4. Visualizza utente corrente");
-            System.out.println();
-            System.out.println("0. Torna al menu principale");
-            System.out.println();
-
-            int scelta = CLIUtils.readInt("Scelta: ");
-
-            switch (scelta) {
-                case 1 -> loginSingolo();
-                case 2 -> registrazionePubblica();
-                case 3 -> logout();
-                case 4 -> visualizzaUtenteCorrente();
-                case 0 -> running = false;
-                default -> CLIUtils.printError("Opzione non valida");
-            }
-        }
+        this.notificationService = NotificationService.getInstance();
     }
 
     /**
@@ -73,8 +38,10 @@ public class AuthMenu {
         }
 
         String email = CLIUtils.readStringOptional("Email (vuoto per annullare): ");
-        if (email == null)
+        if (email == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return;
+        }
 
         String password = CLIUtils.readString("Password: ");
 
@@ -85,6 +52,9 @@ public class AuthMenu {
                 CLIUtils.printSuccess("Login effettuato con successo!");
                 CLIUtils.printInfo("Benvenuto, " + utente.getNome() + " " + utente.getCognome());
                 CLIUtils.printInfo("Ruolo: " + utente.getRuolo());
+
+                // Mostra eventuali notifiche pendenti
+                mostraNotifichePendenti(utente.getId());
             } else {
                 CLIUtils.printError("Credenziali non valide.");
             }
@@ -93,6 +63,30 @@ public class AuthMenu {
         }
 
         CLIUtils.waitForEnter();
+    }
+
+    /**
+     * Mostra le notifiche pendenti per un utente.
+     * Le notifiche vengono consumate (eliminate) dopo la visualizzazione.
+     */
+    private void mostraNotifichePendenti(Integer userId) {
+        List<String> notifiche = notificationService.getAndClearNotifications(userId);
+
+        if (!notifiche.isEmpty()) {
+            System.out.println();
+            CLIUtils.printSubHeader("NOTIFICHE");
+            for (String notifica : notifiche) {
+                CLIUtils.printWarning(notifica);
+            }
+            System.out.println();
+
+            // Pausa per permettere all'utente di leggere le notifiche
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
@@ -113,8 +107,10 @@ public class AuthMenu {
         System.out.println();
 
         String nome = CLIUtils.readTextStringOptional("Nome (vuoto per annullare): ");
-        if (nome == null)
+        if (nome == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return;
+        }
 
         String cognome = CLIUtils.readTextString("Cognome: ");
         String email = CLIUtils.readString("Email: ");
@@ -169,6 +165,7 @@ public class AuthMenu {
 
         String nome = CLIUtils.readTextStringOptional("Nome (vuoto per annullare): ");
         if (nome == null) {
+            CLIUtils.printWarning("Operazione annullata.");
             return null;
         }
 
@@ -270,42 +267,4 @@ public class AuthMenu {
         CLIUtils.waitForEnter();
     }
 
-    /**
-     * Visualizza le informazioni dell'utente corrente.
-     */
-    private void visualizzaUtenteCorrente() {
-        CLIUtils.printSubHeader("Utente Corrente");
-
-        Utente utente = sessionManager.getCurrentUser();
-        if (utente == null) {
-            CLIUtils.printWarning("Nessun utente connesso.");
-        } else {
-            System.out.println();
-            System.out.println("  ID:      " + utente.getId());
-            System.out.println("  Nome:    " + utente.getNome() + " " + utente.getCognome());
-            System.out.println("  Email:   " + utente.getEmail());
-            System.out.println("  Ruolo:   " + utente.getRuolo());
-            System.out.println();
-
-            if (sessionManager.isUserLoggedIn()) {
-                CLIUtils.printInfo("Sessione attiva");
-            }
-        }
-
-        CLIUtils.waitForEnter();
-    }
-
-    /**
-     * Restituisce l'utente attualmente loggato.
-     */
-    public Utente getUtenteCorrente() {
-        return sessionManager.getCurrentUser();
-    }
-
-    /**
-     * Verifica se c'è un utente loggato.
-     */
-    public boolean isLoggedIn() {
-        return sessionManager.getCurrentUser() != null;
-    }
 }

@@ -1,8 +1,7 @@
 package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Manutenzione;
-import it.tennis_club.domain_model.Campo;
-import it.tennis_club.domain_model.Utente;
+import it.tennis_club.domain_model.Manutenzione.Stato;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -79,7 +78,9 @@ public class ManutenzioneDAO {
 
             generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                return generatedKeys.getInt(1);
+                Integer id = generatedKeys.getInt(1);
+                manutenzione.setId(id);
+                return id;
             } else {
                 throw new SQLException("Creazione manutenzione fallita, nessun ID ottenuto.");
             }
@@ -89,23 +90,7 @@ public class ManutenzioneDAO {
             throw e;
 
         } finally {
-            if (generatedKeys != null) {
-                try {
-                    generatedKeys.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
-                }
-            }
-
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
-
-            ConnectionManager.closeConnection(connection);
+            closeResources(generatedKeys, statement, connection);
         }
     }
 
@@ -116,7 +101,7 @@ public class ManutenzioneDAO {
      * @return lista delle manutenzioni del campo
      * @throws SQLException se si verifica un errore durante l'accesso al database
      */
-    public List<Manutenzione> getManutenzioniByIdCampo(Integer idCampo) throws SQLException {
+    public List<Manutenzione> getManutenzioniByCampo(Integer idCampo) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -134,28 +119,7 @@ public class ManutenzioneDAO {
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Manutenzione manutenzione = new Manutenzione();
-                manutenzione.setId(resultSet.getInt("id"));
-
-                // Recupera il campo
-                Campo campo = campoDAO.getCampoById(resultSet.getInt("id_campo"));
-                manutenzione.setCampo(campo);
-
-                // Recupera il manutentore
-                Utente manutentore = utenteDAO.getUtenteById(resultSet.getInt("id_manutentore"));
-                manutenzione.setManutentore(manutentore);
-
-                manutenzione.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-
-                Date dataFine = resultSet.getDate("data_fine");
-                if (dataFine != null) {
-                    manutenzione.setDataFine(dataFine.toLocalDate());
-                }
-
-                manutenzione.setDescrizione(resultSet.getString("descrizione"));
-                manutenzione.setStato(Manutenzione.Stato.valueOf(resultSet.getString("stato")));
-
-                manutenzioni.add(manutenzione);
+                manutenzioni.add(mapResultSetToManutenzione(resultSet));
             }
 
         } catch (SQLException e) {
@@ -163,23 +127,7 @@ public class ManutenzioneDAO {
             throw e;
 
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
-                }
-            }
-
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
-
-            ConnectionManager.closeConnection(connection);
+            closeResources(resultSet, statement, connection);
         }
 
         return manutenzioni;
@@ -192,7 +140,7 @@ public class ManutenzioneDAO {
      * @param nuovoStato     il nuovo stato
      * @throws SQLException se si verifica un errore durante l'accesso al database
      */
-    public boolean updateStatoManutenzione(Integer idManutenzione, Manutenzione.Stato nuovoStato) throws SQLException {
+    public boolean updateStatoManutenzione(Integer idManutenzione, Stato nuovoStato) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -213,15 +161,7 @@ public class ManutenzioneDAO {
             throw e;
 
         } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
-
-            ConnectionManager.closeConnection(connection);
+            closeResources(null, statement, connection);
         }
     }
 
@@ -252,15 +192,7 @@ public class ManutenzioneDAO {
             throw e;
 
         } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
-
-            ConnectionManager.closeConnection(connection);
+            closeResources(null, statement, connection);
         }
     }
 
@@ -286,28 +218,7 @@ public class ManutenzioneDAO {
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Manutenzione manutenzione = new Manutenzione();
-                manutenzione.setId(resultSet.getInt("id"));
-
-                // Recupera il campo
-                Campo campo = campoDAO.getCampoById(resultSet.getInt("id_campo"));
-                manutenzione.setCampo(campo);
-
-                // Recupera il manutentore
-                Utente manutentore = utenteDAO.getUtenteById(resultSet.getInt("id_manutentore"));
-                manutenzione.setManutentore(manutentore);
-
-                manutenzione.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-
-                Date dataFine = resultSet.getDate("data_fine");
-                if (dataFine != null) {
-                    manutenzione.setDataFine(dataFine.toLocalDate());
-                }
-
-                manutenzione.setDescrizione(resultSet.getString("descrizione"));
-                manutenzione.setStato(Manutenzione.Stato.valueOf(resultSet.getString("stato")));
-
-                manutenzioni.add(manutenzione);
+                manutenzioni.add(mapResultSetToManutenzione(resultSet));
             }
 
         } catch (SQLException e) {
@@ -315,23 +226,7 @@ public class ManutenzioneDAO {
             throw e;
 
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
-                }
-            }
-
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
-
-            ConnectionManager.closeConnection(connection);
+            closeResources(resultSet, statement, connection);
         }
 
         return manutenzioni;
@@ -355,9 +250,7 @@ public class ManutenzioneDAO {
             System.out.println("Errore durante l'eliminazione della manutenzione: " + e.getMessage());
             throw e;
         } finally {
-            if (statement != null)
-                statement.close();
-            ConnectionManager.closeConnection(connection);
+            closeResources(null, statement, connection);
         }
     }
 
@@ -376,49 +269,123 @@ public class ManutenzioneDAO {
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                manutenzione = new Manutenzione();
-                manutenzione.setId(resultSet.getInt("id"));
-
-                Campo campo = campoDAO.getCampoById(resultSet.getInt("id_campo"));
-                manutenzione.setCampo(campo);
-
-                Utente utente = utenteDAO.getUtenteById(resultSet.getInt("id_manutentore"));
-                manutenzione.setManutentore(utente);
-
-                manutenzione.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-                Date dataFine = resultSet.getDate("data_fine");
-                if (dataFine != null) {
-                    manutenzione.setDataFine(dataFine.toLocalDate());
-                }
-
-                manutenzione.setDescrizione(resultSet.getString("descrizione"));
-                manutenzione.setStato(Manutenzione.Stato.valueOf(resultSet.getString("stato")));
-
+            if (resultSet.next()) {
+                manutenzione = mapResultSetToManutenzione(resultSet);
             }
         } catch (Exception e) {
             System.out.println("Errore durante il recupero della manutenzione: " + e.getMessage());
             throw e;
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
-                }
-            }
+            closeResources(resultSet, statement, connection);
+        }
+        return manutenzione;
+    }
 
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
-                }
-            }
+    /**
+     * Recupera una manutenzione bloccante per un campo specifico che copre una
+     * data.
+     * Blocca le prenotazioni per manutenzioni IN_CORSO o COMPLETATA.
+     * Permette le prenotazioni se la manutenzione è ANNULLATA.
+     * 
+     * @param data    la data da verificare
+     * @param idCampo l'ID del campo
+     * @return la manutenzione bloccante se presente, null altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public Manutenzione getManutenzioneAttivaByDataAndCampo(LocalDate data, Integer idCampo) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Manutenzione manutenzione = null;
 
-            ConnectionManager.closeConnection(connection);
+        try {
+            connection = ConnectionManager.getConnection();
+
+            // Query: cerca manutenzioni IN_CORSO o COMPLETATA che coprono la data
+            // richiesta:
+            // - Se data_fine è NULL, blocca solo data_inizio (singolo giorno)
+            // - Se data_fine è definita, blocca il range [data_inizio, data_fine]
+            // - Ignora manutenzioni ANNULLATA (permettono prenotazioni)
+            String query = "SELECT id, id_campo, id_manutentore, data_inizio, data_fine, descrizione, stato " +
+                    " FROM manutenzione WHERE id_campo = ? AND stato IN ('IN_CORSO', 'COMPLETATA') " +
+                    " AND ((data_fine IS NULL AND data_inizio = ?) " +
+                    "      OR (data_fine IS NOT NULL AND ? >= data_inizio AND ? <= data_fine))";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idCampo);
+            statement.setDate(2, Date.valueOf(data));
+            statement.setDate(3, Date.valueOf(data));
+            statement.setDate(4, Date.valueOf(data));
+
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                manutenzione = mapResultSetToManutenzione(resultSet);
+            }
+        } catch (Exception e) {
+            System.out.println("Errore durante il recupero della manutenzione: " + e.getMessage());
+            throw e;
+        } finally {
+            closeResources(resultSet, statement, connection);
         }
         return manutenzione;
 
+    }
+
+    /**
+     * Metodo helper per mappare un ResultSet a un oggetto Manutenzione.
+     * 
+     * @param resultSet il ResultSet da mappare
+     * @return l'oggetto Manutenzione
+     * @throws SQLException se si verifica un errore durante l'accesso ai dati
+     */
+    private Manutenzione mapResultSetToManutenzione(ResultSet resultSet) throws SQLException {
+        Manutenzione manutenzione = new Manutenzione();
+        manutenzione.setId(resultSet.getInt("id"));
+
+        // Recupero oggetti completi tramite gli ID
+        int idCampo = resultSet.getInt("id_campo");
+        manutenzione.setCampo(campoDAO.getCampoById(idCampo));
+
+        int idManutentore = resultSet.getInt("id_manutentore");
+        manutenzione.setManutentore(utenteDAO.getUtenteById(idManutentore));
+
+        manutenzione.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
+
+        Date dataFine = resultSet.getDate("data_fine");
+        if (dataFine != null) {
+            manutenzione.setDataFine(dataFine.toLocalDate());
+        }
+
+        manutenzione.setDescrizione(resultSet.getString("descrizione"));
+        manutenzione.setStato(Manutenzione.Stato.valueOf(resultSet.getString("stato")));
+
+        return manutenzione;
+    }
+
+    /**
+     * Metodo helper per chiudere le risorse JDBC.
+     * 
+     * @param resultSet  il ResultSet da chiudere
+     * @param statement  il PreparedStatement da chiudere
+     * @param connection la Connection da chiudere
+     */
+    private void closeResources(ResultSet resultSet, PreparedStatement statement, Connection connection) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+            }
+        }
+
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+            }
+        }
+
+        ConnectionManager.closeConnection(connection);
     }
 }

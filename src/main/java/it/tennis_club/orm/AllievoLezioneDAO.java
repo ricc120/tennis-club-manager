@@ -46,7 +46,7 @@ public class AllievoLezioneDAO {
      * @return l'ID della partecipazione creata
      * @throws SQLException se si verifica un errore
      */
-    public Integer aggiungiAllievoALezione(Integer idLezione, Integer idAllievo) throws SQLException {
+    public Integer aggiungiAllievoLezione(Integer idLezione, Integer idAllievo) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -271,7 +271,7 @@ public class AllievoLezioneDAO {
      * @return l'oggetto AllievoLezione completo, null se non trovato
      * @throws SQLException se si verifica un errore
      */
-    public AllievoLezione getDettagliAllievoLezione(Integer idLezione, Integer idAllievo) throws SQLException {
+    public AllievoLezione getAllievoLezione(Integer idLezione, Integer idAllievo) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -304,7 +304,7 @@ public class AllievoLezioneDAO {
      * @return lista di oggetti AllievoLezione completi
      * @throws SQLException se si verifica un errore
      */
-    public List<AllievoLezione> getAllieviLezioneConDettagli(Integer idLezione) throws SQLException {
+    public List<AllievoLezione> getAllieviLezione(Integer idLezione) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -332,21 +332,21 @@ public class AllievoLezioneDAO {
     /**
      * Metodo helper per mappare un ResultSet a un oggetto AllievoLezione.
      * 
-     * @param rs il ResultSet
+     * @param resultSet il ResultSet
      * @return l'oggetto AllievoLezione
      * @throws SQLException se si verifica un errore
      */
-    private AllievoLezione mapResultSetToAllievoLezione(ResultSet rs) throws SQLException {
+    private AllievoLezione mapResultSetToAllievoLezione(ResultSet resultSet) throws SQLException {
         AllievoLezione allievoLezione = new AllievoLezione();
-        allievoLezione.setId(rs.getInt("id"));
-        allievoLezione.setPresente(rs.getBoolean("presente"));
-        allievoLezione.setFeedback(rs.getString("feedback"));
+        allievoLezione.setId(resultSet.getInt("id"));
+        allievoLezione.setPresente(resultSet.getBoolean("presente"));
+        allievoLezione.setFeedback(resultSet.getString("feedback"));
 
         // Recupera gli oggetti completi
-        int idLezione = rs.getInt("id_lezione");
+        int idLezione = resultSet.getInt("id_lezione");
         allievoLezione.setLezione(lezioneDAO.getLezioneById(idLezione));
 
-        int idAllievo = rs.getInt("id_allievo");
+        int idAllievo = resultSet.getInt("id_allievo");
         allievoLezione.setAllievo(utenteDAO.getUtenteById(idAllievo));
 
         return allievoLezione;
@@ -355,21 +355,21 @@ public class AllievoLezioneDAO {
     /**
      * Metodo helper per chiudere le risorse JDBC.
      */
-    private void closeResources(ResultSet rs, PreparedStatement stmt, Connection conn) {
-        if (rs != null) {
+    private void closeResources(ResultSet resultSet, PreparedStatement statement, Connection connection) {
+        if (resultSet != null) {
             try {
-                rs.close();
+                resultSet.close();
             } catch (SQLException e) {
-                /* ignorato */
+                System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
             }
         }
-        if (stmt != null) {
+        if (statement != null) {
             try {
-                stmt.close();
+                statement.close();
             } catch (SQLException e) {
-                /* ignorato */
+                System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
             }
         }
-        ConnectionManager.closeConnection(conn);
+        ConnectionManager.closeConnection(connection);
     }
 }

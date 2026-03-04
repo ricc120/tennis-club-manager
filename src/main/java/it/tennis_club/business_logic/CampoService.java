@@ -2,9 +2,13 @@ package it.tennis_club.business_logic;
 
 import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Manutenzione;
+import it.tennis_club.domain_model.Manutenzione.Stato;
+import it.tennis_club.domain_model.Prenotazione;
 import it.tennis_club.domain_model.Utente;
+import it.tennis_club.domain_model.Utente.Ruolo;
 import it.tennis_club.orm.CampoDAO;
 import it.tennis_club.orm.ManutenzioneDAO;
+import it.tennis_club.orm.PrenotazioneDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,19 +26,26 @@ public class CampoService {
 
     private final CampoDAO campoDAO;
     private final ManutenzioneDAO manutenzioneDAO;
+    private final PrenotazioneDAO prenotazioneDAO;
+    private final NotificationService notificationService;
 
     public CampoService() {
         this.campoDAO = new CampoDAO();
         this.manutenzioneDAO = new ManutenzioneDAO();
+        this.prenotazioneDAO = new PrenotazioneDAO();
+        this.notificationService = null;
     }
 
     /**
      * Costruttore per Dependency Injection di Spring.
      */
     @Autowired
-    public CampoService(CampoDAO campoDAO, ManutenzioneDAO manutenzioneDAO) {
+    public CampoService(CampoDAO campoDAO, ManutenzioneDAO manutenzioneDAO,
+            PrenotazioneDAO prenotazioneDAO, NotificationService notificationService) {
         this.campoDAO = campoDAO;
         this.manutenzioneDAO = manutenzioneDAO;
+        this.prenotazioneDAO = prenotazioneDAO;
+        this.notificationService = notificationService;
     }
 
     // ========== OPERAZIONI PUBBLICHE (accessibili a tutti) ==========
@@ -45,7 +56,7 @@ public class CampoService {
      * @return lista di tutti i campi
      * @throws CampoException se si verifica un errore durante il recupero
      */
-    public List<Campo> getAllCampi() throws CampoException {
+    public List<Campo> getCampi() throws CampoException {
         try {
             return campoDAO.getAllCampi();
         } catch (SQLException e) {
@@ -60,7 +71,7 @@ public class CampoService {
      * @return il campo richiesto
      * @throws CampoException se il campo non esiste o si verifica un errore
      */
-    public Campo getCampoById(Integer idCampo) throws CampoException {
+    public Campo getCampoPerId(Integer idCampo) throws CampoException {
         if (idCampo == null || idCampo <= 0) {
             throw new CampoException("ID campo non valido");
         }
@@ -97,7 +108,7 @@ public class CampoService {
      * @return lista dei campi con il tipo di superficie specificato
      * @throws CampoException se si verifica un errore durante il recupero
      */
-    public List<Campo> getCampiByTipoSuperficie(String tipoSuperficie) throws CampoException {
+    public List<Campo> getCampiPerTipoSuperficie(String tipoSuperficie) throws CampoException {
         if (tipoSuperficie == null || tipoSuperficie.trim().isEmpty()) {
             throw new CampoException("Tipo superficie non valido");
         }
@@ -153,13 +164,28 @@ public class CampoService {
                 throw new CampoException("Campo con ID " + idCampo + " non trovato");
             }
 
+            // Elimina tutte le prenotazioni esistenti per quel campo e data
+            // Le lezioni associate verranno eliminate automaticamente via CASCADE
+            List<Prenotazione> prenotazioniDaEliminare = prenotazioneDAO.getPrenotazioniByDataAndCampo(
+                    dataInizio, idCampo);
+
+            for (Prenotazione prenotazione : prenotazioniDaEliminare) {
+                // Notifica l'utente che la sua prenotazione è stata cancellata
+                if (notificationService != null && prenotazione.getSocio() != null) {
+                    notificationService.inviaNotificaCancellazione(prenotazione.getSocio(), prenotazione);
+                }
+
+                // Elimina la prenotazione (le lezioni vengono eliminate in cascade)
+                prenotazioneDAO.deletePrenotazione(prenotazione.getId());
+            }
+
             // Crea la manutenzione
             Manutenzione manutenzione = new Manutenzione();
             manutenzione.setCampo(campo);
             manutenzione.setManutentore(utente);
             manutenzione.setDataInizio(dataInizio);
             manutenzione.setDescrizione(descrizione);
-            manutenzione.setStato(Manutenzione.Stato.IN_CORSO);
+            manutenzione.setStato(Stato.IN_CORSO);
 
             return manutenzioneDAO.createManutenzione(manutenzione);
 
@@ -201,6 +227,24 @@ public class CampoService {
                 throw new CampoException("Manutenzione con ID " + idManutenzione + " non trovata");
             }
             manutenzioneDAO.completaManutenzione(idManutenzione, dataFine);
+
+            Manutenzione manutenzione = manutenzioneDAO.getManutenzioneById(idManutenzione);
+
+            // Elimina tutte le prenotazioni esistenti per quel campo nel range [dataInizio,
+            // dataFine]
+            List<Prenotazione> prenotazioniDaEliminare = prenotazioneDAO.getPrenotazioniByDateRangeAndCampo(
+                    manutenzione.getDataInizio(), manutenzione.getDataFine(), manutenzione.getCampo().getId());
+
+            for (Prenotazione prenotazione : prenotazioniDaEliminare) {
+                // Notifica l'utente che la sua prenotazione è stata cancellata
+                if (notificationService != null && prenotazione.getSocio() != null) {
+                    notificationService.inviaNotificaCancellazione(prenotazione.getSocio(), prenotazione);
+                }
+
+                // Elimina la prenotazione (le lezioni associate vengono eliminate in CASCADE)
+                prenotazioneDAO.deletePrenotazione(prenotazione.getId());
+            }
+
         } catch (SQLException e) {
             throw new CampoException("Errore durante il completamento della manutenzione: " + e.getMessage(), e);
         }
@@ -230,7 +274,7 @@ public class CampoService {
                 throw new CampoException("Manutenzione con ID " + idManutenzione + " non trovata");
             }
 
-            manutenzioneDAO.updateStatoManutenzione(idManutenzione, Manutenzione.Stato.ANNULLATA);
+            manutenzioneDAO.updateStatoManutenzione(idManutenzione, Stato.ANNULLATA);
         } catch (SQLException e) {
             throw new CampoException("Errore durante l'annullamento della manutenzione: " + e.getMessage(), e);
         }
@@ -245,7 +289,7 @@ public class CampoService {
      * @return lista delle manutenzioni del campo
      * @throws CampoException se l'utente non ha i permessi o si verifica un errore
      */
-    public List<Manutenzione> getManutenzioniCampo(Utente utente, Integer idCampo) throws CampoException {
+    public List<Manutenzione> getManutenzioniPerCampo(Utente utente, Integer idCampo) throws CampoException {
 
         // Controllo permessi
         verificaPermessiManutenzione(utente);
@@ -256,7 +300,7 @@ public class CampoService {
         }
 
         try {
-            return manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
+            return manutenzioneDAO.getManutenzioniByCampo(idCampo);
         } catch (SQLException e) {
             throw new CampoException("Errore durante il recupero delle manutenzioni: " + e.getMessage(), e);
         }
@@ -270,10 +314,9 @@ public class CampoService {
         }
     }
 
-    // ========== METODI PRIVATI DI UTILITÀ ==========
-
     /**
-     * Verifica che l'utente abbia i permessi per gestire le manutenzioni.
+     * Metodo helper per verifica che l'utente abbia i permessi per gestire le
+     * manutenzioni.
      * Solo ADMIN e MANUTENTORE possono accedere a queste funzionalità.
      * 
      * @param utente l'utente da verificare
@@ -289,8 +332,8 @@ public class CampoService {
         }
 
         // Solo ADMIN e MANUTENTORE possono gestire le manutenzioni
-        if (utente.getRuolo() != Utente.Ruolo.ADMIN &&
-                utente.getRuolo() != Utente.Ruolo.MANUTENTORE) {
+        if (utente.getRuolo() != Ruolo.ADMIN &&
+                utente.getRuolo() != Ruolo.MANUTENTORE) {
             throw new CampoException(
                     "Permessi insufficienti. Solo ADMIN e MANUTENTORE possono gestire le manutenzioni.");
         }

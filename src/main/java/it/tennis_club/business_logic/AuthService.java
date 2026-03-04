@@ -1,6 +1,7 @@
 package it.tennis_club.business_logic;
 
 import it.tennis_club.domain_model.Utente;
+import it.tennis_club.domain_model.Utente.Ruolo;
 import it.tennis_club.orm.UtenteDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class AuthService {
 
     /**
      * Registra un nuovo utente nel sistema senza creare una sessione.
-     * Utile quando un admin crea utenti - non vogliamo cambiare la sessione
+     * Utile quando un admin crea utenti senza cambiare la sessione
      * corrente.
      * 
      * @param nuovoUtente l'oggetto Utente da registrare
@@ -124,7 +125,7 @@ public class AuthService {
             return idGenerato;
 
         } catch (SQLException e) {
-            // Controlla se è un errore di email duplicata (violazione unique constraint)
+            // Controlla se è un errore di email duplicata (violazione UNIQUE CONSTRAINT)
             if (e.getMessage() != null && e.getMessage().contains("duplicate key")
                     || e.getMessage().contains("unique constraint")) {
                 throw new AuthenticationException("L'email è già registrata nel sistema", e);
@@ -196,7 +197,7 @@ public class AuthService {
             SessionManager sessionManager = SessionManager.getInstance();
             String sessionId = sessionManager.createSession(utente);
 
-            // Log dell'accesso (opzionale)
+            // Log dell'accesso
             System.out.println();
             System.out.println("Sessione creata per utente: " + utente.getEmail() +
                     " (Session ID: " + sessionId + ")");
@@ -216,7 +217,7 @@ public class AuthService {
      * @param ruolo  il ruolo richiesto
      * @return true se l'utente ha il ruolo specificato, false altrimenti
      */
-    public boolean hasRole(Utente utente, Utente.Ruolo ruolo) {
+    public boolean hasRole(Utente utente, Ruolo ruolo) {
         if (utente == null || ruolo == null) {
             return false;
         }
@@ -230,7 +231,7 @@ public class AuthService {
      * @return true se l'utente è un admin, false altrimenti
      */
     public boolean isAdmin(Utente utente) {
-        return hasRole(utente, Utente.Ruolo.ADMIN);
+        return hasRole(utente, Ruolo.ADMIN);
     }
 
     /**
@@ -258,7 +259,16 @@ public class AuthService {
         return success;
     }
 
-    public boolean deleteUtente(Integer id) throws AuthenticationException {
+    /**
+     * Elimina un utente esistente.
+     * 
+     * @param id dell'utente
+     * @return true se l'eliminazione è stata effettuata con successo, false
+     *         altrimenti
+     * @throws AuthenticationException se si verifica un errore durante
+     *                                 l'eliminazione
+     */
+    public boolean eliminaUtente(Integer id) throws AuthenticationException {
 
         if (id == null) {
             throw new AuthenticationException("L'ID dell'utente non può essere vuoto");

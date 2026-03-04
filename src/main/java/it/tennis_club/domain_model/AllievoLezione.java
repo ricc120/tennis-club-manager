@@ -4,9 +4,6 @@ package it.tennis_club.domain_model;
  * Rappresenta la partecipazione di un allievo a una lezione.
  * Questa classe gestisce la relazione molti-a-molti tra Lezione e Utente
  * (allievi).
- * 
- * NOTA: Il feedback è specifico per ogni allievo, permettendo al maestro
- * di dare valutazioni personalizzate.
  */
 public class AllievoLezione {
 

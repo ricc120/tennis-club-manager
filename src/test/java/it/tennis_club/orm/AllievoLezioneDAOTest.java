@@ -116,7 +116,7 @@ public class AllievoLezioneDAOTest {
      */
     private boolean aggiungiAllievoSafe(Integer idLezione, Integer idAllievo) {
         try {
-            allievoLezioneDAO.aggiungiAllievoALezione(idLezione, idAllievo);
+            allievoLezioneDAO.aggiungiAllievoLezione(idLezione, idAllievo);
             return true;
         } catch (SQLException e) {
             // L'allievo potrebbe essere già iscritto alla lezione
@@ -235,8 +235,8 @@ public class AllievoLezioneDAOTest {
         allievoLezioneDAO.segnaPresenza(lezione.getId(), allievi.get(1).getId(), true);
 
         // Verifica isolamento
-        AllievoLezione dett1 = allievoLezioneDAO.getDettagliAllievoLezione(lezione.getId(), allievi.get(0).getId());
-        AllievoLezione dett2 = allievoLezioneDAO.getDettagliAllievoLezione(lezione.getId(), allievi.get(1).getId());
+        AllievoLezione dett1 = allievoLezioneDAO.getAllievoLezione(lezione.getId(), allievi.get(0).getId());
+        AllievoLezione dett2 = allievoLezioneDAO.getAllievoLezione(lezione.getId(), allievi.get(1).getId());
 
         assertFalse(dett1.getPresente(), "Allievo 1 dovrebbe essere assente");
         assertTrue(dett2.getPresente(), "Allievo 2 dovrebbe essere presente");
@@ -264,8 +264,8 @@ public class AllievoLezioneDAOTest {
         allievoLezioneDAO.aggiungiFeedback(lezione.getId(), allievi.get(1).getId(), f2);
 
         // Recupera i dettagli dal DB per verificare i feedback
-        AllievoLezione dett1 = allievoLezioneDAO.getDettagliAllievoLezione(lezione.getId(), allievi.get(0).getId());
-        AllievoLezione dett2 = allievoLezioneDAO.getDettagliAllievoLezione(lezione.getId(), allievi.get(1).getId());
+        AllievoLezione dett1 = allievoLezioneDAO.getAllievoLezione(lezione.getId(), allievi.get(0).getId());
+        AllievoLezione dett2 = allievoLezioneDAO.getAllievoLezione(lezione.getId(), allievi.get(1).getId());
 
         assertEquals(f1, dett1.getFeedback(), "Il feedback dell'allievo 1 dovrebbe corrispondere");
         assertEquals(f2, dett2.getFeedback(), "Il feedback dell'allievo 2 dovrebbe corrispondere");
@@ -312,7 +312,7 @@ public class AllievoLezioneDAOTest {
         assertFalse(allieviLezione.isEmpty(), "Dovrebbe esserci almeno un allievo nella lezione");
 
         for (Utente allievoLezione : allieviLezione) {
-            AllievoLezione dettagli = allievoLezioneDAO.getDettagliAllievoLezione(
+            AllievoLezione dettagli = allievoLezioneDAO.getAllievoLezione(
                     lezione.getId(), allievoLezione.getId());
 
             assertNotNull(dettagli, "I dettagli non dovrebbero essere null");
@@ -334,7 +334,7 @@ public class AllievoLezioneDAOTest {
     @Order(8)
     @DisplayName("Verifica che getDettagliAllievoLezione restituisca null per combinazione inesistente")
     void testGetDettagliAllievoLezioneNotFound() throws SQLException {
-        AllievoLezione dettagli = allievoLezioneDAO.getDettagliAllievoLezione(9999, 9999);
+        AllievoLezione dettagli = allievoLezioneDAO.getAllievoLezione(9999, 9999);
 
         assertNull(dettagli, "Non dovrebbe trovare dettagli per una combinazione inesistente");
     }
@@ -352,7 +352,7 @@ public class AllievoLezioneDAOTest {
         }
 
         List<AllievoLezione> allieviConDettagli = allievoLezioneDAO
-                .getAllieviLezioneConDettagli(lezione.getId());
+                .getAllieviLezione(lezione.getId());
 
         assertNotNull(allieviConDettagli, "La lista non dovrebbe essere null");
 
@@ -398,7 +398,7 @@ public class AllievoLezioneDAOTest {
                 "Il numero di allievi dovrebbe essere diminuito di 1");
 
         // Verifica che i dettagli non siano più recuperabili
-        AllievoLezione dettagli = allievoLezioneDAO.getDettagliAllievoLezione(
+        AllievoLezione dettagli = allievoLezioneDAO.getAllievoLezione(
                 lezione.getId(), allievi.get(0).getId());
         assertNull(dettagli, "I dettagli non dovrebbero più esistere dopo la rimozione");
 

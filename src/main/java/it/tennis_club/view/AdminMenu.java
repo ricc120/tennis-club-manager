@@ -69,27 +69,7 @@ public class AdminMenu {
 
         try {
             List<Utente> utenti = utenteDAO.getAllUtenti();
-
-            if (utenti.isEmpty()) {
-                CLIUtils.printWarning("Nessun utente trovato nel sistema.");
-            } else {
-                System.out.println();
-                System.out.printf("%-5s %-15s %-15s %-25s %-12s%n",
-                        "ID", "Nome", "Cognome", "Email", "Ruolo");
-                System.out.println("─".repeat(75));
-
-                for (Utente utente : utenti) {
-                    System.out.printf("%-5d %-15s %-15s %-25s %-12s%n",
-                            utente.getId(),
-                            truncate(utente.getNome(), 15),
-                            truncate(utente.getCognome(), 15),
-                            truncate(utente.getEmail(), 25),
-                            utente.getRuolo());
-                }
-
-                System.out.println("─".repeat(75));
-                CLIUtils.printInfo("Totale utenti: " + utenti.size());
-            }
+            stampaListaUtenti(utenti);
         } catch (SQLException e) {
             CLIUtils.printError("Errore durante il recupero degli utenti: " + e.getMessage());
         }
@@ -106,27 +86,7 @@ public class AdminMenu {
         // Prima mostra la lista degli utenti
         try {
             List<Utente> utenti = utenteDAO.getAllUtenti();
-
-            if (utenti.isEmpty()) {
-                CLIUtils.printWarning("Nessun utente trovato.");
-                CLIUtils.waitForEnter();
-                return;
-            }
-
-            System.out.println();
-            System.out.printf("%-5s %-20s %-25s %-12s%n",
-                    "ID", "Nome Completo", "Email", "Ruolo");
-            System.out.println("─".repeat(65));
-
-            for (Utente utente : utenti) {
-                System.out.printf("%-5d %-20s %-25s %-12s%n",
-                        utente.getId(),
-                        truncate(utente.getNome() + " " + utente.getCognome(), 20),
-                        truncate(utente.getEmail(), 25),
-                        utente.getRuolo());
-            }
-            System.out.println();
-
+            stampaListaUtenti(utenti);
         } catch (SQLException e) {
             CLIUtils.printError("Errore durante il recupero degli utenti: " + e.getMessage());
             CLIUtils.waitForEnter();
@@ -234,44 +194,13 @@ public class AdminMenu {
         CLIUtils.waitForEnter();
     }
 
-    /**
-     * Helper per troncare stringhe troppo lunghe.
-     */
-    private String truncate(String str, int maxLength) {
-        if (str == null)
-            return "";
-        if (str.length() <= maxLength)
-            return str;
-        return str.substring(0, maxLength - 3) + "...";
-    }
-
     private void cancellaUtente() {
         CLIUtils.printSubHeader("Cancella Utente");
 
         // Prima mostra la lista degli utenti
         try {
             List<Utente> utenti = utenteDAO.getAllUtenti();
-
-            if (utenti.isEmpty()) {
-                CLIUtils.printWarning("Nessun utente trovato.");
-                CLIUtils.waitForEnter();
-                return;
-            }
-
-            System.out.println();
-            System.out.printf("%-5s %-20s %-25s %-12s%n",
-                    "ID", "Nome Completo", "Email", "Ruolo");
-            System.out.println("─".repeat(65));
-
-            for (Utente utente : utenti) {
-                System.out.printf("%-5d %-20s %-25s %-12s%n",
-                        utente.getId(),
-                        truncate(utente.getNome() + " " + utente.getCognome(), 20),
-                        truncate(utente.getEmail(), 25),
-                        utente.getRuolo());
-            }
-            System.out.println();
-
+            stampaListaUtenti(utenti);
         } catch (SQLException e) {
             CLIUtils.printError("Errore durante il recupero degli utenti: " + e.getMessage());
             CLIUtils.waitForEnter();
@@ -315,5 +244,25 @@ public class AdminMenu {
         }
 
         CLIUtils.waitForEnter();
+    }
+
+    private void stampaListaUtenti(List<Utente> utenti) {
+        if (utenti.isEmpty()) {
+            CLIUtils.printInfo("Nessun utente trovato.");
+            return;
+        }
+
+        System.out.println();
+        CLIUtils.printTableHeader("ID", "Nome", "Cognome", "Email", "Ruolo");
+        for (Utente u : utenti) {
+            CLIUtils.printTableRow(
+                    String.valueOf(u.getId()),
+                    CLIUtils.truncate(u.getNome(), 15),
+                    CLIUtils.truncate(u.getCognome(), 15),
+                    CLIUtils.truncate(u.getEmail(), 25),
+                    u.getRuolo().toString());
+        }
+        CLIUtils.printTableFooter(5);
+        CLIUtils.printInfo("Totale utenti: " + utenti.size());
     }
 }

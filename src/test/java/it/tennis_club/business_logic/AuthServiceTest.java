@@ -30,7 +30,7 @@ class AuthServiceTest {
         // Rimuove tutti gli utenti creati durante i test
         for (Integer id : idsUtentiCreati) {
             try {
-                authService.deleteUtente(id);
+                authService.eliminaUtente(id);
             } catch (AuthenticationException e) {
                 System.err.println("Errore durante la pulizia dell'utente ID " + id + ": " + e.getMessage());
             }
@@ -261,7 +261,7 @@ class AuthServiceTest {
 
         authService.registrazione(utente);
 
-        assertTrue(authService.deleteUtente(utente.getId()), "L'utente dovrebbe essere eliminato");
+        assertTrue(authService.eliminaUtente(utente.getId()), "L'utente dovrebbe essere eliminato");
     }
 
 }

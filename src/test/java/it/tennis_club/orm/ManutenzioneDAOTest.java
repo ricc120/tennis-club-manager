@@ -139,7 +139,7 @@ class ManutenzioneDAOTest {
 
         if (!campi.isEmpty()) {
             Integer idCampo = campi.get(0).getId();
-            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
+            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByCampo(idCampo);
 
             assertNotNull(manutenzioni, "La lista non dovrebbe essere null");
 
@@ -167,7 +167,7 @@ class ManutenzioneDAOTest {
             assertNotNull(manutenzione.getId(), "L'ID non dovrebbe essere null");
 
             // Verifica che sia nel database
-            List<Manutenzione> manutenzioniCampo = manutenzioneDAO.getManutenzioniByIdCampo(
+            List<Manutenzione> manutenzioniCampo = manutenzioneDAO.getManutenzioniByCampo(
                     manutenzione.getCampo().getId());
             boolean trovata = manutenzioniCampo.stream()
                     .anyMatch(m -> m.getId().equals(manutenzione.getId()));
@@ -269,7 +269,7 @@ class ManutenzioneDAOTest {
         if (!campi.isEmpty()) {
             // Prova con l'ultimo campo della lista
             Integer idCampo = campi.get(campi.size() - 1).getId();
-            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
+            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByCampo(idCampo);
 
             assertNotNull(manutenzioni, "La lista non dovrebbe essere null anche se vuota");
             System.out.println("Trovate " + manutenzioni.size() + " manutenzioni per il campo ID " + idCampo);
@@ -286,7 +286,7 @@ class ManutenzioneDAOTest {
 
         if (!campi.isEmpty()) {
             Integer idCampo = campi.get(0).getId();
-            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByIdCampo(idCampo);
+            List<Manutenzione> manutenzioni = manutenzioneDAO.getManutenzioniByCampo(idCampo);
 
             if (manutenzioni.size() > 1) {
                 for (int i = 0; i < manutenzioni.size() - 1; i++) {
