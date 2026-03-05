@@ -48,9 +48,7 @@ buildNumber.properties
 db.properties
 src/main/resources/db.properties
 src/main/resources/application.properties
-<<<<<<< HEAD
+src/test/resources/application-test.properties
 
-#Docker
+# Docker
 docker-compose.yml
-=======
->>>>>>> main
