@@ -18,6 +18,7 @@ public class CampoMenu {
     private final CampoService campoService;
     private final SessionManager sessionManager;
 
+    @SuppressWarnings("deprecation")
     public CampoMenu() {
         this.campoService = new CampoService();
         this.sessionManager = SessionManager.getInstance();

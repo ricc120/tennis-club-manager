@@ -33,7 +33,12 @@ public class AccademiaService {
     private static final int MAX_ALLIEVI_PER_LEZIONE = 8;
 
     /**
-     * Costruttore che inizializza i DAO e i servizi necessari.
+     * Costruttore che inizializza i DAO.
+     * 
+     * @deprecated Usare
+     *             {@link #AccademiaService(LezioneDAO, PrenotazioneService, AllievoLezioneDAO, UtenteDAO)}
+     *             per Dependency Injection di Spring
+     * 
      */
     public AccademiaService() {
         this.lezioneDAO = new LezioneDAO();

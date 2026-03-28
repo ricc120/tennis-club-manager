@@ -489,6 +489,13 @@ public class UtenteDAO {
         }
     }
 
+    /**
+     * Elimina un utente specifico tramite il suo ID
+     * 
+     * @param id l'ID dell'utente da eliminare
+     * @return true se l'eliminazione è avvenuta con successo, false altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
     public boolean deleteUtente(Integer id) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;

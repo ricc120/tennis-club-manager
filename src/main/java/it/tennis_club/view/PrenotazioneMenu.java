@@ -22,6 +22,7 @@ public class PrenotazioneMenu {
     private final CampoService campoService;
     private final SessionManager sessionManager;
 
+    @SuppressWarnings("deprecation")
     public PrenotazioneMenu() {
         this.prenotazioneService = new PrenotazioneService();
         this.campoService = new CampoService();

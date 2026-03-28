@@ -6,7 +6,12 @@ import it.tennis_club.domain_model.Manutenzione.Stato;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Date;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +22,17 @@ import java.util.List;
 @Repository
 public class ManutenzioneDAO {
 
+    // Istanze dei DAO necessari per recuperare oggetti completi
     private final CampoDAO campoDAO;
     private final UtenteDAO utenteDAO;
 
     /**
-     * Costruttore predefinito per compatibilità con CLI e test.
+     * Costruttore che inizializza i DAO necessari.
+     * 
+     * @deprecated Usare {@link #ManutenzioneDAO(CampoDAO, UtenteDAO)} per
+     *             Dependency Injection di Spring
      */
+    @Deprecated
     public ManutenzioneDAO() {
         this.campoDAO = new CampoDAO();
         this.utenteDAO = new UtenteDAO();
@@ -56,7 +66,7 @@ public class ManutenzioneDAO {
                     +
                     "VALUES (?, ?, ?, ?, ?, ?)";
 
-            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, manutenzione.getCampo().getId());
             statement.setInt(2, manutenzione.getManutentore().getId());
             statement.setDate(3, Date.valueOf(manutenzione.getDataInizio()));
@@ -232,6 +242,13 @@ public class ManutenzioneDAO {
         return manutenzioni;
     }
 
+    /**
+     * Elimina una manutenzione per uno specifico ID
+     * 
+     * @param id l'ID della manutenzione da eliminare
+     * @return true se la manutenzione è stata eliminata, false altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
     public boolean deleteManutenzioni(Integer id) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -254,6 +271,13 @@ public class ManutenzioneDAO {
         }
     }
 
+    /**
+     * Recupera una manutenzione specifica tramite il suo ID.
+     * 
+     * @param id l'ID della manutenzione
+     * @return l'oggetto Manutenzione se trovato, null altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
     public Manutenzione getManutenzioneById(Integer id) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;

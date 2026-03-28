@@ -28,7 +28,11 @@ public class PrenotazioneDAO {
 
     /**
      * Costruttore che inizializza i DAO necessari.
+     * 
+     * @deprecated Usare {@link #PrenotazioneDAO(CampoDAO, UtenteDAO)}
+     *             per Dependency Injection di Spring
      */
+    @Deprecated
     public PrenotazioneDAO() {
         this.campoDAO = new CampoDAO();
         this.utenteDAO = new UtenteDAO();

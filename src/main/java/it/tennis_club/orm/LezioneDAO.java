@@ -20,12 +20,17 @@ import java.util.List;
 @Repository
 public class LezioneDAO {
 
+    // Istanze dei DAO necessari per recuperare oggetti completi
     private final UtenteDAO utenteDAO;
     private final PrenotazioneDAO prenotazioneDAO;
 
     /**
-     * Costruttore che inizializza i DAO dipendenti.
+     * Costruttore che inizializza i DAO necessari.
+     * 
+     * @deprecated Usare {@link #LezioneDAO(UtenteDAO, PrenotazioneDAO)} per
+     *             Dependency Injection di Spring
      */
+    @Deprecated
     public LezioneDAO() {
         this.utenteDAO = new UtenteDAO();
         this.prenotazioneDAO = new PrenotazioneDAO();

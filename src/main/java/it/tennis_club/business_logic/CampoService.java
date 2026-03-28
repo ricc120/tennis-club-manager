@@ -29,6 +29,14 @@ public class CampoService {
     private final PrenotazioneDAO prenotazioneDAO;
     private final NotificationService notificationService;
 
+    /**
+     * Costruttore che inizializza i DAO e i servizi.
+     * 
+     * @deprecated Usare
+     *             {@link #CampoService(PrenotazioneDAO, ManutenzioneDAO, NotificationService)}
+     *             per Dependency Inkection di Spring
+     * 
+     */
     public CampoService() {
         this.campoDAO = new CampoDAO();
         this.manutenzioneDAO = new ManutenzioneDAO();

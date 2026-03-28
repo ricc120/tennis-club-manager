@@ -29,7 +29,12 @@ public class PrenotazioneService {
     private final NotificationService notificationService;
 
     /**
-     * Costruttore che inizializza il DAO.
+     * Costruttore che inizializza i DAO e i servizi.
+     * 
+     * @deprecated Usare
+     *             {@link #PrenotazioneService(PrenotazioneDAO,ManutenzioneDAO, NotificationService)}
+     *             per Dependency Inkection di Spring
+     * 
      */
     public PrenotazioneService() {
         this.prenotazioneDAO = new PrenotazioneDAO();

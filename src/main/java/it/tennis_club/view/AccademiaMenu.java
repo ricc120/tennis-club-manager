@@ -24,6 +24,7 @@ public class AccademiaMenu {
     private final CampoService campoService;
     private final SessionManager sessionManager;
 
+    @SuppressWarnings("deprecation")
     public AccademiaMenu() {
         this.accademiaService = new AccademiaService();
         this.campoService = new CampoService();
