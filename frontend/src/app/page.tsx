@@ -22,7 +22,7 @@ export default function Home() {
           <div className="absolute bottom-10 right-10 text-9xl">🏆</div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12rem]">🎾</div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -31,7 +31,7 @@ export default function Home() {
               <span className="text-emerald-300">Sempre a Portata di Mano</span>
             </h1>
             <p className="text-lg md:text-xl text-emerald-100 max-w-2xl mx-auto mb-10">
-              Prenota campi, scopri le lezioni e gestisci la tua attività tennistica 
+              Prenota campi, scopri le lezioni e gestisci la tua attività tennistica
               in modo semplice e veloce.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -53,7 +53,7 @@ export default function Home() {
       </section>
 
       {/* FEATURES SECTION — Le 3 funzionalità principali */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="dark:bg-gray max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
           Cosa Puoi Fare
         </h2>
@@ -61,7 +61,7 @@ export default function Home() {
           {/* Card 1 */}
           <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow border border-gray-100">
             <div className="text-4xl mb-4">📅</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <h3 className="text-xl font-semibold dark:text-white text-gray-800 mb-2">
               Prenota un Campo
             </h3>
             <p className="text-gray-600">
