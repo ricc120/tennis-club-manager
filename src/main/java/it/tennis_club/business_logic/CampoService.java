@@ -10,6 +10,9 @@ import it.tennis_club.orm.CampoDAO;
 import it.tennis_club.orm.ManutenzioneDAO;
 import it.tennis_club.orm.PrenotazioneDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,18 +21,39 @@ import java.util.List;
  * Servizio per la gestione dei campi da tennis e delle loro manutenzioni.
  * Implementa la business logic e il controllo dei permessi.
  */
+@Service
 public class CampoService {
 
-    private CampoDAO campoDAO;
-    private ManutenzioneDAO manutenzioneDAO;
-    private PrenotazioneDAO prenotazioneDAO;
-    private NotificationService notificationService;
+    private final CampoDAO campoDAO;
+    private final ManutenzioneDAO manutenzioneDAO;
+    private final PrenotazioneDAO prenotazioneDAO;
+    private final NotificationService notificationService;
 
+    /**
+     * Costruttore che inizializza i DAO e i servizi.
+     * 
+     * @deprecated Usare
+     *             {@link #CampoService(PrenotazioneDAO, ManutenzioneDAO, NotificationService)}
+     *             per Dependency Inkection di Spring
+     * 
+     */
     public CampoService() {
         this.campoDAO = new CampoDAO();
         this.manutenzioneDAO = new ManutenzioneDAO();
         this.prenotazioneDAO = new PrenotazioneDAO();
-        this.notificationService = NotificationService.getInstance();
+        this.notificationService = null;
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public CampoService(CampoDAO campoDAO, ManutenzioneDAO manutenzioneDAO,
+            PrenotazioneDAO prenotazioneDAO, NotificationService notificationService) {
+        this.campoDAO = campoDAO;
+        this.manutenzioneDAO = manutenzioneDAO;
+        this.prenotazioneDAO = prenotazioneDAO;
+        this.notificationService = notificationService;
     }
 
     // ========== OPERAZIONI PUBBLICHE (accessibili a tutti) ==========
@@ -155,11 +179,9 @@ public class CampoService {
 
             for (Prenotazione prenotazione : prenotazioniDaEliminare) {
                 // Notifica l'utente che la sua prenotazione è stata cancellata
-                String messaggio = String.format(
-                        "La tua prenotazione del %s sul %s è stata cancellata " +
-                                "a causa di una manutenzione programmata.",
-                        prenotazione.getData(), campo.getNome());
-                notificationService.addNotification(prenotazione.getSocio().getId(), messaggio);
+                if (notificationService != null && prenotazione.getSocio() != null) {
+                    notificationService.inviaNotificaCancellazione(prenotazione.getSocio(), prenotazione);
+                }
 
                 // Elimina la prenotazione (le lezioni vengono eliminate in cascade)
                 prenotazioneDAO.deletePrenotazione(prenotazione.getId());
@@ -223,11 +245,9 @@ public class CampoService {
 
             for (Prenotazione prenotazione : prenotazioniDaEliminare) {
                 // Notifica l'utente che la sua prenotazione è stata cancellata
-                String messaggio = String.format(
-                        "La tua prenotazione del %s sul %s è stata cancellata " +
-                                "a causa di una manutenzione programmata.",
-                        prenotazione.getData(), manutenzione.getCampo().getNome());
-                notificationService.addNotification(prenotazione.getSocio().getId(), messaggio);
+                if (notificationService != null && prenotazione.getSocio() != null) {
+                    notificationService.inviaNotificaCancellazione(prenotazione.getSocio(), prenotazione);
+                }
 
                 // Elimina la prenotazione (le lezioni associate vengono eliminate in CASCADE)
                 prenotazioneDAO.deletePrenotazione(prenotazione.getId());

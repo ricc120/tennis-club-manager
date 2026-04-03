@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lezioni - Tennis Club Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: white;
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            color: #1a5f2a;
+            font-size: 28px;
+        }
+
+        .btn-back {
+            color: #1a5f2a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #e0ffe0;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .message.error {
+            background: #ffe0e0;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .form-card h2 {
+            color: #1a5f2a;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a5f2a;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 95, 42, 0.3);
+        }
+
+        /* Lezione cards */
+        .lezioni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .lezione-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+            display: block;
+        }
+
+        .lezione-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #1a5f2a;
+        }
+
+        .lezione-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .lezione-id {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .lezione-maestro {
+            font-size: 13px;
+            color: #1565c0;
+            font-weight: 600;
+        }
+
+        .lezione-desc {
+            color: #333;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .lezione-meta {
+            display: flex;
+            gap: 15px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .lezione-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand"><span>🎾</span><span>Tennis Club Manager</span></a>
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-name" th:text="${utente.nome + ' ' + utente.cognome}">Nome Utente</div>
+                <div class="user-role" th:text="${utente.ruolo}">RUOLO</div>
+            </div>
+            <a th:href="@{/logout}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🎓 Lezioni</h1>
+            <a th:href="@{/}" class="btn-back">← Torna alla Home</a>
+        </div>
+
+        <div th:if="${successo}" class="message success" th:text="${successo}"></div>
+        <div th:if="${errore}" class="message error" th:text="${errore}"></div>
+
+        <!-- Form nuova lezione (solo MAESTRO) -->
+        <div class="form-card" th:if="${utente.ruolo.name() == 'MAESTRO'}">
+            <h2>Nuova Lezione</h2>
+            <form th:action="@{/lezioni/nuova}" method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" name="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="oraInizio">Ora</label>
+                        <input type="time" id="oraInizio" name="oraInizio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="idCampo">Campo</label>
+                        <select id="idCampo" name="idCampo" required>
+                            <option value="">Seleziona...</option>
+                            <option th:each="campo : ${campi}" th:value="${campo.id}"
+                                th:text="${campo.nome + ' (' + campo.tipoSuperficie + ')'}">Campo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="descrizione">Descrizione</label>
+                        <input type="text" id="descrizione" name="descrizione" placeholder="Tema della lezione..."
+                            required>
+                    </div>
+                    <button type="submit" class="btn-primary">Crea</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Griglia lezioni -->
+        <div class="lezioni-grid" th:if="${lezioni != null and !lezioni.isEmpty()}">
+            <a class="lezione-card" th:each="l : ${lezioni}" th:href="@{'/lezioni/' + ${l.id}}">
+                <div class="lezione-header">
+                    <span class="lezione-id" th:text="'#' + ${l.id}">ID</span>
+                    <span class="lezione-maestro" th:text="${l.maestro.nome + ' ' + l.maestro.cognome}">Maestro</span>
+                </div>
+                <div class="lezione-desc" th:text="${l.descrizione}">Descrizione lezione</div>
+                <div class="lezione-meta">
+                    <span>📅 <span th:text="${l.prenotazione.data}">2024-01-01</span></span>
+                    <span>🕐 <span th:text="${l.prenotazione.oraInizio}">10:00</span></span>
+                    <span>🏟️ <span th:text="${l.prenotazione.campo.nome}">Campo 1</span></span>
+                </div>
+            </a>
+        </div>
+
+        <div th:if="${lezioni == null or lezioni.isEmpty()}" class="empty-state">
+            <div class="icon">🎓</div>
+            <p>Nessuna lezione trovata.</p>
+        </div>
+    </div>
+</body>
+
+</html>

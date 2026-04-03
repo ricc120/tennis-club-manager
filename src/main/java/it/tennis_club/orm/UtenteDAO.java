@@ -3,6 +3,8 @@ package it.tennis_club.orm;
 import it.tennis_club.domain_model.Utente;
 import it.tennis_club.domain_model.Utente.Ruolo;
 
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +16,7 @@ import java.util.List;
 /**
  * Data Access Object per la gestione degli utenti nel database.
  */
+@Repository
 public class UtenteDAO {
 
     /**
@@ -85,7 +88,10 @@ public class UtenteDAO {
      * @param password la password dell'utente
      * @return l'oggetto Utente se le credenziali sono corrette, null altrimenti
      * @throws SQLException se si verifica un errore durante l'accesso al database
+     * @deprecated Usare {@link #getUtenteByEmail(String)} + BCrypt per la verifica
+     *             password.
      */
+    @Deprecated
     public Utente login(String email, String password) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -150,6 +156,106 @@ public class UtenteDAO {
         }
 
         return utente;
+    }
+
+    /**
+     * Recupera un utente tramite la sua email.
+     * Utilizzato per il login con BCrypt: si recupera l'utente e si verifica
+     * la password hashata nel servizio di autenticazione.
+     * 
+     * @param email l'email dell'utente da cercare
+     * @return l'oggetto Utente se trovato, null altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public Utente getUtenteByEmail(String email) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Utente utente = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "SELECT id, nome, cognome, email, password, ruolo " +
+                    "FROM utente WHERE email = ?";
+
+            statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                utente = new Utente();
+                utente.setId(resultSet.getInt("id"));
+                utente.setNome(resultSet.getString("nome"));
+                utente.setCognome(resultSet.getString("cognome"));
+                utente.setEmail(resultSet.getString("email"));
+                utente.setPassword(resultSet.getString("password"));
+
+                String ruoloStr = resultSet.getString("ruolo");
+                utente.setRuolo(Ruolo.valueOf(ruoloStr));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero dell'utente per email: " + e.getMessage());
+            throw e;
+
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del ResultSet: " + e.getMessage());
+                }
+            }
+
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+
+            ConnectionManager.closeConnection(connection);
+        }
+
+        return utente;
+    }
+
+    /**
+     * Aggiorna la password di un utente nel database.
+     * Usato dalla migrazione lazy delle password plaintext a BCrypt.
+     * 
+     * @param idUtente       l'ID dell'utente
+     * @param hashedPassword la password già hashata con BCrypt
+     * @return true se l'aggiornamento è andato a buon fine
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
+    public boolean updatePassword(Integer idUtente, String hashedPassword) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = ConnectionManager.getConnection();
+            String query = "UPDATE utente SET password = ? WHERE id = ?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, hashedPassword);
+            statement.setInt(2, idUtente);
+
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura del PreparedStatement: " + e.getMessage());
+                }
+            }
+            ConnectionManager.closeConnection(connection);
+        }
     }
 
     /**
@@ -383,6 +489,13 @@ public class UtenteDAO {
         }
     }
 
+    /**
+     * Elimina un utente specifico tramite il suo ID
+     * 
+     * @param id l'ID dell'utente da eliminare
+     * @return true se l'eliminazione è avvenuta con successo, false altrimenti
+     * @throws SQLException se si verifica un errore durante l'accesso al database
+     */
     public boolean deleteUtente(Integer id) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;

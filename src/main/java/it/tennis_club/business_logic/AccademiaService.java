@@ -10,6 +10,9 @@ import it.tennis_club.orm.LezioneDAO;
 import it.tennis_club.orm.AllievoLezioneDAO;
 import it.tennis_club.orm.UtenteDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.time.LocalDate;
@@ -20,6 +23,7 @@ import java.time.LocalTime;
  * Gestisce la creazione di lezioni, l'iscrizione degli allievi,
  * le presenze e i feedback didattici.
  */
+@Service
 public class AccademiaService {
 
     private final LezioneDAO lezioneDAO;
@@ -29,13 +33,30 @@ public class AccademiaService {
     private static final int MAX_ALLIEVI_PER_LEZIONE = 8;
 
     /**
-     * Costruttore che inizializza i DAO e i servizi necessari.
+     * Costruttore che inizializza i DAO.
+     * 
+     * @deprecated Usare
+     *             {@link #AccademiaService(LezioneDAO, PrenotazioneService, AllievoLezioneDAO, UtenteDAO)}
+     *             per Dependency Injection di Spring
+     * 
      */
     public AccademiaService() {
         this.lezioneDAO = new LezioneDAO();
         this.prenotazioneService = new PrenotazioneService();
         this.allievoLezioneDAO = new AllievoLezioneDAO();
         this.utenteDAO = new UtenteDAO();
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public AccademiaService(LezioneDAO lezioneDAO, PrenotazioneService prenotazioneService,
+            AllievoLezioneDAO allievoLezioneDAO, UtenteDAO utenteDAO) {
+        this.lezioneDAO = lezioneDAO;
+        this.prenotazioneService = prenotazioneService;
+        this.allievoLezioneDAO = allievoLezioneDAO;
+        this.utenteDAO = utenteDAO;
     }
 
     /**
@@ -492,6 +513,26 @@ public class AccademiaService {
             return utente;
         } catch (SQLException e) {
             throw new AccademiaException("Errore durante il recupero dell'utente: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Recupera tutti gli allievi di una lezione con i dettagli completi
+     * (presenza, feedback). Usato dalla pagina web di dettaglio lezione.
+     * 
+     * @param idLezione l'ID della lezione
+     * @return lista di AllievoLezione con i dettagli completi
+     * @throws AccademiaException se si verifica un errore
+     */
+    public List<AllievoLezione> getAllieviLezioneConDettagli(Integer idLezione) throws AccademiaException {
+        if (idLezione == null || idLezione <= 0) {
+            throw new AccademiaException("ID della lezione non valido");
+        }
+
+        try {
+            return allievoLezioneDAO.getAllieviLezione(idLezione);
+        } catch (SQLException e) {
+            throw new AccademiaException("Errore durante il recupero dei dettagli allievi: " + e.getMessage(), e);
         }
     }
 }

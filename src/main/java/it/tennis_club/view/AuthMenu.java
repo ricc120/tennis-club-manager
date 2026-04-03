@@ -2,11 +2,8 @@ package it.tennis_club.view;
 
 import it.tennis_club.business_logic.AuthService;
 import it.tennis_club.business_logic.AuthenticationException;
-import it.tennis_club.business_logic.NotificationService;
 import it.tennis_club.business_logic.SessionManager;
 import it.tennis_club.domain_model.Utente;
-
-import java.util.List;
 
 /**
  * Menu CLI per la gestione dell'autenticazione.
@@ -16,12 +13,10 @@ public class AuthMenu {
 
     private final AuthService authService;
     private final SessionManager sessionManager;
-    private final NotificationService notificationService;
 
     public AuthMenu() {
         this.authService = new AuthService();
         this.sessionManager = SessionManager.getInstance();
-        this.notificationService = NotificationService.getInstance();
     }
 
     /**
@@ -66,27 +61,12 @@ public class AuthMenu {
     }
 
     /**
-     * Mostra le notifiche pendenti per un utente.
-     * Le notifiche vengono consumate (eliminate) dopo la visualizzazione.
+     * Mostra un messaggio informativo sulle notifiche.
+     * In passato le notifiche erano in-memory; ora vengono inviate via email.
      */
     private void mostraNotifichePendenti(Integer userId) {
-        List<String> notifiche = notificationService.getAndClearNotifications(userId);
-
-        if (!notifiche.isEmpty()) {
-            System.out.println();
-            CLIUtils.printSubHeader("NOTIFICHE");
-            for (String notifica : notifiche) {
-                CLIUtils.printWarning(notifica);
-            }
-            System.out.println();
-
-            // Pausa per permettere all'utente di leggere le notifiche
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
+        // Le notifiche sono ora gestite via email dal NotificationService di Spring.
+        // Nessuna notifica in-memory da mostrare nella CLI.
     }
 
     /**

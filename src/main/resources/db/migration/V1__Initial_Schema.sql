@@ -1,11 +1,15 @@
--- schema.sql
+-- V1__Initial_Schema.sql
 -- Definizione dello schema del database
 
 -- Tipo enumerato per il ruolo dell'utente
-CREATE TYPE ruolo_utente AS ENUM ('ADMIN', 'MAESTRO', 'SOCIO','ALLIEVO','MANUTENTORE');
+DO $$ BEGIN
+    CREATE TYPE ruolo_utente AS ENUM ('ADMIN', 'MAESTRO', 'SOCIO','ALLIEVO','MANUTENTORE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Tabella Utente
-CREATE TABLE utente (
+CREATE TABLE IF NOT EXISTS utente (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cognome VARCHAR(100) NOT NULL,
@@ -15,7 +19,7 @@ CREATE TABLE utente (
 );
 
 -- Tabella Campo
-CREATE TABLE campo (
+CREATE TABLE IF NOT EXISTS campo (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     tipo_superficie VARCHAR(50) NOT NULL, -- Es: Terra, Erba, Cemento
@@ -23,7 +27,7 @@ CREATE TABLE campo (
 );
 
 -- Tabella Prenotazione
-CREATE TABLE prenotazione (
+CREATE TABLE IF NOT EXISTS prenotazione (
     id SERIAL PRIMARY KEY,
     data DATE NOT NULL,
     ora_inizio TIME NOT NULL,
@@ -33,7 +37,7 @@ CREATE TABLE prenotazione (
 );
 
 -- Tabella Manutenzione
-CREATE TABLE manutenzione (
+CREATE TABLE IF NOT EXISTS manutenzione (
     id SERIAL PRIMARY KEY,
     id_campo INTEGER NOT NULL REFERENCES campo(id) ON DELETE CASCADE,
     id_manutentore INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
@@ -44,7 +48,7 @@ CREATE TABLE manutenzione (
 );
 
 -- Tabella Lezione
-CREATE TABLE lezione (
+CREATE TABLE IF NOT EXISTS lezione (
     id SERIAL PRIMARY KEY,
     id_prenotazione INTEGER NOT NULL UNIQUE REFERENCES prenotazione(id) ON DELETE CASCADE,
     id_maestro INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,
@@ -52,7 +56,7 @@ CREATE TABLE lezione (
 );
 
 -- Tabella Allievo Lezione
-CREATE TABLE allievo_lezione (
+CREATE TABLE IF NOT EXISTS allievo_lezione (
     id SERIAL PRIMARY KEY,
     id_lezione INTEGER NOT NULL REFERENCES lezione(id) ON DELETE CASCADE,
     id_allievo INTEGER NOT NULL REFERENCES utente(id) ON DELETE CASCADE,

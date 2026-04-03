@@ -6,6 +6,11 @@ import it.tennis_club.domain_model.Utente;
 import it.tennis_club.orm.PrenotazioneDAO;
 import it.tennis_club.orm.ManutenzioneDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,17 +21,36 @@ import java.util.List;
  * Questo layer si occupa di validare i dati e gestire le regole di business
  * prima di delegare le operazioni al DAO.
  */
+@Service
 public class PrenotazioneService {
 
     private final PrenotazioneDAO prenotazioneDAO;
     private final ManutenzioneDAO manutenzioneDAO;
+    private final NotificationService notificationService;
 
     /**
-     * Costruttore che inizializza il DAO.
+     * Costruttore che inizializza i DAO e i servizi.
+     * 
+     * @deprecated Usare
+     *             {@link #PrenotazioneService(PrenotazioneDAO,ManutenzioneDAO, NotificationService)}
+     *             per Dependency Inkection di Spring
+     * 
      */
     public PrenotazioneService() {
         this.prenotazioneDAO = new PrenotazioneDAO();
         this.manutenzioneDAO = new ManutenzioneDAO();
+        this.notificationService = null;
+    }
+
+    /**
+     * Costruttore per Dependency Injection di Spring.
+     */
+    @Autowired
+    public PrenotazioneService(PrenotazioneDAO prenotazioneDAO, ManutenzioneDAO manutenzioneDAO,
+            NotificationService notificationService) {
+        this.prenotazioneDAO = prenotazioneDAO;
+        this.manutenzioneDAO = manutenzioneDAO;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -40,6 +64,7 @@ public class PrenotazioneService {
      * @throws PrenotazioneException se la prenotazione non è valida o il campo non
      *                               è disponibile
      */
+    @Transactional
     public Integer creaPrenotazione(LocalDate data, LocalTime oraInizio, Campo campo, Utente socio)
             throws PrenotazioneException {
 
@@ -90,8 +115,22 @@ public class PrenotazioneService {
             nuovaPrenotazione.setSocio(socio);
 
             // Salva nel database
-            return prenotazioneDAO.createPrenotazione(nuovaPrenotazione);
+            Integer idPrenotazione = prenotazioneDAO.createPrenotazione(nuovaPrenotazione);
 
+            // Invia notifica asincrona di conferma
+            if (notificationService != null) {
+                nuovaPrenotazione.setId(idPrenotazione);
+                notificationService.inviaConfermaPrenotazione(socio, nuovaPrenotazione);
+            }
+
+            return idPrenotazione;
+
+        } catch (DataIntegrityViolationException e) {
+            // Vincolo UNIQUE violato: race condition tra due prenotazioni simultanee
+            throw new PrenotazioneException(
+                    String.format("Il campo %s è già prenotato per il %s alle ore %s (conflitto concorrente)",
+                            campo.getNome(), data, oraInizio),
+                    e);
         } catch (SQLException e) {
             throw new PrenotazioneException("Errore durante la creazione della prenotazione: " + e.getMessage(), e);
         }
@@ -244,7 +283,14 @@ public class PrenotazioneService {
             }
 
             // Cancella la prenotazione
-            return prenotazioneDAO.deletePrenotazione(idPrenotazione);
+            boolean cancellata = prenotazioneDAO.deletePrenotazione(idPrenotazione);
+
+            // Invia notifica asincrona di cancellazione
+            if (cancellata && notificationService != null && prenotazione.getSocio() != null) {
+                notificationService.inviaNotificaCancellazione(prenotazione.getSocio(), prenotazione);
+            }
+
+            return cancellata;
         } catch (SQLException e) {
             throw new PrenotazioneException("Errore durante la cancellazione della prenotazione: " + e.getMessage(), e);
         }

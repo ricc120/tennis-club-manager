@@ -2,6 +2,8 @@ package it.tennis_club.orm;
 
 import it.tennis_club.domain_model.Campo;
 
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +14,7 @@ import java.util.List;
 /**
  * Data Access Object per la gestione dei campi da tennis nel database.
  */
+@Repository
 public class CampoDAO {
 
     /**
