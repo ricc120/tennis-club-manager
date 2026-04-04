@@ -1,8 +1,15 @@
 package it.tennis_club.domain_model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Rappresenta un utente del tennis club.
  * Corrisponde alla tabella 'utente' nel database.
+ * 
+ * NOTA REST API: @JsonIgnore sul campo password impedisce a Jackson
+ * di includere la password hashata nelle risposte JSON.
+ * Il getter funziona ancora internamente (per il login),
+ * ma quando Spring serializza questo oggetto in JSON, il campo viene saltato.
  */
 public class Utente {
     
@@ -15,6 +22,7 @@ public class Utente {
     private String nome;
     private String cognome;
     private String email;
+    @JsonIgnore  // Jackson NON includerà questo campo nel JSON
     private String password;
     private Ruolo ruolo;
     
