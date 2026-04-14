@@ -30,6 +30,7 @@
 
 import { getCampi } from "@/services/campiService";
 import CampoCard from "@/components/CampoCard";
+import { Campo } from "@/types";
 
 // NOTA: "async" davanti alla funzione! Questo è possibile SOLO nei Server Components.
 // In un Client Component ("use client") NON potresti farlo — vedremo dopo la differenza.
@@ -39,8 +40,8 @@ export default async function CampiPage() {
   // 2. Spring Boot risponde con il JSON dei campi
   // 3. Node.js riceve i dati e costruisce l'HTML
   // 4. L'HTML completo viene inviato al browser
-  
-  let campi;
+
+  let campi: Campo[];
   let errore = "";
 
   try {
@@ -48,8 +49,8 @@ export default async function CampiPage() {
   } catch (error) {
     // Se il backend non è raggiungibile o risponde con errore,
     // mostriamo un messaggio all'utente invece di crashare
-    errore = error instanceof Error 
-      ? error.message 
+    errore = error instanceof Error
+      ? error.message
       : "Errore nel caricamento dei campi";
     campi = [];
   }

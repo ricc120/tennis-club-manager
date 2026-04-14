@@ -26,9 +26,10 @@
 
 import { getPrenotazioni } from "@/services/prenotazioniService";
 import PrenotazioneCard from "@/components/PrenotazioneCard";
+import { Prenotazione } from "@/types";
 
 export default async function PrenotazioniPage() {
-  let prenotazioni;
+  let prenotazioni: Prenotazione[];
   let errore = "";
 
   try {
