@@ -1,41 +1,84 @@
 /**
- * PrenotazioneCard — Mostra i dettagli di una singola prenotazione.
+ * PrenotazioneCard — Card con dettagli e bottone Elimina.
  * 
- * CONCETTO CHIAVE: oggetti NESTED (annidati).
- * Una Prenotazione contiene un Campo e un Utente (socio).
- * Per accedere al nome del campo scrivi: prenotazione.campo.nome
- * È lo stesso di Java: prenotazione.getCampo().getNome()
+ * STEP 6: Aggiunto bottone "Elimina" con conferma.
  * 
- * FORMATTAZIONE DATE:
- * Le date arrivano come stringhe ISO ("2026-03-30").
- * Usiamo formattaData() per mostrarle in formato italiano ("30 marzo 2026").
+ * "use client" è necessario perché ora questo componente:
+ * - Gestisce click (onClick su Elimina)
+ * - Usa useState per lo stato di loading
+ * - Usa useRouter per aggiornare la pagina dopo l'eliminazione
+ * 
+ * CONCETTO: window.confirm()
+ * Mostra un dialog di conferma nativo del browser.
+ * Se l'utente clicca "OK" → ritorna true → procede con l'eliminazione.
+ * Se l'utente clicca "Annulla" → ritorna false → non fa nulla.
  */
+"use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/AuthContext";
 import { Prenotazione } from "@/types";
+import { cancellaPrenotazione } from "@/services/prenotazioniService";
 
 interface PrenotazioneCardProps {
   prenotazione: Prenotazione;
 }
 
 export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [errore, setErrore] = useState("");
+  const router = useRouter();
+  const { utente } = useAuth();
+
+  /**
+   * Gestisce il click su "Elimina".
+   * 
+   * 1. Mostra un dialog di conferma
+   * 2. Se confermato, chiama DELETE /api/prenotazioni/{id}
+   * 3. Se successo, router.refresh() aggiorna la lista
+   */
+  const handleElimina = async () => {
+    // Chiede conferma prima di eliminare
+    const conferma = window.confirm(
+      `Vuoi eliminare la prenotazione del ${formattaData(prenotazione.data)} alle ${prenotazione.oraInizio}?`
+    );
+
+    if (!conferma) return;
+
+    setIsDeleting(true);
+    setErrore("");
+
+    try {
+      await cancellaPrenotazione(prenotazione.id);
+      // Dopo l'eliminazione, aggiorna la pagina per ricaricare la lista
+      router.refresh();
+    } catch (error) {
+      setErrore(error instanceof Error ? error.message : "Errore nell'eliminazione");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Mostra il bottone elimina solo se l'utente è loggato e è il proprietario o admin
+  const puoEliminare = utente && (
+    utente.id === prenotazione.socio.id || utente.ruolo === "ADMIN"
+  );
+
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      {/* HEADER — data e orario */}
+      {/* HEADER */}
       <div className="bg-emerald-700 px-6 py-3 flex items-center justify-between">
         <span className="text-white font-semibold">
           📅 {formattaData(prenotazione.data)}
         </span>
-        <span className="text-emerald-200 font-mono text-sm">
+        <span className="text-white-200 font-mono text-sm">
           🕐 {prenotazione.oraInizio}
         </span>
       </div>
 
-      {/* CORPO — dettagli */}
+      {/* CORPO */}
       <div className="px-6 py-5 space-y-3">
-        {/* 
-          Oggetto NESTED: prenotazione.campo.nome
-          In Java: prenotazione.getCampo().getNome()
-        */}
         <div className="flex items-center gap-2 text-gray-700">
           <span className="text-lg">🏟️</span>
           <div>
@@ -44,7 +87,6 @@ export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps
           </div>
         </div>
 
-        {/* Superficie del campo */}
         <div className="flex items-center gap-2 text-gray-700">
           <span className="text-lg">🎾</span>
           <div>
@@ -53,14 +95,6 @@ export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps
           </div>
         </div>
 
-        {/* 
-          Utente che ha prenotato: prenotazione.socio.nome + cognome
-          In Java: prenotazione.getSocio().getNome() + " " + prenotazione.getSocio().getCognome()
-          
-          In TypeScript/JSX usiamo i template literals con ${}:
-          `${prenotazione.socio.nome} ${prenotazione.socio.cognome}`
-          Oppure concateniamo direttamente nel JSX.
-        */}
         <div className="flex items-center gap-2 text-gray-700">
           <span className="text-lg">👤</span>
           <div>
@@ -71,19 +105,26 @@ export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps
           </div>
         </div>
       </div>
+
+      {/* FOOTER — Bottone Elimina (visibile solo al proprietario o admin) */}
+      {puoEliminare && (
+        <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
+          {errore && (
+            <p className="text-red-600 text-xs mb-2">⚠️ {errore}</p>
+          )}
+          <button
+            onClick={handleElimina}
+            disabled={isDeleting}
+            className="w-full py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+          >
+            {isDeleting ? "Eliminazione..." : "🗑️ Elimina prenotazione"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-// ============================================================
-// FUNZIONI HELPER
-// ============================================================
-/**
- * Formatta una data ISO ("2026-03-30") in formato italiano ("30 marzo 2026").
- * 
- * Usiamo l'API nativa Intl.DateTimeFormat, che supporta la localizzazione.
- * Non servono librerie esterne come moment.js o date-fns.
- */
 function formattaData(dataISO: string): string {
   const data = new Date(dataISO);
   return data.toLocaleDateString("it-IT", {

@@ -1,107 +1,114 @@
 /**
- * Pagina /prenotazioni — Lista prenotazioni dal BACKEND.
+ * Pagina /prenotazioni — CRUD completo: visualizza, crea, elimina.
  * 
- * Stessa logica della pagina /campi:
- * 1. Server Component async → il fetch avviene sul server
- * 2. try/catch → gestisce errori di connessione
- * 3. .map() → renderizza un PrenotazioneCard per ogni elemento
+ * STEP 6: Aggiunto il form di creazione.
  * 
- * NOTA SULLA GESTIONE ERRORI:
- * Il pattern try/catch qui è identico a quello Java:
+ * CONCETTO: Composizione Server Component + Client Component
  * 
- * Java:
- *   try {
- *       List<Prenotazione> prenotazioni = service.getPrenotazioni();
- *   } catch (PrenotazioneException e) {
- *       // gestisci errore
- *   }
+ * Questa pagina è un Server Component (async) che:
+ * 1. Carica le prenotazioni dal backend (await getPrenotazioni())
+ * 2. Carica i campi dal backend (await getCampi()) — necessari per il form
+ * 3. Passa i campi al form (Client Component) come prop
  * 
- * TypeScript:
- *   try {
- *       const prenotazioni = await getPrenotazioni();
- *   } catch (error) {
- *       // gestisci errore
- *   }
+ * Il form (NuovaPrenotazioneForm) è un Client Component perché ha
+ * interattività (form, useState, onClick). Ma la pagina resta Server Component
+ * per il fetch iniziale dei dati (SEO-friendly, nessun spinner al caricamento).
+ * 
+ * ARCHITETTURA:
+ *   PrenotazioniPage (Server Component, async)
+ *   ├── await getPrenotazioni()  → dati dal backend
+ *   ├── await getCampi()         → dati dal backend
+ *   ├── NuovaPrenotazioneForm    → Client Component (form interattivo)
+ *   └── PrenotazioneCard[]       → Client Component (bottone elimina)
  */
 
 import { getPrenotazioni } from "@/services/prenotazioniService";
+import { getCampi } from "@/services/campiService";
 import PrenotazioneCard from "@/components/PrenotazioneCard";
-import { Prenotazione } from "@/types";
+import NuovaPrenotazioneForm from "@/components/NuovaPrenotazioneForm";
 
 export default async function PrenotazioniPage() {
-  let prenotazioni: Prenotazione[];
+  let prenotazioni;
+  let campi;
   let errore = "";
 
   try {
-    prenotazioni = await getPrenotazioni();
+    // Carica prenotazioni E campi in parallelo per velocità
+    // Promise.all esegue entrambe le richieste contemporaneamente
+    [prenotazioni, campi] = await Promise.all([
+      getPrenotazioni(),
+      getCampi(),
+    ]);
   } catch (error) {
     errore = error instanceof Error
       ? error.message
-      : "Errore nel caricamento delle prenotazioni";
+      : "Errore nel caricamento dei dati";
     prenotazioni = [];
+    campi = [];
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="bg-white dark:bg-grey max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* HEADER */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            📅 Prenotazioni
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Visualizza e gestisci le prenotazioni dei campi.
-          </p>
-        </div>
-        {/* Bottone disabilitato — lo attiveremo quando creeremo il form */}
-        <button
-          className="px-5 py-2.5 bg-emerald-700 text-white rounded-lg font-medium hover:bg-emerald-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled
-          title="Funzionalità in arrivo"
-        >
-          + Nuova Prenotazione
-        </button>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">
+          📅 Prenotazioni
+        </h1>
+        <p className="mt-2 text-gray-600">
+          Visualizza, crea e gestisci le prenotazioni dei campi.
+        </p>
       </div>
 
-      {/* MESSAGGIO DI ERRORE */}
+      {/* ERRORE */}
       {errore && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           <p className="font-semibold">⚠️ Errore di connessione</p>
           <p className="text-sm mt-1">{errore}</p>
-          <p className="text-sm mt-2 text-red-500">
-            Assicurati che il backend sia avviato su {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}
-          </p>
         </div>
       )}
 
-      {/* LISTA VUOTA */}
-      {prenotazioni.length === 0 && !errore && (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-5xl mb-4">📭</p>
-          <p className="text-lg">Nessuna prenotazione trovata.</p>
+      {/* 
+        LAYOUT A 2 COLONNE:
+        - Sinistra: form di creazione (1/3 della larghezza)
+        - Destra: lista prenotazioni (2/3 della larghezza)
+        
+        Su mobile: 1 colonna (form sopra, lista sotto)
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* COLONNA SINISTRA — Form di creazione */}
+        <div className="lg:col-span-1">
+          <NuovaPrenotazioneForm campi={campi} />
         </div>
-      )}
 
-      {/* GRIGLIA delle prenotazioni */}
-      {prenotazioni.length > 0 && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {prenotazioni.map((prenotazione) => (
-              <PrenotazioneCard
-                key={prenotazione.id}
-                prenotazione={prenotazione}
-              />
-            ))}
-          </div>
+        {/* COLONNA DESTRA — Lista prenotazioni */}
+        <div className="lg:col-span-2">
+          {prenotazioni.length === 0 && !errore ? (
+            <div className="text-center py-16 text-gray-400">
+              <p className="text-5xl mb-4">📭</p>
+              <p className="text-lg">Nessuna prenotazione trovata.</p>
+              <p className="text-sm mt-2">Usa il form a sinistra per crearne una!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {prenotazioni.map((prenotazione) => (
+                <PrenotazioneCard
+                  key={prenotazione.id}
+                  prenotazione={prenotazione}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Riepilogo */}
-          <div className="mt-8 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-            <p className="text-sm text-emerald-800">
-              📊 Totale prenotazioni: <strong>{prenotazioni.length}</strong>
-            </p>
-          </div>
-        </>
-      )}
+          {prenotazioni.length > 0 && (
+            <div className="mt-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+              <p className="text-sm text-emerald-800">
+                📊 Totale prenotazioni: <strong>{prenotazioni.length}</strong>
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

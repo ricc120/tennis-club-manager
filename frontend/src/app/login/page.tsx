@@ -41,7 +41,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   // ========== STATO DEL COMPONENTE (useState) ==========
-  
+
   // Ogni useState crea una coppia [valore, funzionePerAggiornarlo]
   const [email, setEmail] = useState("");           // "" = valore iniziale
   const [password, setPassword] = useState("");
@@ -53,7 +53,7 @@ export default function LoginPage() {
   const { setUtente } = useAuth(); // per salvare l'utente loggato nel context
 
   // ========== GESTIONE SUBMIT DEL FORM ==========
-  
+
   /**
    * Questa funzione viene chiamata quando il form viene inviato.
    * 
@@ -63,7 +63,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     // Impedisce al browser di ricaricare la pagina (comportamento default dei form)
     e.preventDefault();
-    
+
     // Reset errore precedente
     setErrore("");
     setIsLoading(true);
@@ -71,13 +71,13 @@ export default function LoginPage() {
     try {
       // Chiama il backend: POST /api/auth/login
       const utente = await login({ email, password });
-      
+
       // Login riuscito! Salva l'utente nel context (come session.setAttribute)
       setUtente(utente);
-      
+
       // Redirect alla homepage
       router.push("/");
-      
+
     } catch (error) {
       // Login fallito — mostra il messaggio di errore
       if (error instanceof Error) {
@@ -93,9 +93,9 @@ export default function LoginPage() {
   };
 
   // ========== RENDER (JSX) ==========
-  
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="bg-white dark:bg-gray min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* HEADER */}
         <div className="text-center mb-8">
@@ -146,7 +146,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="mario.rossi@email.com"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors"
+                className="w-full text-black px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors"
               />
             </div>
 
@@ -165,7 +165,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors"
+                className="w-full text-black px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors"
               />
             </div>
 

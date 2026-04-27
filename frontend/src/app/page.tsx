@@ -53,7 +53,7 @@ export default function Home() {
       </section>
 
       {/* FEATURES SECTION — Le 3 funzionalità principali */}
-      <section className="dark:bg-gray max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="bg-white dark:bg-gray max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
           Cosa Puoi Fare
         </h2>
@@ -61,7 +61,7 @@ export default function Home() {
           {/* Card 1 */}
           <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow border border-gray-100">
             <div className="text-4xl mb-4">📅</div>
-            <h3 className="text-xl font-semibold dark:text-white text-gray-800 mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
               Prenota un Campo
             </h3>
             <p className="text-gray-600">

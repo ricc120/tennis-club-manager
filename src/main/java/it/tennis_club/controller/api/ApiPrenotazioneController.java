@@ -1,72 +1,56 @@
 package it.tennis_club.controller.api;
 
+import it.tennis_club.business_logic.CampoService;
+import it.tennis_club.business_logic.CampoException;
 import it.tennis_club.business_logic.PrenotazioneService;
 import it.tennis_club.business_logic.PrenotazioneException;
+import it.tennis_club.domain_model.Campo;
 import it.tennis_club.domain_model.Prenotazione;
+import it.tennis_club.domain_model.Utente;
+import it.tennis_club.orm.UtenteDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
- * REST Controller per le Prenotazioni.
+ * REST Controller per le Prenotazioni — CRUD completo.
  * 
- * NOTA DIDATTICA: confronta questo controller con PrenotazioneController (in controller/).
+ * STEP 6: Aggiunto POST (crea) e DELETE (elimina).
  * 
- * PrenotazioneController (@Controller):
- *   @GetMapping("/prenotazioni")
- *   public String listaPrenotazioni(Model model) {
- *       model.addAttribute("prenotazioni", prenotazioni);  // passa dati al template
- *       return "prenotazioni";                              // nome del template HTML
- *   }
- * 
- * ApiPrenotazioneController (@RestController):
- *   @GetMapping("/prenotazioni")
- *   public ResponseEntity<?> getPrenotazioni() {
- *       return ResponseEntity.ok(prenotazioni);  // l'oggetto DIVENTA il JSON
- *   }
- * 
- * La differenza fondamentale:
- * - @Controller → "dammi il template con questo nome e riempi i buchi con questi dati"
- * - @RestController → "prendi questo oggetto e trasformalo in JSON"
+ * Riepilogo endpoint:
+ *   GET    /api/prenotazioni       → lista tutte
+ *   GET    /api/prenotazioni/{id}  → una specifica
+ *   POST   /api/prenotazioni       → crea nuova
+ *   DELETE /api/prenotazioni/{id}  → elimina
  */
 @RestController
 @RequestMapping("/api")
 public class ApiPrenotazioneController {
 
     private final PrenotazioneService prenotazioneService;
+    private final CampoService campoService;
+    private final UtenteDAO utenteDAO;
 
     @Autowired
-    public ApiPrenotazioneController(PrenotazioneService prenotazioneService) {
+    public ApiPrenotazioneController(
+            PrenotazioneService prenotazioneService,
+            CampoService campoService,
+            UtenteDAO utenteDAO) {
         this.prenotazioneService = prenotazioneService;
+        this.campoService = campoService;
+        this.utenteDAO = utenteDAO;
     }
+
+    // ==================== READ ====================
 
     /**
      * GET /api/prenotazioni — Restituisce tutte le prenotazioni.
-     * 
-     * Ogni Prenotazione contiene oggetti nested:
-     * - campo: {id, nome, tipoSuperficie, isCoperto}
-     * - socio: {id, nome, cognome, email, ruolo}  (password esclusa grazie a @JsonIgnore!)
-     * 
-     * Il JSON risultante avrà questa struttura:
-     * [
-     *   {
-     *     "id": 1,
-     *     "data": "2026-03-30",
-     *     "oraInizio": "09:00",
-     *     "campo": {"id": 1, "nome": "Campo Centrale", ...},
-     *     "socio": {"id": 2, "nome": "Laura", "cognome": "Bianchi", ...}
-     *   },
-     *   ...
-     * ]
-     * 
-     * NOTA: Jackson serializza automaticamente LocalDate come "2026-03-30" 
-     * e LocalTime come "09:00:00". Non devi fare nulla di speciale!
      */
     @GetMapping("/prenotazioni")
     public ResponseEntity<?> getPrenotazioni() {
@@ -91,6 +75,82 @@ public class ApiPrenotazioneController {
         } catch (PrenotazioneException e) {
             return ResponseEntity
                     .status(404)
+                    .body("{\"errore\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    // ==================== CREATE ====================
+
+    /**
+     * POST /api/prenotazioni — Crea una nuova prenotazione.
+     * 
+     * Il frontend invia un JSON nel body:
+     *   {"data": "2026-04-15", "oraInizio": "14:00", "idCampo": 2, "idSocio": 5}
+     * 
+     * Il flusso:
+     * 1. Jackson deserializza il JSON → PrenotazioneRequest (DTO)
+     * 2. Il controller recupera Campo e Utente dal DB usando gli ID
+     * 3. prenotazioneService.creaPrenotazione() fa le validazioni e salva
+     * 4. HTTP 201 Created + la prenotazione creata
+     */
+    @PostMapping("/prenotazioni")
+    public ResponseEntity<?> creaPrenotazione(@RequestBody PrenotazioneRequest request) {
+        try {
+            LocalDate data = LocalDate.parse(request.getData());
+            LocalTime oraInizio = LocalTime.parse(request.getOraInizio());
+
+            Campo campo = campoService.getCampoPerId(request.getIdCampo());
+
+            Utente socio = utenteDAO.getUtenteById(request.getIdSocio());
+            if (socio == null) {
+                return ResponseEntity
+                        .status(400)
+                        .body("{\"errore\": \"Utente non trovato\"}");
+            }
+
+            Integer idCreato = prenotazioneService.creaPrenotazione(data, oraInizio, campo, socio);
+            Prenotazione nuova = prenotazioneService.getPrenotazionePerId(idCreato);
+            return ResponseEntity.status(201).body(nuova);
+
+        } catch (PrenotazioneException | CampoException e) {
+            return ResponseEntity
+                    .status(400)
+                    .body("{\"errore\": \"" + e.getMessage() + "\"}");
+        } catch (SQLException e) {
+            return ResponseEntity
+                    .status(500)
+                    .body("{\"errore\": \"Errore del database: " + e.getMessage() + "\"}");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(400)
+                    .body("{\"errore\": \"Formato dati non valido: " + e.getMessage() + "\"}");
+        }
+    }
+
+    // ==================== DELETE ====================
+
+    /**
+     * DELETE /api/prenotazioni/{id} — Elimina una prenotazione.
+     * 
+     * DELETE non ha body. L'ID è nell'URL.
+     * HTTP 204 "No Content" = eliminazione riuscita, nulla da restituire.
+     */
+    @DeleteMapping("/prenotazioni/{id}")
+    public ResponseEntity<?> cancellaPrenotazione(@PathVariable Integer id) {
+        try {
+            boolean eliminata = prenotazioneService.cancellaPrenotazione(id);
+
+            if (eliminata) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity
+                        .status(404)
+                        .body("{\"errore\": \"Prenotazione non trovata\"}");
+            }
+
+        } catch (PrenotazioneException e) {
+            return ResponseEntity
+                    .status(400)
                     .body("{\"errore\": \"" + e.getMessage() + "\"}");
         }
     }
