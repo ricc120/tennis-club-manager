@@ -26,10 +26,16 @@ import { getPrenotazioni } from "@/services/prenotazioniService";
 import { getCampi } from "@/services/campiService";
 import PrenotazioneCard from "@/components/PrenotazioneCard";
 import NuovaPrenotazioneForm from "@/components/NuovaPrenotazioneForm";
+import { Prenotazione, Campo } from "@/types";
+
+// STEP 7 FIX: impedisce il pre-rendering statico al build time (vedi campi/page.tsx per spiegazione)
+export const dynamic = "force-dynamic";
 
 export default async function PrenotazioniPage() {
-  let prenotazioni;
-  let campi;
+  // NOTA: in dev mode TypeScript è permissivo, ma "next build" (produzione)
+  // richiede tipi espliciti — ecco perché aggiungiamo i tipi qui.
+  let prenotazioni: Prenotazione[] = [];
+  let campi: Campo[] = [];
   let errore = "";
 
   try {

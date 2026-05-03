@@ -32,8 +32,20 @@ import { getCampi } from "@/services/campiService";
 import CampoCard from "@/components/CampoCard";
 import { Campo } from "@/types";
 
-// NOTA: "async" davanti alla funzione! Questo è possibile SOLO nei Server Components.
-// In un Client Component ("use client") NON potresti farlo — vedremo dopo la differenza.
+/**
+ * STEP 7 FIX: force-dynamic
+ * 
+ * Senza questo, Next.js pre-renderizza la pagina al BUILD TIME (npm run build).
+ * Ma al build time dentro Docker, il backend non è raggiungibile!
+ * → Next.js salva la pagina con l'errore e la serve sempre così.
+ * 
+ * Con "force-dynamic", Next.js esegue la funzione ad OGNI RICHIESTA
+ * (come un @Controller in Spring che viene chiamato per ogni HTTP request).
+ * 
+ * In Spring Boot equivale a: non c'è cache — ogni richiesta esegue il controller.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function CampiPage() {
   // Questo codice gira sul SERVER Node.js:
   // 1. Node.js chiama http://localhost:8080/api/campi (verso Spring Boot)

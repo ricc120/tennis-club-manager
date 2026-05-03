@@ -1,4 +1,36 @@
+##############################################################################
+# docker-compose.yml — Orchestrazione completa dell'applicazione
+#
+# STEP 7: Aggiunto il servizio "frontend" (Next.js)
+#
+# Ora con un solo comando puoi avviare TUTTO:
+#   docker-compose up --build
+#
+# Architettura:
+#   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+#   │   frontend   │────>│     app      │────>│      db      │
+#   │  (Next.js)   │     │ (Spring Boot)│     │ (PostgreSQL) │
+#   │  porta 3000  │     │  porta 8080  │     │  porta 5432  │
+#   └──────────────┘     └──────────────┘     └──────────────┘
+#        Browser              API               Database
+#
+# CONCETTO: Networking Docker
+#
+# Dentro Docker, i container NON usano "localhost" per parlarsi.
+# Docker crea una rete virtuale dove ogni container è raggiungibile
+# usando il NOME DEL SERVIZIO come hostname:
+#   - frontend → chiama http://app:8080/api/campi (non localhost!)
+#   - app → chiama jdbc:postgresql://db:5432/tennis_club (non localhost!)
+#
+# "localhost" dentro un container = il container STESSO.
+# Se il frontend chiama localhost:8080 dentro Docker, cerca Spring Boot
+# dentro il container del frontend → non lo trova → errore!
+##############################################################################
+
 services:
+  # ========================
+  # DATABASE (PostgreSQL)
+  # ========================
   db:
     image: postgres:15-alpine
     container_name: tennis-db
@@ -16,6 +48,9 @@ services:
       timeout: 5s
       retries: 5
 
+  # ========================
+  # BACKEND (Spring Boot)
+  # ========================
   app:
     build: .
     container_name: tennis-app
@@ -28,6 +63,43 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  # ========================
+  # FRONTEND (Next.js)
+  # ========================
+  #
+  # CONCETTO: build.context e variabili d'ambiente
+  #
+  # build.context: ./frontend = "builda il Dockerfile dentro la cartella frontend/"
+  # (Il Dockerfile del backend è nella root, quello del frontend in frontend/)
+  #
+  # environment:
+  #   NEXT_PUBLIC_API_URL: variabile usata dal BROWSER per le chiamate fetch
+  #   In sviluppo locale: http://localhost:8080
+  #   In Docker: http://localhost:8080 (il browser è FUORI da Docker!)
+  #
+  # ATTENZIONE: il browser dell'utente è FUORI dalla rete Docker.
+  # Quindi NEXT_PUBLIC_API_URL deve puntare a localhost:8080,
+  # NON a http://app:8080 (che funziona solo tra container).
+  #
+  # Ma il Server Component (che gira dentro il container frontend)
+  # deve chiamare http://app:8080. Questa differenza la gestiamo
+  # con due variabili d'ambiente separate.
+  #
+  frontend:
+    build:
+      context: ./frontend
+    container_name: tennis-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # API_URL (senza NEXT_PUBLIC_) = variabile SERVER-SIDE letta a RUNTIME.
+      # Il Server Component (Node.js nel container) la usa per chiamare Spring Boot.
+      # "app" è il nome del servizio Docker → Docker lo risolve all'IP del container.
+      API_URL: http://app:8080
+      HOSTNAME: "0.0.0.0"
+    depends_on:
+      - app
 
 volumes:
   pgdata:

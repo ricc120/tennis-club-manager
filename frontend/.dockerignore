@@ -1,0 +1,14 @@
+# .dockerignore — File da NON copiare nell'immagine Docker
+#
+# Senza questo file, Docker copierebbe TUTTO (inclusi node_modules, .next, .git)
+# dentro l'immagine, rallentando il build e aumentando le dimensioni.
+#
+# È come .gitignore ma per il contesto di build Docker.
+
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env.local
+.env*.local

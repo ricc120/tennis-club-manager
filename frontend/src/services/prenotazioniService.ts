@@ -77,7 +77,8 @@ export async function creaPrenotazione(dati: NuovaPrenotazione): Promise<Prenota
  * in cui la risposta è vuota.
  */
 export async function cancellaPrenotazione(id: number): Promise<void> {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  // Usa la stessa logica di apiClient.ts per risolvere l'URL
+  const API_BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const response = await fetch(`${API_BASE_URL}/api/prenotazioni/${id}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },

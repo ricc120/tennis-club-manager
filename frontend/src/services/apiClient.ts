@@ -1,29 +1,24 @@
 /**
  * apiClient.ts — Client HTTP centralizzato per comunicare con il backend.
  * 
- * CONCETTO CHIAVE: questo file è il "ponte" tra frontend e backend.
- * Invece di scrivere `fetch("http://localhost:8080/api/campi")` ovunque,
- * centralizziamo qui l'URL base e la gestione degli errori.
+ * STEP 7 FIX: Variabili d'ambiente per Docker
  * 
- * Se un giorno il backend si sposta su un altro URL (es: https://api.tennisclub.it),
- * basta cambiare la variabile d'ambiente — il codice non cambia.
+ * PROBLEMA: NEXT_PUBLIC_* viene "bruciata" nel JS al momento del BUILD.
+ * In Docker, al build-time non esiste ancora il backend come "app:8080".
  * 
- * CONCETTI NUOVI:
+ * SOLUZIONE: usiamo DUE variabili:
+ *   - API_URL (senza NEXT_PUBLIC_): letta a RUNTIME dal server Node.js
+ *     → In Docker: http://app:8080 (networking tra container)
+ *     → In locale: non definita → usa il fallback
+ *   - NEXT_PUBLIC_API_URL: fallback per sviluppo locale e browser
+ *     → http://localhost:8080
  * 
- * 1. fetch() — È come "curl" ma dal codice JavaScript.
- *    fetch(url) → invia una richiesta HTTP e ritorna una Promise (promessa di risposta)
- * 
- * 2. async/await — Modo di aspettare una risposta asincrona:
- *    const risposta = await fetch(url);  // aspetta che arrivi la risposta
- *    const dati = await risposta.json(); // aspetta che il JSON venga parsato
- * 
- * 3. process.env.NEXT_PUBLIC_API_URL — Legge la variabile d'ambiente dal file .env.local
- *    Il prefisso NEXT_PUBLIC_ la rende accessibile anche nel browser
+ * Questa funzione gira nei Server Components (sul server Node.js),
+ * quindi può leggere variabili d'ambiente di runtime.
  */
 
-// Legge l'URL base dal file .env.local
-// Se non è definito, usa localhost:8080 come fallback
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+// Priorità: API_URL (runtime/Docker) → NEXT_PUBLIC_API_URL (.env.local) → fallback
+const API_BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 /**
  * Classe per gli errori API — estende Error con informazioni HTTP aggiuntive.
