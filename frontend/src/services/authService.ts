@@ -1,46 +1,69 @@
 /**
- * authService.ts — Service per l'autenticazione.
+ * authService.ts — Service per l'autenticazione con JWT.
  * 
- * CONCETTO: POST con fetch()
+ * STEP 8: JWT Authentication
  * 
- * Finora abbiamo fatto solo GET (leggere dati).
- * Per il login serve POST (inviare dati):
+ * PRIMA (Step 5): login() restituiva solo l'utente
+ *   const utente = await login({email, password});
+ *   → { id: 1, nome: "Mario", ... }
  * 
- *   GET  = "dammi i dati"     → fetch(url)
- *   POST = "ecco i miei dati" → fetch(url, { method: "POST", body: ... })
+ * ADESSO (Step 8): login() restituisce token + utente
+ *   const { token, utente } = await login({email, password});
+ *   → { token: "eyJhbGci...", utente: { id: 1, nome: "Mario", ... } }
  * 
- * La differenza:
- *   GET /api/campi                        → nessun body
- *   POST /api/auth/login + body JSON      → il body contiene email e password
+ * Il token viene salvato in localStorage e usato da apiClient.ts
+ * per autenticare tutte le richieste successive.
  */
 
-import { Utente } from "@/types";
+import { LoginResponse } from "@/types";
 import { fetchApi } from "./apiClient";
 
-/**
- * Interfaccia per i dati di login.
- * È il "DTO" del frontend — corrisponde a LoginRequest.java nel backend.
- */
 interface LoginData {
   email: string;
   password: string;
 }
 
 /**
- * Esegue il login inviando le credenziali al backend.
+ * Esegue il login e salva il JWT token.
  * 
- * Chiama: POST /api/auth/login
- * Body: { "email": "...", "password": "..." }
- * Ritorna: Utente (se le credenziali sono valide)
- * Lancia: ApiError (se le credenziali sono errate o il server non risponde)
- * 
- * NOTA: fetchApi gestisce già la serializzazione del body e gli errori.
- * Noi dobbiamo solo passare le opzioni corrette.
+ * FLUSSO:
+ * 1. Invia email + password al backend
+ * 2. Il backend verifica le credenziali
+ * 3. Se valide, il backend genera un JWT token e lo restituisce
+ * 4. Noi salviamo il token in localStorage
+ * 5. Da ora, apiClient.ts lo includerà in ogni richiesta
  */
-export async function login(data: LoginData): Promise<Utente> {
-  return fetchApi<Utente>("/api/auth/login", {
-    method: "POST",                          // metodo HTTP
-    body: JSON.stringify(data),              // converte l'oggetto JS in stringa JSON
-    // headers Content-Type è già impostato da fetchApi
+export async function login(data: LoginData): Promise<LoginResponse> {
+  // Ora il tipo di ritorno è LoginResponse (token + utente)
+  // invece di Utente (solo utente)
+  const response = await fetchApi<LoginResponse>("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify(data),
   });
+
+  // STEP 8: Salva il token JWT in localStorage
+  // apiClient.ts lo leggerà automaticamente con getToken()
+  if (typeof window !== "undefined" && response.token) {
+    localStorage.setItem("jwt_token", response.token);
+  }
+
+  return response;
+}
+
+/**
+ * Esegue il logout — rimuove il token da localStorage.
+ * 
+ * Con JWT, il logout è puramente lato CLIENT:
+ * basta eliminare il token dal browser. Il server non tiene traccia
+ * delle sessioni (è stateless), quindi non c'è nulla da invalidare.
+ * 
+ * DIFFERENZA con Spring Session:
+ *   Spring: session.invalidate() → il server cancella la sessione
+ *   JWT:    localStorage.removeItem("jwt_token") → il client cancella il token
+ */
+export function logout(): void {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("utente");
+  }
 }

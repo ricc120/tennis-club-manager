@@ -2,6 +2,7 @@ package it.tennis_club.controller.api;
 
 import it.tennis_club.business_logic.AuthService;
 import it.tennis_club.business_logic.AuthenticationException;
+import it.tennis_club.config.JwtUtils;
 import it.tennis_club.domain_model.Utente;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,61 +12,61 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 /**
- * REST Controller per l'autenticazione — login via JSON.
+ * REST Controller per l'autenticazione — STEP 8: JWT.
  * 
- * CONCETTO CHIAVE: @RequestBody
+ * PRIMA (Step 5):
+ *   POST /api/auth/login → risposta: { utente }
+ *   Il frontend salvava l'utente in localStorage, ma le API erano pubbliche.
  * 
- * Nei controller Thymeleaf (AuthController) usi @RequestParam:
- *   il browser invia i dati come "form data" (email=xxx&password=yyy)
+ * ADESSO (Step 8):
+ *   POST /api/auth/login → risposta: { "token": "eyJ...", "utente": {...} }
+ *   Il frontend salva il TOKEN e lo invia in ogni richiesta successiva.
+ *   Le API sono protette — senza token, ricevi 401.
  * 
- * Nei REST controller usi @RequestBody:
- *   il frontend invia i dati come JSON nel CORPO della richiesta
- *   {"email": "mario@email.com", "password": "secret123"}
+ * CONCETTO: Perché usiamo Map.of() per la risposta?
  * 
- * Jackson deserializza automaticamente il JSON nel DTO (LoginRequest).
- * È il processo inverso della serializzazione:
- *   Serializzazione:     Utente → JSON  (risposta al frontend)
- *   Deserializzazione:   JSON → LoginRequest  (richiesta dal frontend)
+ * Map.of("token", jwt, "utente", utente) crea un oggetto immutabile
+ * che Jackson serializza come:
+ *   { "token": "eyJhbGci...", "utente": { "id": 1, "nome": "Mario", ... } }
  * 
- * CONFRONTO:
- *   AuthController (@Controller):
- *     @PostMapping("/login")
- *     public String login(@RequestParam String email, @RequestParam String password)
- *     → riceve form data, restituisce redirect a pagina HTML
- * 
- *   ApiAuthController (@RestController):
- *     @PostMapping("/api/auth/login")
- *     public ResponseEntity<?> login(@RequestBody LoginRequest request)
- *     → riceve JSON, restituisce JSON
+ * Un'alternativa sarebbe creare una classe LoginResponse DTO,
+ * ma Map.of() è più conciso per un caso semplice come questo.
  */
 @RestController
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
     private final AuthService authService;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public ApiAuthController(AuthService authService) {
+    public ApiAuthController(AuthService authService, JwtUtils jwtUtils) {
         this.authService = authService;
+        this.jwtUtils = jwtUtils;
     }
 
     /**
-     * POST /api/auth/login — Verifica le credenziali e restituisce l'utente.
+     * POST /api/auth/login — Autentica l'utente e restituisce un JWT token.
      * 
-     * Richiesta (dal frontend):
+     * Richiesta:
      *   POST /api/auth/login
      *   Content-Type: application/json
      *   {"email": "mario@email.com", "password": "secret123"}
      * 
-     * Risposta (successo):
-     *   HTTP 200
-     *   {"id": 1, "nome": "Mario", "cognome": "Rossi", "email": "mario@email.com", "ruolo": "ADMIN"}
-     *   (nota: nessun campo "password" grazie a @JsonIgnore!)
+     * Risposta (successo — 200):
+     *   {
+     *     "token": "eyJhbGciOiJIUzI1NiJ9...",
+     *     "utente": { "id": 1, "nome": "Mario", "cognome": "Rossi", "email": "mario@email.com", "ruolo": "ADMIN" }
+     *   }
      * 
-     * Risposta (errore):
-     *   HTTP 401 Unauthorized
+     * Risposta (credenziali errate — 401):
      *   {"errore": "Credenziali non valide"}
+     * 
+     * NOTA: questa rotta è PUBBLICA (/api/auth/** → permitAll in SecurityConfig).
+     * È l'unico modo per ottenere un token — tutte le altre API richiedono il token.
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -73,21 +74,26 @@ public class ApiAuthController {
             Utente utente = authService.login(request.getEmail(), request.getPassword());
 
             if (utente != null) {
-                // Login riuscito — restituisce l'utente come JSON
-                // @JsonIgnore su password garantisce che non venga inclusa
-                return ResponseEntity.ok(utente);
+                // STEP 8: Genera il JWT token per l'utente autenticato
+                String token = jwtUtils.generateToken(utente);
+
+                // Restituisce sia il token che i dati dell'utente
+                // Il frontend salverà entrambi: token per le richieste API,
+                // utente per mostrare nome/ruolo nella UI
+                return ResponseEntity.ok(Map.of(
+                        "token", token,
+                        "utente", utente
+                ));
             } else {
-                // Credenziali non valide (email o password errate)
                 return ResponseEntity
                         .status(401)
-                        .body("{\"errore\": \"Credenziali non valide\"}");
+                        .body(Map.of("errore", "Credenziali non valide"));
             }
 
         } catch (AuthenticationException e) {
-            // Errore di validazione (email vuota, etc.)
             return ResponseEntity
                     .status(400)
-                    .body("{\"errore\": \"" + e.getMessage() + "\"}");
+                    .body(Map.of("errore", e.getMessage()));
         }
     }
 }

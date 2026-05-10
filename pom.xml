@@ -55,6 +55,35 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- JWT (JSON Web Token) — STEP 8 -->
+        <!--
+            jjwt è la libreria standard per gestire JWT in Java.
+            Servono 3 artefatti:
+              jjwt-api:     le interfacce (usate nel codice)
+              jjwt-impl:    l'implementazione (usata a runtime)
+              jjwt-jackson: il bridge per serializzare JSON con Jackson
+            
+            È come Spring Boot con starter-web + tomcat:
+            tu usi le interfacce, l'implementazione viene caricata a runtime.
+        -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

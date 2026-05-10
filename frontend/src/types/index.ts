@@ -50,6 +50,23 @@ export interface Utente {
 }
 
 // ============================================================
+// LOGIN RESPONSE — STEP 8: JWT
+// ============================================================
+/**
+ * Risposta dal backend dopo il login con JWT.
+ * 
+ * PRIMA (Step 5): il backend restituiva solo l'utente
+ *   { "id": 1, "nome": "Mario", ... }
+ * 
+ * ADESSO (Step 8): il backend restituisce token + utente
+ *   { "token": "eyJhbGci...", "utente": { "id": 1, "nome": "Mario", ... } }
+ */
+export interface LoginResponse {
+  token: string;     // JWT token da salvare e inviare in ogni richiesta
+  utente: Utente;    // dati dell'utente per la UI
+}
+
+// ============================================================
 // CAMPO — Corrisponde a domain_model/Campo.java
 // ============================================================
 export interface Campo {

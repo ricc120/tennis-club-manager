@@ -77,11 +77,20 @@ export async function creaPrenotazione(dati: NuovaPrenotazione): Promise<Prenota
  * in cui la risposta è vuota.
  */
 export async function cancellaPrenotazione(id: number): Promise<void> {
-  // Usa la stessa logica di apiClient.ts per risolvere l'URL
   const API_BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  
+  // STEP 8: Prepara gli headers con il token JWT
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("jwt_token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/prenotazioni/${id}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers,
   });
 
   if (!response.ok) {

@@ -70,9 +70,11 @@ export default function LoginPage() {
 
     try {
       // Chiama il backend: POST /api/auth/login
-      const utente = await login({ email, password });
+      // STEP 8: ora ritorna { token, utente } invece di solo utente
+      // Il token viene salvato automaticamente da authService.ts
+      const { utente } = await login({ email, password });
 
-      // Login riuscito! Salva l'utente nel context (come session.setAttribute)
+      // Login riuscito! Salva l'utente nel context (per la UI)
       setUtente(utente);
 
       // Redirect alla homepage

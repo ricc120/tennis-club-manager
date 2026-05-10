@@ -1,33 +1,43 @@
 /**
  * apiClient.ts — Client HTTP centralizzato per comunicare con il backend.
  * 
- * STEP 7 FIX: Variabili d'ambiente per Docker
+ * STEP 7: Variabili d'ambiente per Docker
+ * STEP 8: JWT Authentication — inietta il token nell'header Authorization
  * 
- * PROBLEMA: NEXT_PUBLIC_* viene "bruciata" nel JS al momento del BUILD.
- * In Docker, al build-time non esiste ancora il backend come "app:8080".
+ * FLUSSO CON JWT:
+ * 1. L'utente fa login → il backend restituisce un JWT token
+ * 2. Il frontend salva il token in localStorage
+ * 3. Ad OGNI richiesta successiva, fetchApi() aggiunge l'header:
+ *      Authorization: Bearer eyJhbGciOiJI...
+ * 4. Il backend (JwtAuthFilter) valida il token e identifica l'utente
  * 
- * SOLUZIONE: usiamo DUE variabili:
- *   - API_URL (senza NEXT_PUBLIC_): letta a RUNTIME dal server Node.js
- *     → In Docker: http://app:8080 (networking tra container)
- *     → In locale: non definita → usa il fallback
- *   - NEXT_PUBLIC_API_URL: fallback per sviluppo locale e browser
- *     → http://localhost:8080
- * 
- * Questa funzione gira nei Server Components (sul server Node.js),
- * quindi può leggere variabili d'ambiente di runtime.
+ * ANALOGIA con Spring Security:
+ *   Spring MVC: il browser invia il cookie JSESSIONID automaticamente
+ *   Next.js + JWT: NOI inviamo il token manualmente nell'header
  */
 
 // Priorità: API_URL (runtime/Docker) → NEXT_PUBLIC_API_URL (.env.local) → fallback
 const API_BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 /**
- * Classe per gli errori API — estende Error con informazioni HTTP aggiuntive.
+ * Recupera il JWT token da localStorage.
  * 
- * Quando il backend risponde con un errore (es: 404 Not Found, 500 Server Error),
- * lanciamo questa eccezione con lo status code per gestirla nel componente.
+ * NOTA: localStorage è disponibile SOLO nel browser (Client Components).
+ * Nei Server Components (che girano su Node.js), localStorage non esiste.
+ * Per questo controlliamo typeof window !== "undefined".
  * 
- * È simile alle tue eccezioni Java (PrenotazioneException, CampoException)
- * ma con lo status HTTP incluso.
+ * Questo è un pattern molto comune in Next.js per codice
+ * che deve funzionare sia sul server che nel browser.
+ */
+function getToken(): string | null {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("jwt_token");
+  }
+  return null;
+}
+
+/**
+ * Classe per gli errori API.
  */
 export class ApiError extends Error {
   status: number;
@@ -41,44 +51,44 @@ export class ApiError extends Error {
 /**
  * Funzione generica per fare richieste HTTP al backend.
  * 
- * PARAMETRI:
- * - endpoint: il percorso dell'API (es: "/api/campi")
- * - options: opzioni aggiuntive per fetch (metodo, headers, body)
+ * STEP 8: Ora aggiunge automaticamente l'header Authorization
+ * con il JWT token, se disponibile.
  * 
- * RITORNA: i dati JSON parsati come oggetto TypeScript
+ * PRIMA (Step 4):
+ *   headers: { "Content-Type": "application/json" }
  * 
- * TIPO GENERICO <T>:
- * Il <T> è un "generics" TypeScript (come i generics Java: List<Campo>).
- * Significa: "questa funzione restituisce un tipo che il chiamante decide".
- * 
- * Esempio:
- *   fetchApi<Campo[]>("/api/campi")   → ritorna Promise<Campo[]>
- *   fetchApi<Campo>("/api/campi/1")   → ritorna Promise<Campo>
+ * ADESSO (Step 8):
+ *   headers: {
+ *     "Content-Type": "application/json",
+ *     "Authorization": "Bearer eyJhbGci..."   ← NUOVO!
+ *   }
  */
 export async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  // Costruisce l'URL completo: "http://localhost:8080" + "/api/campi"
   const url = `${API_BASE_URL}${endpoint}`;
 
+  // Prepara gli headers, includendo il token JWT se disponibile
+  const token = getToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string>),
+  };
+
+  // STEP 8: Se c'è un token salvato, aggiungilo all'header
+  // Il formato è: "Bearer <token>" (standard OAuth2)
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   try {
-    // fetch() invia la richiesta HTTP
-    // "await" aspetta che il server risponda (potrebbe impiegare millisecondi o secondi)
     const response = await fetch(url, {
-      // Spread operator (...) copia tutte le opzioni passate dal chiamante
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        // Importa gli headers aggiuntivi (es: Authorization per JWT in futuro)
-        ...options.headers,
-      },
+      headers,
     });
 
-    // Controlla se la risposta è un errore HTTP (status 4xx o 5xx)
-    // response.ok è true solo se lo status è 200-299
     if (!response.ok) {
-      // Prova a leggere il messaggio d'errore dal body JSON
       let errorMessage = `Errore HTTP ${response.status}`;
       try {
         const errorBody = await response.json();
@@ -89,17 +99,13 @@ export async function fetchApi<T>(
       throw new ApiError(errorMessage, response.status);
     }
 
-    // Parsa il body della risposta da JSON a oggetto TypeScript
-    // response.json() è come ObjectMapper.readValue() in Jackson
     const data: T = await response.json();
     return data;
 
   } catch (error) {
-    // Se è già un ApiError (dal blocco sopra), rilancialo
     if (error instanceof ApiError) {
       throw error;
     }
-    // Altrimenti è un errore di rete (backend non raggiungibile, DNS fallito, etc.)
     throw new ApiError(
       "Impossibile contattare il server. Verifica che il backend sia avviato.",
       0
