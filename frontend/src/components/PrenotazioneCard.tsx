@@ -1,66 +1,47 @@
 /**
- * PrenotazioneCard — Card con dettagli e bottone Elimina.
- * 
- * STEP 6: Aggiunto bottone "Elimina" con conferma.
- * 
- * "use client" è necessario perché ora questo componente:
- * - Gestisce click (onClick su Elimina)
- * - Usa useState per lo stato di loading
- * - Usa useRouter per aggiornare la pagina dopo l'eliminazione
- * 
- * CONCETTO: window.confirm()
- * Mostra un dialog di conferma nativo del browser.
- * Se l'utente clicca "OK" → ritorna true → procede con l'eliminazione.
- * Se l'utente clicca "Annulla" → ritorna false → non fa nulla.
+ * PrenotazioneCard — STEP 9: Refactoring con useMutation.
+ *
+ * PRIMA (Step 6):
+ *   await cancellaPrenotazione(id);  // fetch manuale
+ *   router.refresh();                // ricarica TUTTA la pagina
+ *
+ * ADESSO (Step 9):
+ *   elimina(id);                     // useMutation gestisce il DELETE
+ *   → onSuccess: invalidateQueries   // la card scompare automaticamente
+ *
+ * Il vantaggio più visibile: dopo l'eliminazione, la card scompare
+ * dalla lista SENZA ricaricare l'intera pagina. React Query rifà
+ * solo il GET delle prenotazioni e React aggiorna il DOM.
  */
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/AuthContext";
+import { useCancellaPrenotazione } from "@/hooks/usePrenotazioni";
 import { Prenotazione } from "@/types";
-import { cancellaPrenotazione } from "@/services/prenotazioniService";
 
 interface PrenotazioneCardProps {
   prenotazione: Prenotazione;
 }
 
 export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [errore, setErrore] = useState("");
-  const router = useRouter();
   const { utente } = useAuth();
 
-  /**
-   * Gestisce il click su "Elimina".
-   * 
-   * 1. Mostra un dialog di conferma
-   * 2. Se confermato, chiama DELETE /api/prenotazioni/{id}
-   * 3. Se successo, router.refresh() aggiorna la lista
-   */
-  const handleElimina = async () => {
-    // Chiede conferma prima di eliminare
+  // STEP 9: useMutation per il DELETE
+  const { mutate: elimina, isPending: isDeleting, error } = useCancellaPrenotazione();
+
+  const handleElimina = () => {
     const conferma = window.confirm(
       `Vuoi eliminare la prenotazione del ${formattaData(prenotazione.data)} alle ${prenotazione.oraInizio}?`
     );
 
     if (!conferma) return;
 
-    setIsDeleting(true);
-    setErrore("");
-
-    try {
-      await cancellaPrenotazione(prenotazione.id);
-      // Dopo l'eliminazione, aggiorna la pagina per ricaricare la lista
-      router.refresh();
-    } catch (error) {
-      setErrore(error instanceof Error ? error.message : "Errore nell'eliminazione");
-    } finally {
-      setIsDeleting(false);
-    }
+    // mutate() esegue il DELETE.
+    // onSuccess (definito nel hook) invalida la cache ["prenotazioni"].
+    // React Query rifà il GET → la lista si aggiorna → questa card scompare.
+    elimina(prenotazione.id);
   };
 
-  // Mostra il bottone elimina solo se l'utente è loggato e è il proprietario o admin
   const puoEliminare = utente && (
     utente.id === prenotazione.socio.id || utente.ruolo === "ADMIN"
   );
@@ -106,11 +87,13 @@ export default function PrenotazioneCard({ prenotazione }: PrenotazioneCardProps
         </div>
       </div>
 
-      {/* FOOTER — Bottone Elimina (visibile solo al proprietario o admin) */}
+      {/* FOOTER — Bottone Elimina */}
       {puoEliminare && (
         <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
-          {errore && (
-            <p className="text-red-600 text-xs mb-2">⚠️ {errore}</p>
+          {error && (
+            <p className="text-red-600 text-xs mb-2">
+              ⚠️ {error instanceof Error ? error.message : "Errore nell'eliminazione"}
+            </p>
           )}
           <button
             onClick={handleElimina}

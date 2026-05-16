@@ -1,100 +1,78 @@
 /**
- * NuovaPrenotazioneForm — Form per creare una nuova prenotazione.
- * 
- * CONCETTO: Form con campi multipli
- * 
- * Il form di login aveva solo 2 campi (email, password).
- * Questo form ha 3 campi:
- *   - Campo (select dropdown) → simile a <select th:each="campo : ${campi}"> in Thymeleaf
- *   - Data  (date picker)     → <input type="date">
- *   - Ora   (time picker)     → <input type="time">
- * 
- * CONCETTO: Props
- * 
- * Questo componente riceve "campi" come prop (parametro):
- *   <NuovaPrenotazioneForm campi={listaCampi} />
- * 
- * In Java sarebbe come passare un parametro al costruttore:
- *   new NuovaPrenotazioneForm(listaCampi);
- * 
- * CONCETTO: router.refresh()
- * 
- * Dopo aver creato una prenotazione (POST), i dati nella pagina sono "vecchi".
- * router.refresh() dice a Next.js di ri-eseguire il Server Component
- * (la pagina /prenotazioni) per ricaricare i dati aggiornati dal backend.
- * 
- * È come fare "redirect:/prenotazioni" in Spring dopo un POST.
+ * NuovaPrenotazioneForm — STEP 9: Refactoring con useMutation.
+ *
+ * PRIMA (Step 6):
+ *   await creaPrenotazione(dati);   // fetch manuale
+ *   router.refresh();               // ricarica TUTTA la pagina
+ *
+ * ADESSO (Step 9):
+ *   mutate(dati);                   // useMutation gestisce il POST
+ *   → onSuccess: invalidateQueries  // aggiorna SOLO la lista
+ *
+ * CONCETTO: useMutation vs fetch manuale
+ *
+ * useMutation offre:
+ * - isPending: true durante il POST (sostituisce useState isLoading)
+ * - isError/error: gestione errori automatica
+ * - onSuccess: callback per invalidare la cache
+ * - reset(): pulisce lo stato di errore
+ *
+ * Il form è più semplice: meno useState, meno try/catch, meno codice.
  */
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/AuthContext";
+import { useCreaPrenotazione } from "@/hooks/usePrenotazioni";
 import { Campo } from "@/types";
-import { creaPrenotazione } from "@/services/prenotazioniService";
 
 interface Props {
-  campi: Campo[];  // la lista dei campi disponibili, passata dalla pagina server
+  campi: Campo[];
 }
 
 export default function NuovaPrenotazioneForm({ campi }: Props) {
-  // Stato del form — un useState per ogni campo
   const [idCampo, setIdCampo] = useState<number | "">("");
   const [data, setData] = useState("");
   const [oraInizio, setOraInizio] = useState("");
-  const [errore, setErrore] = useState("");
   const [successo, setSuccesso] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter();
   const { utente } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // STEP 9: useMutation sostituisce il try/catch manuale
+  const { mutate: creaPrenotazione, isPending, error, reset } = useCreaPrenotazione();
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrore("");
     setSuccesso("");
+    reset(); // pulisce eventuali errori precedenti della mutation
 
-    // Validazione lato client (il backend valida anche lui — difesa in profondità)
-    if (!utente) {
-      setErrore("Devi essere loggato per prenotare.");
-      return;
-    }
+    if (!utente) return;
+    if (idCampo === "" || !data || !oraInizio) return;
 
-    if (idCampo === "" || !data || !oraInizio) {
-      setErrore("Tutti i campi sono obbligatori.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      await creaPrenotazione({
-        data: data,              // "2026-04-15"
-        oraInizio: oraInizio,    // "14:00"
+    // mutate() esegue il POST e gestisce tutto automaticamente:
+    // - isPending diventa true durante il fetch
+    // - onSuccess (definito nel hook) invalida la cache
+    // - Se il POST fallisce, error viene popolato
+    creaPrenotazione(
+      {
+        data: data,
+        oraInizio: oraInizio,
         idCampo: idCampo as number,
-        idSocio: utente.id,      // l'utente loggato è chi prenota
-      });
-
-      setSuccesso("✅ Prenotazione creata con successo!");
-
-      // Reset del form
-      setIdCampo("");
-      setData("");
-      setOraInizio("");
-
-      // CONCETTO: router.refresh()
-      // Dice a Next.js di ri-eseguire la pagina server per aggiornare la lista.
-      // Senza questo, la lista mostrerebbe i dati vecchi.
-      router.refresh();
-
-    } catch (error) {
-      setErrore(error instanceof Error ? error.message : "Errore nella creazione");
-    } finally {
-      setIsLoading(false);
-    }
+        idSocio: utente.id,
+      },
+      {
+        // Callback locale: si attiva SOLO per questa chiamata
+        onSuccess: () => {
+          setSuccesso("✅ Prenotazione creata con successo!");
+          // Reset del form
+          setIdCampo("");
+          setData("");
+          setOraInizio("");
+        },
+      }
+    );
   };
 
-  // Se non loggato, mostra un messaggio
   if (!utente) {
     return (
       <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
@@ -109,10 +87,10 @@ export default function NuovaPrenotazioneForm({ campi }: Props) {
         ➕ Nuova Prenotazione
       </h2>
 
-      {/* Messaggi di errore/successo */}
-      {errore && (
+      {/* Errore dalla mutation */}
+      {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          ⚠️ {errore}
+          ⚠️ {error instanceof Error ? error.message : "Errore nella creazione"}
         </div>
       )}
       {successo && (
@@ -122,20 +100,7 @@ export default function NuovaPrenotazioneForm({ campi }: Props) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 
-          SELECT per il campo — è un "controlled component":
-          il value è legato a idCampo (useState), e onChange lo aggiorna.
-          
-          In Thymeleaf:
-            <select name="idCampo">
-              <option th:each="campo : ${campi}" th:value="${campo.id}" th:text="${campo.nome}"/>
-            </select>
-          
-          In React:
-            <select value={idCampo} onChange={(e) => setIdCampo(Number(e.target.value))}>
-              {campi.map(campo => <option key={campo.id} value={campo.id}>{campo.nome}</option>)}
-            </select>
-        */}
+        {/* SELECT Campo */}
         <div>
           <label htmlFor="campo" className="block text-sm font-medium text-gray-700 mb-1">
             Campo
@@ -195,13 +160,13 @@ export default function NuovaPrenotazioneForm({ campi }: Props) {
           Prenotazione a nome di: <strong>{utente.nome} {utente.cognome}</strong> ({utente.ruolo})
         </div>
 
-        {/* SUBMIT */}
+        {/* SUBMIT — isPending sostituisce il vecchio useState isLoading */}
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isPending}
           className="w-full py-3 bg-emerald-700 text-white font-semibold rounded-lg hover:bg-emerald-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Creazione in corso..." : "Prenota Campo"}
+          {isPending ? "Creazione in corso..." : "Prenota Campo"}
         </button>
       </form>
     </div>

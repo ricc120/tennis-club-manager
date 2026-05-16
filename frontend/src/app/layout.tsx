@@ -15,6 +15,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/hooks/AuthContext";
+import QueryProvider from "@/hooks/QueryProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -40,11 +41,13 @@ export default function RootLayout({
           È come HttpSession che è condivisa tra tutte le richieste.
         */}
         <AuthProvider>
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <QueryProvider>
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
