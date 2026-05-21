@@ -46,9 +46,13 @@ buildNumber.properties
 
 # Project files
 db.properties
-src/main/resources/db.properties
-src/main/resources/application.properties
-src/test/resources/application-test.properties
+backend/src/main/resources/db.properties
+backend/src/main/resources/application.properties
+backend/src/test/resources/application-test.properties
 
 # Docker
 docker-compose.yml
+
+# Node.js (frontend + frontend-vetrina)
+node_modules/
+.next/

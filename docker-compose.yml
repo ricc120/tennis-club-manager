@@ -52,7 +52,7 @@ services:
   # BACKEND (Spring Boot)
   # ========================
   app:
-    build: .
+    build: ./backend
     container_name: tennis-app
     ports:
       - "8080:8080"
