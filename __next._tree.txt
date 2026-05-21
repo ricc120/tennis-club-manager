@@ -1,0 +1,7 @@
+:HL["/tennis-club-manager/_next/static/chunks/17r.--w04k7qn.css","style"]
+:HL["https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap","style"]
+:HL["https://placehold.co/400x400/2C5F2D/FFFFFF?text=M.+Stefanini","image"]
+:HL["https://placehold.co/400x400/4A8B4C/FFFFFF?text=L.+Bianchi","image"]
+:HL["https://placehold.co/400x400/00B8D4/FFFFFF?text=A.+Rossi","image"]
+:HL["https://placehold.co/400x400/FF6D00/FFFFFF?text=G.+Conti","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"YZj8N0ISH-dmWe02I6F8a"}
