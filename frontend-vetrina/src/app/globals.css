@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* ============================================================
+   TC CARMIGNANO — Design System
+   
+   Palette:
+   - Verde Tennis:     #2C5F2D (tradizione, header, CTA)
+   - Verde Light:      #4A8B4C (hover, accenti)
+   - Cyan Padel:       #00E5FF (modernità, sezione padel)
+   - Arancione S.T.A.: #FF6D00 (accademia, badge, highlights)
+   - Grigio Scuro:     #1A1A2E (hero overlay, testo principale)
+   - Grigio Chiaro:    #F8F9FA (sfondi alternati)
+   ============================================================ */
+
+@theme {
+  /* Tennis Green */
+  --color-tennis: #2C5F2D;
+  --color-tennis-light: #4A8B4C;
+  --color-tennis-dark: #1E4220;
+  --color-tennis-50: #f0f7f0;
+  --color-tennis-100: #dceedd;
+
+  /* Padel Cyan */
+  --color-padel: #00E5FF;
+  --color-padel-dark: #00B8D4;
+  --color-padel-50: #e0fcff;
+
+  /* Academy Orange (S.T.A.) */
+  --color-academy: #FF6D00;
+  --color-academy-light: #FF9E40;
+  --color-academy-dark: #E65100;
+  --color-academy-50: #fff3e0;
+
+  /* Neutrals */
+  --color-dark: #1A1A2E;
+  --color-dark-lighter: #2D2D44;
+  --color-light: #F8F9FA;
+  --color-light-darker: #E9ECEF;
+}
+
+/* Google Fonts loaded via <link> in layout.tsx */
+
+/* ============================================================
+   Global Styles
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: #1A1A2E;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* ============================================================
+   Utility Animations
+   ============================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Stagger delay classes */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
