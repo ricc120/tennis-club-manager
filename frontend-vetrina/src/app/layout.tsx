@@ -2,15 +2,22 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { siteConfig } from "@/config/site";
 
+/**
+ * CONCETTO: Metadata dinamica da configurazione White-Label
+ *
+ * I dati SEO non sono più hardcoded nel layout ma letti dal file
+ * di configurazione centralizzato. Per un nuovo cliente basta
+ * aggiornare siteConfig.seo e il build genera i meta tag corretti.
+ */
 export const metadata: Metadata = {
-  title: "TC Carmignano — Tennis Club & Padel | Stefanini Tennis Academy",
-  description:
-    "Tennis Club Carmignano: campi in terra rossa, padel panoramici e la Stefanini Tennis Academy (S.T.A.) nel cuore della Toscana. Prenota il tuo campo.",
-  keywords: "tennis, padel, carmignano, prato, toscana, accademia tennis, S.T.A., Stefanini",
+  title: siteConfig.seo.title,
+  description: siteConfig.seo.description,
+  keywords: siteConfig.seo.keywords,
   openGraph: {
-    title: "TC Carmignano — Tennis, Padel & Academy",
-    description: "Dal 1985, tradizione e innovazione nel cuore della Toscana.",
+    title: siteConfig.seo.ogTitle,
+    description: siteConfig.seo.ogDescription,
     type: "website",
     locale: "it_IT",
   },

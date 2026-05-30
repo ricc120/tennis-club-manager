@@ -1,3 +1,5 @@
+import { siteConfig } from "@/config/site";
+
 export default function Footer() {
   return (
     <footer className="bg-dark py-16">
@@ -7,11 +9,11 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🎾</span>
-              <span className="text-white font-bold text-xl">TC Carmignano</span>
+              <span className="text-white font-bold text-xl">{siteConfig.clubShortName}</span>
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
-              Tennis Club Carmignano — Dal 1985, tradizione e innovazione
-              nel cuore della Toscana. Tennis, Padel e la Stefanini Tennis Academy.
+              {siteConfig.clubName} — Dal {siteConfig.foundedYear}, {siteConfig.clubSlogan.toLowerCase()}.
+              {" "}Tennis, Padel e la {siteConfig.academyName}.
             </p>
           </div>
 
@@ -22,14 +24,14 @@ export default function Footer() {
               {[
                 { label: "Chi Siamo", href: "#chi-siamo" },
                 { label: "I Nostri Campi", href: "#campi" },
-                { label: "S.T.A. Academy", href: "#academy" },
+                { label: `${siteConfig.academyShortName} Academy`, href: "#academy" },
                 { label: "Tariffe", href: "#tariffe" },
                 { label: "Contatti", href: "#contatti" },
               ].map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-white/50 hover:text-padel text-sm transition-colors"
+                    className="text-white/50 hover:text-secondary text-sm transition-colors"
                   >
                     {link.label}
                   </a>
@@ -42,18 +44,12 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Orari di Apertura</h4>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-white/50">
-                <span>Lunedì – Venerdì</span>
-                <span className="text-white/70">8:00 – 22:00</span>
-              </div>
-              <div className="flex justify-between text-white/50">
-                <span>Sabato – Domenica</span>
-                <span className="text-white/70">8:00 – 20:00</span>
-              </div>
-              <div className="flex justify-between text-white/50">
-                <span>Segreteria</span>
-                <span className="text-white/70">9:00 – 19:00</span>
-              </div>
+              {Object.values(siteConfig.hours).map((h) => (
+                <div key={h.label} className="flex justify-between text-white/50">
+                  <span>{h.label}</span>
+                  <span className="text-white/70">{h.time}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -61,11 +57,11 @@ export default function Footer() {
         {/* Divider + Copyright */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-sm">
-            © {new Date().getFullYear()} Tennis Club Carmignano. Tutti i diritti riservati.
+            © {new Date().getFullYear()} {siteConfig.clubName}. Tutti i diritti riservati.
           </p>
           <div className="flex items-center gap-4">
             <span className="text-white/30 text-xs">
-              Powered by S.T.A. — Stefanini Tennis Academy
+              Powered by {siteConfig.academyShortName} — {siteConfig.academyName}
             </span>
           </div>
         </div>

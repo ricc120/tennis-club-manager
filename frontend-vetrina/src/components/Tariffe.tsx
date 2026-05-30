@@ -6,9 +6,9 @@ import { tariffe, Tariffa } from "@/data/tariffe";
 type Categoria = "tennis" | "padel" | "academy";
 
 const tabs: { label: string; value: Categoria; colore: string }[] = [
-  { label: "🎾 Tennis", value: "tennis", colore: "tennis" },
-  { label: "🏸 Padel", value: "padel", colore: "padel" },
-  { label: "🏆 Academy", value: "academy", colore: "academy" },
+  { label: "🎾 Tennis", value: "tennis", colore: "primary" },
+  { label: "🏸 Padel", value: "padel", colore: "secondary" },
+  { label: "🏆 Academy", value: "academy", colore: "accent" },
 ];
 
 export default function Tariffe() {
@@ -17,14 +17,14 @@ export default function Tariffe() {
   const tariffeFiltrate = tariffe.filter((t) => t.categoria === categoriaAttiva);
 
   const coloreAttivo =
-    categoriaAttiva === "tennis" ? "tennis" : categoriaAttiva === "padel" ? "padel" : "academy";
+    categoriaAttiva === "tennis" ? "primary" : categoriaAttiva === "padel" ? "secondary" : "accent";
 
   return (
     <section id="tariffe" className="py-20 lg:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <p className={`text-${coloreAttivo} font-semibold tracking-widest uppercase text-sm mb-3`}>
+          <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
             Prezzi Trasparenti
           </p>
           <h2 className="text-4xl lg:text-5xl font-bold text-dark mb-6">
@@ -44,11 +44,11 @@ export default function Tariffe() {
               onClick={() => setCategoriaAttiva(tab.value)}
               className={`px-6 py-3 rounded-full text-sm font-semibold transition-all ${
                 categoriaAttiva === tab.value
-                  ? tab.colore === "tennis"
-                    ? "bg-tennis text-white shadow-lg shadow-tennis/30"
-                    : tab.colore === "padel"
-                    ? "bg-padel-dark text-white shadow-lg shadow-padel/30"
-                    : "bg-academy text-white shadow-lg shadow-academy/30"
+                  ? tab.colore === "primary"
+                    ? "bg-primary text-white shadow-lg shadow-primary/30"
+                    : tab.colore === "secondary"
+                    ? "bg-secondary-dark text-white shadow-lg shadow-secondary/30"
+                    : "bg-accent text-white shadow-lg shadow-accent/30"
                   : "bg-light text-gray-600 hover:bg-light-darker"
               }`}
             >
@@ -70,19 +70,19 @@ export default function Tariffe() {
 
 function TariffaCard({ tariffa, colore }: { tariffa: Tariffa; colore: string }) {
   const borderColor = tariffa.evidenziato
-    ? colore === "tennis"
-      ? "border-tennis"
-      : colore === "padel"
-      ? "border-padel"
-      : "border-academy"
+    ? colore === "primary"
+      ? "border-primary"
+      : colore === "secondary"
+      ? "border-secondary"
+      : "border-accent"
     : "border-gray-200";
 
   const badgeColor =
-    colore === "tennis"
-      ? "bg-tennis text-white"
-      : colore === "padel"
-      ? "bg-padel-dark text-white"
-      : "bg-academy text-white";
+    colore === "primary"
+      ? "bg-primary text-white"
+      : colore === "secondary"
+      ? "bg-secondary-dark text-white"
+      : "bg-accent text-white";
 
   return (
     <div
@@ -106,7 +106,7 @@ function TariffaCard({ tariffa, colore }: { tariffa: Tariffa; colore: string }) 
       <ul className="space-y-3">
         {tariffa.dettagli.map((det) => (
           <li key={det} className="flex items-start gap-3 text-gray-600 text-sm">
-            <span className={`text-${colore} mt-0.5`}>✓</span>
+            <span className="text-primary mt-0.5">✓</span>
             {det}
           </li>
         ))}

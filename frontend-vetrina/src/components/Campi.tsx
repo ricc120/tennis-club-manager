@@ -1,7 +1,9 @@
+import { siteConfig } from "@/config/site";
+
 const campi = [
   {
     tipo: "Tennis",
-    colore: "tennis",
+    colore: "primary",
     icona: "🎾",
     items: [
       { nome: "4 Campi in Terra Rossa", dettaglio: "Superficie tradizionale, manutenzione quotidiana" },
@@ -11,7 +13,7 @@ const campi = [
   },
   {
     tipo: "Padel",
-    colore: "padel",
+    colore: "secondary",
     icona: "🏸",
     items: [
       { nome: "2 Campi Panoramici", dettaglio: "Vetro temperato con vista collinare" },
@@ -27,14 +29,14 @@ export default function Campi() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <p className="text-tennis font-semibold tracking-widest uppercase text-sm mb-3">
+          <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
             Le Nostre Strutture
           </p>
           <h2 className="text-4xl lg:text-5xl font-bold text-dark mb-6">
             I Nostri Campi
           </h2>
           <p className="text-gray-600 text-lg">
-            Strutture moderne immerse nel verde toscano, per un&apos;esperienza di gioco unica.
+            Strutture moderne immerse nel verde, per un&apos;esperienza di gioco unica.
           </p>
         </div>
 
@@ -44,24 +46,24 @@ export default function Campi() {
             <div
               key={campo.tipo}
               className={`rounded-3xl overflow-hidden border-2 ${
-                campo.colore === "tennis"
-                  ? "border-tennis-100 hover:border-tennis"
-                  : "border-padel-50 hover:border-padel"
+                campo.colore === "primary"
+                  ? "border-primary-100 hover:border-primary"
+                  : "border-secondary-50 hover:border-secondary"
               } bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
             >
               {/* Card Header */}
               <div
                 className={`px-8 py-6 ${
-                  campo.colore === "tennis"
-                    ? "bg-gradient-to-r from-tennis to-tennis-light"
-                    : "bg-gradient-to-r from-padel-dark to-padel"
+                  campo.colore === "primary"
+                    ? "bg-gradient-to-r from-primary to-primary-light"
+                    : "bg-gradient-to-r from-secondary-dark to-secondary"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-4xl">{campo.icona}</span>
                   <div>
                     <h3 className="text-2xl font-bold text-white">{campo.tipo}</h3>
-                    <p className="text-white/70 text-sm">TC Carmignano</p>
+                    <p className="text-white/70 text-sm">{siteConfig.clubShortName}</p>
                   </div>
                 </div>
               </div>
@@ -72,9 +74,9 @@ export default function Campi() {
                   <div key={item.nome} className="flex gap-4">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        campo.colore === "tennis"
-                          ? "bg-tennis-50 text-tennis"
-                          : "bg-padel-50 text-padel-dark"
+                        campo.colore === "primary"
+                          ? "bg-primary-50 text-primary"
+                          : "bg-secondary-50 text-secondary-dark"
                       }`}
                     >
                       ✓

@@ -1,41 +1,81 @@
 @import "tailwindcss";
 
 /* ============================================================
-   TC CARMIGNANO — Design System
+   DESIGN SYSTEM — White-Label Template
    
-   Palette:
-   - Verde Tennis:     #2C5F2D (tradizione, header, CTA)
-   - Verde Light:      #4A8B4C (hover, accenti)
-   - Cyan Padel:       #00E5FF (modernità, sezione padel)
-   - Arancione S.T.A.: #FF6D00 (accademia, badge, highlights)
-   - Grigio Scuro:     #1A1A2E (hero overlay, testo principale)
-   - Grigio Chiaro:    #F8F9FA (sfondi alternati)
+   CONCETTO: CSS Variables per il White-Labeling
+   
+   I colori del brand sono definiti come CSS custom properties
+   nella pseudo-classe :root. Per cambiare il branding:
+   1. Modifica i valori in :root
+   2. @theme di Tailwind li eredita automaticamente
+   3. Le utility classes (bg-primary, text-accent, ecc.) si aggiornano
+   
+   Questo approccio funziona perché Tailwind v4 usa internamente
+   CSS Variables — non compila i colori in valori statici.
    ============================================================ */
 
-@theme {
-  /* Tennis Green */
-  --color-tennis: #2C5F2D;
-  --color-tennis-light: #4A8B4C;
-  --color-tennis-dark: #1E4220;
-  --color-tennis-50: #f0f7f0;
-  --color-tennis-100: #dceedd;
+/* ============================================================
+   :root — Variabili di branding (modificare QUI per nuovo cliente)
+   ============================================================ */
+:root {
+  /* Primary = colore principale del club (Verde Tennis di default) */
+  --brand-primary: #2C5F2D;
+  --brand-primary-light: #4A8B4C;
+  --brand-primary-dark: #1E4220;
+  --brand-primary-50: #f0f7f0;
+  --brand-primary-100: #dceedd;
 
-  /* Padel Cyan */
-  --color-padel: #00E5FF;
-  --color-padel-dark: #00B8D4;
-  --color-padel-50: #e0fcff;
+  /* Secondary = colore secondario (Cyan Padel di default) */
+  --brand-secondary: #00E5FF;
+  --brand-secondary-dark: #00B8D4;
+  --brand-secondary-50: #e0fcff;
 
-  /* Academy Orange (S.T.A.) */
-  --color-academy: #FF6D00;
-  --color-academy-light: #FF9E40;
-  --color-academy-dark: #E65100;
-  --color-academy-50: #fff3e0;
+  /* Accent = colore di accento (Arancione Academy di default) */
+  --brand-accent: #FF6D00;
+  --brand-accent-light: #FF9E40;
+  --brand-accent-dark: #E65100;
+  --brand-accent-50: #fff3e0;
 
   /* Neutrals */
-  --color-dark: #1A1A2E;
-  --color-dark-lighter: #2D2D44;
-  --color-light: #F8F9FA;
-  --color-light-darker: #E9ECEF;
+  --brand-dark: #1A1A2E;
+  --brand-dark-lighter: #2D2D44;
+  --brand-light: #F8F9FA;
+  --brand-light-darker: #E9ECEF;
+}
+
+/* ============================================================
+   @theme — Tailwind v4 Design Tokens
+   
+   Mappa le CSS Variables del brand alle utility classes di Tailwind.
+   bg-primary → var(--brand-primary)
+   text-secondary → var(--brand-secondary)
+   border-accent → var(--brand-accent)
+   ============================================================ */
+@theme {
+  /* Primary (ex "tennis") */
+  --color-primary: var(--brand-primary);
+  --color-primary-light: var(--brand-primary-light);
+  --color-primary-dark: var(--brand-primary-dark);
+  --color-primary-50: var(--brand-primary-50);
+  --color-primary-100: var(--brand-primary-100);
+
+  /* Secondary (ex "padel") */
+  --color-secondary: var(--brand-secondary);
+  --color-secondary-dark: var(--brand-secondary-dark);
+  --color-secondary-50: var(--brand-secondary-50);
+
+  /* Accent (ex "academy") */
+  --color-accent: var(--brand-accent);
+  --color-accent-light: var(--brand-accent-light);
+  --color-accent-dark: var(--brand-accent-dark);
+  --color-accent-50: var(--brand-accent-50);
+
+  /* Neutrals */
+  --color-dark: var(--brand-dark);
+  --color-dark-lighter: var(--brand-dark-lighter);
+  --color-light: var(--brand-light);
+  --color-light-darker: var(--brand-light-darker);
 }
 
 /* Google Fonts loaded via <link> in layout.tsx */
@@ -49,7 +89,7 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  color: #1A1A2E;
+  color: var(--brand-dark);
   overflow-x: hidden;
 }
 

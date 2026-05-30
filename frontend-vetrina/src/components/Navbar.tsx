@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { siteConfig } from "@/config/site";
 
 const navLinks = [
   { label: "Chi Siamo", href: "#chi-siamo" },
   { label: "Campi", href: "#campi" },
   { label: "Academy", href: "#academy" },
+  { label: "Risultati", href: "#risultati" },
   { label: "Tariffe", href: "#tariffe" },
   { label: "Gallery", href: "#gallery" },
   { label: "Contatti", href: "#contatti" },
@@ -34,11 +36,9 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="#" className="flex items-center gap-2 group">
           <span className="text-2xl">🎾</span>
-          <div>
-            <span className="text-white font-bold text-lg tracking-wide group-hover:text-tennis-light transition-colors">
-              TC Carmignano
-            </span>
-          </div>
+          <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary-light transition-colors">
+            {siteConfig.clubShortName}
+          </span>
         </Link>
 
         {/* Desktop Links */}
@@ -47,14 +47,14 @@ export default function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="text-white/80 hover:text-padel text-sm font-medium tracking-wide transition-colors"
+              className="text-white/80 hover:text-secondary text-sm font-medium tracking-wide transition-colors"
             >
               {link.label}
             </a>
           ))}
           <a
             href="#contatti"
-            className="bg-tennis hover:bg-tennis-light text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-tennis/30"
+            className="bg-primary hover:bg-primary-light text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary/30"
           >
             Prenota Ora
           </a>
@@ -85,7 +85,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="block text-white/80 hover:text-padel py-2 text-base font-medium transition-colors"
+                className="block text-white/80 hover:text-secondary py-2 text-base font-medium transition-colors"
               >
                 {link.label}
               </a>
@@ -93,7 +93,7 @@ export default function Navbar() {
             <a
               href="#contatti"
               onClick={() => setMenuOpen(false)}
-              className="block text-center bg-tennis hover:bg-tennis-light text-white px-5 py-3 rounded-full font-semibold transition-all mt-4"
+              className="block text-center bg-primary hover:bg-primary-light text-white px-5 py-3 rounded-full font-semibold transition-all mt-4"
             >
               Prenota Ora
             </a>

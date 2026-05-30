@@ -5,13 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "predeploy": "npm run build",
+    "deploy": "echo. > out/.nojekyll && npx gh-pages -d out --dotfiles -r https://github.com/ricc120/tennis-club-manager.git",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "next": "16.2.6",
+    "next-sanity": "^13.0.3",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sanity": "^5.27.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -20,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

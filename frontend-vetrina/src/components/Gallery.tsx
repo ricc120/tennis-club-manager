@@ -24,7 +24,7 @@ export default function Gallery() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <p className="text-tennis font-semibold tracking-widest uppercase text-sm mb-3">
+          <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
             Il Club in Immagini
           </p>
           <h2 className="text-4xl lg:text-5xl font-bold text-dark mb-6">Gallery</h2>
@@ -38,7 +38,7 @@ export default function Gallery() {
               onClick={() => setFiltro(f.value)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 filtro === f.value
-                  ? "bg-tennis text-white shadow-md"
+                  ? "bg-primary text-white shadow-md"
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { siteConfig } from "@/config/site";
 
 export default function Contatti() {
   const [modalAperta, setModalAperta] = useState(false);
@@ -11,7 +12,7 @@ export default function Contatti() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <p className="text-tennis font-semibold tracking-widest uppercase text-sm mb-3">
+            <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
               Vieni a Trovarci
             </p>
             <h2 className="text-4xl lg:text-5xl font-bold text-dark mb-6">
@@ -25,15 +26,19 @@ export default function Contatti() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Info + Buttons */}
             <div className="space-y-8">
-              {/* Info Cards */}
+              {/* Info Cards — dati da siteConfig */}
               {[
-                { icona: "📍", titolo: "Indirizzo", testo: "Via dello Sport 42, 59015 Carmignano (PO)" },
-                { icona: "📞", titolo: "Telefono", testo: "+39 055 XXX XXXX" },
-                { icona: "✉️", titolo: "Email", testo: "info@tccarmignano.it" },
-                { icona: "🕐", titolo: "Orari", testo: "Lun–Ven: 8:00–22:00 | Sab–Dom: 8:00–20:00" },
+                { icona: "📍", titolo: "Indirizzo", testo: siteConfig.address },
+                { icona: "📞", titolo: "Telefono", testo: siteConfig.phone },
+                { icona: "✉️", titolo: "Email", testo: siteConfig.email },
+                {
+                  icona: "🕐",
+                  titolo: "Orari",
+                  testo: `${siteConfig.hours.weekday.label}: ${siteConfig.hours.weekday.time} | ${siteConfig.hours.weekend.label}: ${siteConfig.hours.weekend.time}`,
+                },
               ].map((info) => (
                 <div key={info.titolo} className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-tennis-50 flex items-center justify-center text-xl flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-xl flex-shrink-0">
                     {info.icona}
                   </div>
                   <div>
@@ -47,12 +52,12 @@ export default function Contatti() {
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button
                   onClick={() => setModalAperta(true)}
-                  className="flex items-center justify-center gap-2 bg-tennis hover:bg-tennis-light text-white px-6 py-4 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-tennis/30"
+                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-light text-white px-6 py-4 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-primary/30"
                 >
                   📅 Prenota Ora
                 </button>
                 <a
-                  href="https://wa.me/39055XXXXXXX"
+                  href={siteConfig.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-4 rounded-xl font-semibold transition-all hover:shadow-lg"
@@ -73,7 +78,7 @@ export default function Contatti() {
                   <input
                     type="text"
                     placeholder="Il tuo nome"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-tennis focus:border-tennis outline-none transition-all text-dark"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-dark"
                   />
                 </div>
                 <div>
@@ -81,7 +86,7 @@ export default function Contatti() {
                   <input
                     type="email"
                     placeholder="la.tua@email.com"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-tennis focus:border-tennis outline-none transition-all text-dark"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-dark"
                   />
                 </div>
                 <div>
@@ -89,12 +94,12 @@ export default function Contatti() {
                   <textarea
                     rows={4}
                     placeholder="Come possiamo aiutarti?"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-tennis focus:border-tennis outline-none transition-all resize-none text-dark"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-dark"
                   />
                 </div>
                 <button
                   type="button"
-                  className="w-full bg-tennis hover:bg-tennis-light text-white py-3 rounded-xl font-semibold transition-all hover:shadow-lg"
+                  className="w-full bg-primary hover:bg-primary-light text-white py-3 rounded-xl font-semibold transition-all hover:shadow-lg"
                 >
                   Invia Messaggio
                 </button>
@@ -124,16 +129,12 @@ export default function Contatti() {
                 Nel frattempo, contatta la segreteria per prenotare il tuo campo.
               </p>
               <div className="space-y-3">
-                <p className="text-sm text-gray-500">
-                  📞 +39 055 XXX XXXX
-                </p>
-                <p className="text-sm text-gray-500">
-                  ✉️ info@tccarmignano.it
-                </p>
+                <p className="text-sm text-gray-500">📞 {siteConfig.phone}</p>
+                <p className="text-sm text-gray-500">✉️ {siteConfig.email}</p>
               </div>
               <button
                 onClick={() => setModalAperta(false)}
-                className="mt-6 bg-tennis hover:bg-tennis-light text-white px-8 py-3 rounded-xl font-semibold transition-all"
+                className="mt-6 bg-primary hover:bg-primary-light text-white px-8 py-3 rounded-xl font-semibold transition-all"
               >
                 Ho Capito
               </button>
