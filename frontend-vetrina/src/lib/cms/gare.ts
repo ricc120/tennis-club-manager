@@ -28,6 +28,7 @@
 import { getSanityClient, isSanityConfigured } from "@/sanity/client";
 import type { GaraSanity, Gara } from "./types";
 import { arricchisciGara } from "./types";
+import { siteConfig } from "@/config/site";
 
 /**
  * Query GROQ per recuperare le ultime 5 gare a squadre.
@@ -48,7 +49,8 @@ const GARE_QUERY = `
     squadraOspite,
     punteggioCasa,
     punteggioOspite,
-    inCasa
+    inCasa,
+    fotoCopertina
   }
 `;
 
@@ -58,28 +60,39 @@ const GARE_QUERY = `
  * @returns Array di Gara arricchite (con risultato, isVittoria, luogo derivati)
  */
 export async function getGareASquadre(): Promise<Gara[]> {
+  // Se Sanity non è configurato, usa dati mock
+  if (!isSanityConfigured()) {
+    console.warn(
+      "[CMS] NEXT_PUBLIC_SANITY_PROJECT_ID non configurato. Uso dati mock."
+    );
+    return getMockGare();
+  }
+
   try {
     const client = getSanityClient();
     const rawGare = await client.fetch<GaraSanity[]>(
       GARE_QUERY,
       {},
       {
-        /**
-         * ISR: rigenerazione ogni 3600 secondi (1 ora).
-         *
-         * Questo significa che Next.js:
-         * 1. Genera la pagina al primo request
-         * 2. Serve la versione cached per 1 ora
-         * 3. Dopo 1 ora, rigenera in background al prossimo request
-         */
         next: { revalidate: 3600 },
       }
     );
 
+    console.log(`[CMS] ${rawGare.length} gare caricate da Sanity`);
+
     return rawGare.map(arricchisciGara);
   } catch (error) {
     console.error("[CMS] Errore nel fetch delle gare:", error);
-    // In caso di errore, ritorna array vuoto (l'UI mostra l'EmptyState)
     return [];
   }
+}
+
+// -----------------------------------------------------------
+// MOCK DATA — Letto da config/site.ts per supporto white-label
+// -----------------------------------------------------------
+function getMockGare(): Gara[] {
+  // I dati mock sono definiti in siteConfig.mockGare
+  // così ogni cliente white-label può personalizzarli
+  const mockRaw = siteConfig.mockGare as unknown as GaraSanity[];
+  return mockRaw.map(arricchisciGara);
 }

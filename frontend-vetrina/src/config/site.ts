@@ -99,6 +99,69 @@ export const siteConfig = {
     members: "500+",
     coaches: "15+",
   },
+
+  // ========================
+  // MOCK GARE (dati demo per la sezione Risultati)
+  // ========================
+  /** Gare di esempio mostrate quando Sanity non è configurato.
+   *  Cambiare questi dati per ogni nuovo cliente white-label. */
+  mockGare: [
+    {
+      _id: "mock-1",
+      data: "2026-05-18T15:00:00Z",
+      campionato: "Serie C Maschile",
+      giornata: 12,
+      squadraCasa: "TC Carmignano",
+      squadraOspite: "CT Firenze",
+      punteggioCasa: 4,
+      punteggioOspite: 2,
+      inCasa: true,
+    },
+    {
+      _id: "mock-2",
+      data: "2026-05-11T10:00:00Z",
+      campionato: "Serie C Maschile",
+      giornata: 11,
+      squadraCasa: "CT Prato",
+      squadraOspite: "TC Carmignano",
+      punteggioCasa: 3,
+      punteggioOspite: 3,
+      inCasa: false,
+    },
+    {
+      _id: "mock-3",
+      data: "2026-05-04T15:00:00Z",
+      campionato: "Serie D1 Femminile",
+      giornata: 10,
+      squadraCasa: "TC Carmignano",
+      squadraOspite: "TC Empoli",
+      punteggioCasa: 5,
+      punteggioOspite: 1,
+      inCasa: true,
+    },
+    {
+      _id: "mock-4",
+      data: "2026-04-27T10:00:00Z",
+      campionato: "Serie C Maschile",
+      giornata: 10,
+      squadraCasa: "TC Carmignano",
+      squadraOspite: "CT Montecatini",
+      punteggioCasa: 4,
+      punteggioOspite: 2,
+      inCasa: true,
+    },
+    {
+      _id: "mock-5",
+      data: "2026-04-20T15:00:00Z",
+      campionato: "Serie D1 Femminile",
+      giornata: 9,
+      squadraCasa: "CT Scandicci",
+      squadraOspite: "TC Carmignano",
+      punteggioCasa: 4,
+      punteggioOspite: 2,
+      inCasa: false,
+    },
+  ],
 } as const;
 
 /**

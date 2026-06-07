@@ -18,7 +18,7 @@
  *     _id, data, campionato, giornata,
  *     squadraCasa, squadraOspite,
  *     punteggioCasa, punteggioOspite,
- *     inCasa
+ *     inCasa, fotoCopertina
  *   }
  */
 
@@ -81,6 +81,15 @@ export default defineType({
       description: "Se il circolo ha giocato in casa",
       initialValue: true,
     }),
+    defineField({
+      name: "fotoCopertina",
+      title: "Foto Evento",
+      type: "image",
+      description: "Foto della gara o dell'evento (opzionale)",
+      options: {
+        hotspot: true,
+      },
+    }),
   ],
 
   // Preview personalizzato nello Studio per facilitare la navigazione
@@ -91,14 +100,16 @@ export default defineType({
       ospite: "squadraOspite",
       pCasa: "punteggioCasa",
       pOspite: "punteggioOspite",
+      media: "fotoCopertina",
     },
-    prepare({ data, casa, ospite, pCasa, pOspite }) {
+    prepare({ data, casa, ospite, pCasa, pOspite, media }) {
       const dataStr = data
         ? new Date(data).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })
         : "—";
       return {
         title: `${casa ?? "?"} vs ${ospite ?? "?"}`,
         subtitle: `${dataStr} · ${pCasa ?? "?"}-${pOspite ?? "?"}`,
+        media,
       };
     },
   },

@@ -22,6 +22,8 @@
 import { getGareASquadre } from "@/lib/cms/gare";
 import type { Gara } from "@/lib/cms/types";
 import { siteConfig } from "@/config/site";
+import { urlFor } from "@/sanity/image";
+import Image from "next/image";
 
 export default async function TeamResults() {
   const gare = await getGareASquadre();
@@ -73,6 +75,23 @@ function GaraCard({ gara }: { gara: Gara }) {
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+      {/* Foto copertina */}
+      <div className="relative h-40 w-full bg-light-darker">
+        {gara.fotoCopertina ? (
+          <Image
+            src={urlFor(gara.fotoCopertina).width(600).height(320).quality(80).format("webp").url()}
+            alt={`${gara.squadraCasa} vs ${gara.squadraOspite}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+            <span className="text-4xl">🎾</span>
+          </div>
+        )}
+      </div>
+
       {/* Header con campionato e giornata */}
       <div className="bg-light px-6 py-3 flex items-center justify-between border-b border-gray-200">
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">

@@ -17,12 +17,20 @@
  *   punteggioCasa (number)         →    punteggioCasa
  *   punteggioOspite (number)       →    punteggioOspite
  *   inCasa (boolean)               →    inCasa
+ *   fotoCopertina (image)          →    fotoCopertina (SanityImageSource | null)
  *
  * CAMPI DERIVATI (calcolati nel codice, NON nello schema):
  *   risultato   → `${punteggioCasa}-${punteggioOspite}`
  *   isVittoria  → il club ha segnato più punti dell'avversario
  *   luogo       → inCasa ? "Casa" : "Trasferta"
  */
+
+/**
+ * Tipo per i riferimenti immagine di Sanity.
+ * Sanity restituisce un oggetto con _type, asset._ref e opzionalmente hotspot/crop.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SanityImageSource = any;
 
 /**
  * Dati grezzi restituiti dalla query GROQ di Sanity.
@@ -38,6 +46,8 @@ export interface GaraSanity {
   punteggioCasa: number;
   punteggioOspite: number;
   inCasa: boolean;
+  /** Foto dell'evento (opzionale — può essere null se non caricata) */
+  fotoCopertina?: SanityImageSource | null;
 }
 
 /**
