@@ -22,11 +22,9 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Link Rapidi</h4>
             <ul className="space-y-2">
               {[
-                { label: "Chi Siamo", href: "#chi-siamo" },
-                { label: "I Nostri Campi", href: "#campi" },
-                { label: `${siteConfig.academyShortName} Academy`, href: "#academy" },
-                { label: "Tariffe", href: "#tariffe" },
-                { label: "Contatti", href: "#contatti" },
+                { label: "I Nostri Campi", href: "/strutture" },
+                { label: "Tariffe", href: "/accademia" },
+                { label: "Contatti", href: "/contatti" },
               ].map((link) => (
                 <li key={link.href}>
                   <a

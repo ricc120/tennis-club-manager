@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -32,18 +33,18 @@ export default function Hero() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
-          <a
-            href="#chi-siamo"
+          <Link
+            href="/club"
             className="bg-primary hover:bg-primary-light text-white px-8 py-4 rounded-full text-lg font-semibold transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
           >
             Scopri il Club
-          </a>
-          <a
-            href="#tariffe"
+          </Link>
+          <Link
+            href="/accademia"
             className="border-2 border-white/30 hover:border-secondary text-white hover:text-secondary px-8 py-4 rounded-full text-lg font-semibold transition-all hover:-translate-y-0.5"
           >
             Vedi Tariffe
-          </a>
+          </Link>
         </div>
       </div>
 

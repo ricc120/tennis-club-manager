@@ -5,13 +5,11 @@ import Link from "next/link";
 import { siteConfig } from "@/config/site";
 
 const navLinks = [
-  { label: "Chi Siamo", href: "#chi-siamo" },
-  { label: "Campi", href: "#campi" },
-  { label: "Academy", href: "#academy" },
-  { label: "Risultati", href: "#risultati" },
-  { label: "Tariffe", href: "#tariffe" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contatti", href: "#contatti" },
+  { label: "Il Club", href: "/club" },
+  { label: "Accademia", href: "/accademia" },
+  { label: "Strutture", href: "/strutture" },
+  { label: "Risultati", href: "/#risultati" },
+  { label: "Contatti", href: "/contatti" },
 ];
 
 export default function Navbar() {
@@ -34,7 +32,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
-        <Link href="#" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group">
           <span className="text-2xl">🎾</span>
           <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary-light transition-colors">
             {siteConfig.clubShortName}
@@ -44,20 +42,20 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="text-white/80 hover:text-secondary text-sm font-medium tracking-wide transition-colors"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-          <a
-            href="#contatti"
+          <Link
+            href="/contatti"
             className="bg-primary hover:bg-primary-light text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary/30"
           >
             Prenota Ora
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -81,22 +79,22 @@ export default function Navbar() {
         <div className="lg:hidden bg-dark/95 backdrop-blur-md border-t border-white/10 animate-fade-in">
           <div className="px-4 py-4 space-y-3">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className="block text-white/80 hover:text-secondary py-2 text-base font-medium transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
-              href="#contatti"
+            <Link
+              href="/contatti"
               onClick={() => setMenuOpen(false)}
               className="block text-center bg-primary hover:bg-primary-light text-white px-5 py-3 rounded-full font-semibold transition-all mt-4"
             >
               Prenota Ora
-            </a>
+            </Link>
           </div>
         </div>
       )}

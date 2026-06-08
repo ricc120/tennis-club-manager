@@ -162,6 +162,80 @@ export const siteConfig = {
       inCasa: false,
     },
   ],
+
+  // ========================
+  // STAFF (per la pagina /club)
+  // ========================
+  staff: [
+    { name: "Marco Rossi", role: "Direttore Tecnico", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=MR" },
+    { name: "Elena Bianchi", role: "Maestra Nazionale FIT", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=EB" },
+    { name: "Luca Verdi", role: "Maestro Padel", photo: "https://placehold.co/400x500/00B4D8/FFFFFF?text=LV" },
+    { name: "Giulia Neri", role: "Preparatrice Atletica", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=GN" },
+    { name: "Andrea Conti", role: "Maestro Agonistica", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=AC" },
+    { name: "Sara Martini", role: "Coordinatrice SAT", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=SM" },
+  ],
+
+  // ========================
+  // CORSI (per la pagina /accademia)
+  // ========================
+  courses: [
+    {
+      name: "Bambini",
+      subtitle: "Dai 4 ai 12 anni",
+      price: "€XX",
+      period: "/mese",
+      features: [
+        "2 lezioni settimanali",
+        "Gruppi da max 6 allievi",
+        "Attrezzatura inclusa",
+        "Tornei interni stagionali",
+      ],
+      highlighted: false,
+    },
+    {
+      name: "Adulti",
+      subtitle: "Tutti i livelli",
+      price: "€XX",
+      period: "/mese",
+      features: [
+        "2-3 lezioni settimanali",
+        "Gruppi per livello",
+        "Accesso libero ai campi",
+        "Partecipazione tornei sociali",
+        "Analisi video del gioco",
+      ],
+      highlighted: true,
+    },
+    {
+      name: "Agonistica",
+      subtitle: "Under 14 / Under 18",
+      price: "€XX",
+      period: "/mese",
+      features: [
+        "5 allenamenti settimanali",
+        "Preparazione atletica dedicata",
+        "Supporto tornei FIT/TPRA",
+        "Mental coaching",
+        "Analisi match con video",
+        "Programmazione annuale",
+      ],
+      highlighted: false,
+    },
+  ],
+
+  // ========================
+  // STRUTTURE (per la pagina /strutture)
+  // ========================
+  strutture: [
+    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/2C5F2D/FFFFFF?text=Campo+Centrale", tall: true },
+    { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
+    { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
+    { title: "Clubhouse", category: "Clubhouse", photo: "https://placehold.co/800x600/1A1A2E/FFFFFF?text=Clubhouse", tall: true },
+    { title: "Ristorante", category: "Ristorante", photo: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Ristorante", tall: false },
+    { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
+    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/00B4D8/FFFFFF?text=Piscina", tall: true },
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/2C5F2D/FFFFFF?text=Terra+Rossa", tall: false },
+  ],
 } as const;
 
 /**
