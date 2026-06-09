@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN SYSTEM — White-Label Template
+   
+   CONCETTO: CSS Variables per il White-Labeling
+   
+   I colori del brand sono definiti come CSS custom properties
+   nella pseudo-classe :root. Per cambiare il branding:
+   1. Modifica i valori in :root
+   2. @theme di Tailwind li eredita automaticamente
+   3. Le utility classes (bg-primary, text-accent, ecc.) si aggiornano
+   
+   Questo approccio funziona perché Tailwind v4 usa internamente
+   CSS Variables — non compila i colori in valori statici.
+   ============================================================ */
+
+/* ============================================================
+   :root — Variabili di branding (modificare QUI per nuovo cliente)
+   ============================================================ */
+:root {
+  /* Primary = colore principale del club (Verde Tennis di default) */
+  --brand-primary: #2C5F2D;
+  --brand-primary-light: #4A8B4C;
+  --brand-primary-dark: #1E4220;
+  --brand-primary-50: #f0f7f0;
+  --brand-primary-100: #dceedd;
+
+  /* Secondary = colore secondario (Cyan Padel di default) */
+  --brand-secondary: #00E5FF;
+  --brand-secondary-dark: #00B8D4;
+  --brand-secondary-50: #e0fcff;
+
+  /* Accent = colore di accento (Arancione Academy di default) */
+  --brand-accent: #FF6D00;
+  --brand-accent-light: #FF9E40;
+  --brand-accent-dark: #E65100;
+  --brand-accent-50: #fff3e0;
+
+  /* Neutrals */
+  --brand-dark: #1A1A2E;
+  --brand-dark-lighter: #2D2D44;
+  --brand-light: #F8F9FA;
+  --brand-light-darker: #E9ECEF;
+}
+
+/* ============================================================
+   @theme — Tailwind v4 Design Tokens
+   
+   Mappa le CSS Variables del brand alle utility classes di Tailwind.
+   bg-primary → var(--brand-primary)
+   text-secondary → var(--brand-secondary)
+   border-accent → var(--brand-accent)
+   ============================================================ */
+@theme {
+  /* Primary (ex "tennis") */
+  --color-primary: var(--brand-primary);
+  --color-primary-light: var(--brand-primary-light);
+  --color-primary-dark: var(--brand-primary-dark);
+  --color-primary-50: var(--brand-primary-50);
+  --color-primary-100: var(--brand-primary-100);
+
+  /* Secondary (ex "padel") */
+  --color-secondary: var(--brand-secondary);
+  --color-secondary-dark: var(--brand-secondary-dark);
+  --color-secondary-50: var(--brand-secondary-50);
+
+  /* Accent (ex "academy") */
+  --color-accent: var(--brand-accent);
+  --color-accent-light: var(--brand-accent-light);
+  --color-accent-dark: var(--brand-accent-dark);
+  --color-accent-50: var(--brand-accent-50);
+
+  /* Neutrals */
+  --color-dark: var(--brand-dark);
+  --color-dark-lighter: var(--brand-dark-lighter);
+  --color-light: var(--brand-light);
+  --color-light-darker: var(--brand-light-darker);
+}
+
+/* Google Fonts loaded via <link> in layout.tsx */
+
+/* ============================================================
+   Global Styles
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--brand-dark);
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* ============================================================
+   Utility Animations
+   ============================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Stagger delay classes */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
