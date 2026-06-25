@@ -23,33 +23,33 @@ export const siteConfig = {
   // BRAND
   // ========================
   /** Nome completo del circolo (es. per titoli e testi lunghi) */
-  clubName: "Tennis Club Carmignano",
+  clubName: "Tennis Club Gorinello",
   /** Nome abbreviato (es. per navbar e badge) */
-  clubShortName: "TC Carmignano",
+  clubShortName: "TC Gorinello",
   /** Slogan principale del circolo */
-  clubSlogan: "Tradizione e innovazione nel cuore della Toscana",
+  clubSlogan: "Il tennis vista mare nelle Marche",
   /** Anno di fondazione */
-  foundedYear: 1985,
+  foundedYear: 1978,
   /** Città e provincia */
-  location: "Carmignano, Prato",
+  location: "Pesaro, Pesaro e Urbino",
   /** Regione (usata nei testi descrittivi) */
-  region: "Toscana",
+  region: "Marche",
 
   // ========================
   // ACADEMY
   // ========================
   /** Nome completo dell'accademia */
-  academyName: "Stefanini Tennis Academy",
+  academyName: "Gorinello Tennis Lab",
   /** Acronimo dell'accademia */
-  academyShortName: "S.T.A.",
+  academyShortName: "G.T.L.",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Via dello Sport 42, 59015 Carmignano (PO)",
-  phone: "+39 055 XXX XXXX",
-  email: "info@tccarmignano.it",
-  whatsappUrl: "https://wa.me/39055XXXXXXX",
+  address: "Viale Adriatico 115, 61121 Pesaro (PU)",
+  phone: "+39 0721 37 5500",
+  email: "info@tcgorinello.it",
+  whatsappUrl: "https://wa.me/390721375500",
 
   // ========================
   // ORARI
@@ -73,13 +73,13 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "TC Carmignano — Tennis Club & Padel | Stefanini Tennis Academy",
+    title: "TC Gorinello — Tennis & Padel vista mare | Pesaro",
     description:
-      "Tennis Club Carmignano: campi in terra rossa, padel panoramici e la Stefanini Tennis Academy (S.T.A.) nel cuore della Toscana. Prenota il tuo campo.",
+      "Tennis Club Gorinello: campi in terra rossa, padel e il Gorinello Tennis Lab sulla riviera marchigiana a Pesaro. Prenota il tuo campo.",
     keywords:
-      "tennis, padel, carmignano, prato, toscana, accademia tennis, S.T.A., Stefanini",
-    ogTitle: "TC Carmignano — Tennis, Padel & Academy",
-    ogDescription: "Dal 1985, tradizione e innovazione nel cuore della Toscana.",
+      "tennis, padel, pesaro, marche, scuola tennis, G.T.L., Gorinello, riviera",
+    ogTitle: "TC Gorinello — Tennis, Padel & Academy",
+    ogDescription: "Dal 1978, il tennis vista mare nelle Marche.",
   },
 
   // ========================
@@ -87,17 +87,17 @@ export const siteConfig = {
   // ========================
   images: {
     heroBackground:
-      "https://placehold.co/1920x1080/2C5F2D/FFFFFF?text=Tennis+Club",
+      "https://placehold.co/1920x1080/0D47A1/FFFFFF?text=TC+Gorinello",
   },
 
   // ========================
   // STRUTTURE (dati per la sezione Campi)
   // ========================
   stats: {
-    years: "40+",
-    courts: "6",
-    members: "500+",
-    coaches: "15+",
+    years: "45+",
+    courts: "10",
+    members: "700+",
+    coaches: "12+",
   },
 
   // ========================
