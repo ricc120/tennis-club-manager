@@ -23,33 +23,33 @@ export const siteConfig = {
   // BRAND
   // ========================
   /** Nome completo del circolo (es. per titoli e testi lunghi) */
-  clubName: "Tennis Club Carmignano",
+  clubName: "Circolo Tennis Colli Alti",
   /** Nome abbreviato (es. per navbar e badge) */
-  clubShortName: "TC Carmignano",
+  clubShortName: "CT Colli Alti",
   /** Slogan principale del circolo */
-  clubSlogan: "Tradizione e innovazione nel cuore della Toscana",
+  clubSlogan: "Tennis tra le colline dell'Umbria",
   /** Anno di fondazione */
-  foundedYear: 1985,
+  foundedYear: 1992,
   /** Città e provincia */
-  location: "Carmignano, Prato",
+  location: "Spoleto, Perugia",
   /** Regione (usata nei testi descrittivi) */
-  region: "Toscana",
+  region: "Umbria",
 
   // ========================
   // ACADEMY
   // ========================
   /** Nome completo dell'accademia */
-  academyName: "Stefanini Tennis Academy",
+  academyName: "Colli Alti Tennis School",
   /** Acronimo dell'accademia */
-  academyShortName: "S.T.A.",
+  academyShortName: "C.A.T.S.",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Via dello Sport 42, 59015 Carmignano (PO)",
-  phone: "+39 055 XXX XXXX",
-  email: "info@tccarmignano.it",
-  whatsappUrl: "https://wa.me/39055XXXXXXX",
+  address: "Via delle Colline 18, 06049 Spoleto (PG)",
+  phone: "+39 0743 48 1200",
+  email: "info@ctcollialti.it",
+  whatsappUrl: "https://wa.me/390743481200",
 
   // ========================
   // ORARI
@@ -73,13 +73,13 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "TC Carmignano — Tennis Club & Padel | Stefanini Tennis Academy",
+    title: "CT Colli Alti — Tennis & Padel tra le colline dell'Umbria",
     description:
-      "Tennis Club Carmignano: campi in terra rossa, padel panoramici e la Stefanini Tennis Academy (S.T.A.) nel cuore della Toscana. Prenota il tuo campo.",
+      "Circolo Tennis Colli Alti: campi panoramici, padel e la Colli Alti Tennis School nel verde dell'Umbria a Spoleto. Prenota il tuo campo.",
     keywords:
-      "tennis, padel, carmignano, prato, toscana, accademia tennis, S.T.A., Stefanini",
-    ogTitle: "TC Carmignano — Tennis, Padel & Academy",
-    ogDescription: "Dal 1985, tradizione e innovazione nel cuore della Toscana.",
+      "tennis, padel, spoleto, perugia, umbria, scuola tennis, C.A.T.S., Colli Alti",
+    ogTitle: "CT Colli Alti — Tennis, Padel & Academy",
+    ogDescription: "Dal 1992, tennis tra le colline dell'Umbria.",
   },
 
   // ========================
@@ -87,17 +87,17 @@ export const siteConfig = {
   // ========================
   images: {
     heroBackground:
-      "https://placehold.co/1920x1080/2C5F2D/FFFFFF?text=Tennis+Club",
+      "https://placehold.co/1920x1080/1B4332/FFFFFF?text=CT+Colli+Alti",
   },
 
   // ========================
   // STRUTTURE (dati per la sezione Campi)
   // ========================
   stats: {
-    years: "40+",
-    courts: "6",
-    members: "500+",
-    coaches: "15+",
+    years: "30+",
+    courts: "8",
+    members: "350+",
+    coaches: "10+",
   },
 
   // ========================

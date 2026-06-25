@@ -19,23 +19,23 @@
    :root — Variabili di branding (modificare QUI per nuovo cliente)
    ============================================================ */
 :root {
-  /* Primary = colore principale del club (Verde Tennis di default) */
-  --brand-primary: #2C5F2D;
-  --brand-primary-light: #4A8B4C;
-  --brand-primary-dark: #1E4220;
-  --brand-primary-50: #f0f7f0;
-  --brand-primary-100: #dceedd;
+  /* Primary = Verde bosco (colline umbre) */
+  --brand-primary: #1B4332;
+  --brand-primary-light: #2D6A4F;
+  --brand-primary-dark: #0B2B1E;
+  --brand-primary-50: #edf5f0;
+  --brand-primary-100: #d5e8dc;
 
-  /* Secondary = colore secondario (Cyan Padel di default) */
-  --brand-secondary: #00E5FF;
-  --brand-secondary-dark: #00B8D4;
-  --brand-secondary-50: #e0fcff;
+  /* Secondary = Teal (acqua naturale) */
+  --brand-secondary: #2EC4B6;
+  --brand-secondary-dark: #1A9E92;
+  --brand-secondary-50: #e0f7f5;
 
-  /* Accent = colore di accento (Arancione Academy di default) */
-  --brand-accent: #FF6D00;
-  --brand-accent-light: #FF9E40;
-  --brand-accent-dark: #E65100;
-  --brand-accent-50: #fff3e0;
+  /* Accent = Oro caldo (tramonto collinare) */
+  --brand-accent: #D4A017;
+  --brand-accent-light: #E8C547;
+  --brand-accent-dark: #B8860B;
+  --brand-accent-50: #fef9e7;
 
   /* Neutrals */
   --brand-dark: #1A1A2E;
