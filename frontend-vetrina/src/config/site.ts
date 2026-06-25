@@ -27,29 +27,29 @@ export const siteConfig = {
   /** Nome abbreviato (es. per navbar e badge) */
   clubShortName: "TC Gorinello",
   /** Slogan principale del circolo */
-  clubSlogan: "Il tennis vista mare nelle Marche",
+  clubSlogan: "Tennis e sport nel cuore della Toscana",
   /** Anno di fondazione */
   foundedYear: 1978,
   /** Città e provincia */
-  location: "Pesaro, Pesaro e Urbino",
+  location: "Campi Bisenzio, Firenze",
   /** Regione (usata nei testi descrittivi) */
-  region: "Marche",
+  region: "Toscana",
 
   // ========================
-  // ACADEMY
+  // CORSI (generico, no academy branding)
   // ========================
-  /** Nome completo dell'accademia */
-  academyName: "Gorinello Tennis Lab",
-  /** Acronimo dell'accademia */
-  academyShortName: "G.T.L.",
+  /** Nome della sezione corsi (generico) */
+  academyName: "I Nostri Corsi",
+  /** Acronimo (vuoto = non mostrato) */
+  academyShortName: "",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Viale Adriatico 115, 61121 Pesaro (PU)",
-  phone: "+39 0721 37 5500",
+  address: "Via del Santo 3, 50013 Campi Bisenzio (FI)",
+  phone: "+39 055 790 2300",
   email: "info@tcgorinello.it",
-  whatsappUrl: "https://wa.me/390721375500",
+  whatsappUrl: "https://wa.me/390557902300",
 
   // ========================
   // ORARI
@@ -73,13 +73,13 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "TC Gorinello — Tennis & Padel vista mare | Pesaro",
+    title: "TC Gorinello — Tennis a Campi Bisenzio | Firenze",
     description:
-      "Tennis Club Gorinello: campi in terra rossa, padel e il Gorinello Tennis Lab sulla riviera marchigiana a Pesaro. Prenota il tuo campo.",
+      "Tennis Club Gorinello: campi in terra rossa e corsi per ogni età a Campi Bisenzio, alle porte di Firenze. Prenota il tuo campo.",
     keywords:
-      "tennis, padel, pesaro, marche, scuola tennis, G.T.L., Gorinello, riviera",
-    ogTitle: "TC Gorinello — Tennis, Padel & Academy",
-    ogDescription: "Dal 1978, il tennis vista mare nelle Marche.",
+      "tennis, campi bisenzio, firenze, toscana, corsi tennis, Gorinello",
+    ogTitle: "TC Gorinello — Tennis a Campi Bisenzio",
+    ogDescription: "Dal 1978, tennis e sport alle porte di Firenze.",
   },
 
   // ========================
@@ -227,14 +227,12 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
-    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/2C5F2D/FFFFFF?text=Campo+Centrale", tall: true },
-    { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
-    { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
+    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/0D47A1/FFFFFF?text=Campo+Centrale", tall: true },
     { title: "Clubhouse", category: "Clubhouse", photo: "https://placehold.co/800x600/1A1A2E/FFFFFF?text=Clubhouse", tall: true },
     { title: "Ristorante", category: "Ristorante", photo: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Ristorante", tall: false },
     { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
-    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/00B4D8/FFFFFF?text=Piscina", tall: true },
-    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/2C5F2D/FFFFFF?text=Terra+Rossa", tall: false },
+    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/FF6F61/FFFFFF?text=Piscina", tall: true },
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/0D47A1/FFFFFF?text=Terra+Rossa", tall: false },
   ],
 } as const;
 
