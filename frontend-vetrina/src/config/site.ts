@@ -27,29 +27,29 @@ export const siteConfig = {
   /** Nome abbreviato (es. per navbar e badge) */
   clubShortName: "CT Colli Alti",
   /** Slogan principale del circolo */
-  clubSlogan: "Tennis tra le colline dell'Umbria",
+  clubSlogan: "Tennis tra le colline del Chianti",
   /** Anno di fondazione */
   foundedYear: 1992,
   /** Città e provincia */
-  location: "Spoleto, Perugia",
+  location: "Impruneta, Firenze",
   /** Regione (usata nei testi descrittivi) */
-  region: "Umbria",
+  region: "Toscana",
 
   // ========================
-  // ACADEMY
+  // CORSI (generico, no academy branding)
   // ========================
-  /** Nome completo dell'accademia */
-  academyName: "Colli Alti Tennis School",
-  /** Acronimo dell'accademia */
-  academyShortName: "C.A.T.S.",
+  /** Nome della sezione corsi (generico) */
+  academyName: "I Nostri Corsi",
+  /** Acronimo (vuoto = non mostrato) */
+  academyShortName: "",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Via delle Colline 18, 06049 Spoleto (PG)",
-  phone: "+39 0743 48 1200",
+  address: "Via dei Colli 18, 50023 Impruneta (FI)",
+  phone: "+39 055 231 4500",
   email: "info@ctcollialti.it",
-  whatsappUrl: "https://wa.me/390743481200",
+  whatsappUrl: "https://wa.me/390552314500",
 
   // ========================
   // ORARI
@@ -73,13 +73,13 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "CT Colli Alti — Tennis & Padel tra le colline dell'Umbria",
+    title: "CT Colli Alti — Tennis tra le colline del Chianti | Impruneta",
     description:
-      "Circolo Tennis Colli Alti: campi panoramici, padel e la Colli Alti Tennis School nel verde dell'Umbria a Spoleto. Prenota il tuo campo.",
+      "Circolo Tennis Colli Alti: campi panoramici e corsi per ogni età nel verde delle colline del Chianti a Impruneta. Prenota il tuo campo.",
     keywords:
-      "tennis, padel, spoleto, perugia, umbria, scuola tennis, C.A.T.S., Colli Alti",
-    ogTitle: "CT Colli Alti — Tennis, Padel & Academy",
-    ogDescription: "Dal 1992, tennis tra le colline dell'Umbria.",
+      "tennis, impruneta, firenze, toscana, chianti, corsi tennis, Colli Alti",
+    ogTitle: "CT Colli Alti — Tennis nel Chianti",
+    ogDescription: "Dal 1992, tennis tra le colline del Chianti.",
   },
 
   // ========================
@@ -227,14 +227,12 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
-    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/2C5F2D/FFFFFF?text=Campo+Centrale", tall: true },
-    { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
-    { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
+    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/1B4332/FFFFFF?text=Campo+Centrale", tall: true },
     { title: "Clubhouse", category: "Clubhouse", photo: "https://placehold.co/800x600/1A1A2E/FFFFFF?text=Clubhouse", tall: true },
     { title: "Ristorante", category: "Ristorante", photo: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Ristorante", tall: false },
     { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
-    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/00B4D8/FFFFFF?text=Piscina", tall: true },
-    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/2C5F2D/FFFFFF?text=Terra+Rossa", tall: false },
+    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/2EC4B6/FFFFFF?text=Piscina", tall: true },
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/1B4332/FFFFFF?text=Terra+Rossa", tall: false },
   ],
 } as const;
 
