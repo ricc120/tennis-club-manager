@@ -25,7 +25,7 @@ const summaryCards = [
   },
   {
     emoji: "🎾",
-    title: "Corsi & Agonistica",
+    title: "Corsi e Agonistica",
     description: `Percorsi formativi per ogni età e livello, dall'avviamento al minitennis fino all'agonismo.`,
     href: "/accademia",
     color: "accent",

@@ -20,7 +20,7 @@ export default function AccademiaPage() {
             className="text-4xl lg:text-6xl font-bold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Corsi &amp; Agonistica
+            Corsi e Agonistica
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
             Programmi di allenamento per ogni livello,
@@ -66,11 +66,10 @@ export default function AccademiaPage() {
             {siteConfig.courses.map((course) => (
               <div
                 key={course.name}
-                className={`relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${
-                  course.highlighted
+                className={`relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${course.highlighted
                     ? "bg-primary text-white shadow-2xl shadow-primary/30 ring-2 ring-primary scale-105"
                     : "bg-white text-dark shadow-sm hover:shadow-xl border border-gray-200"
-                }`}
+                  }`}
               >
                 {/* Badge "Più Popolare" */}
                 {course.highlighted && (
@@ -116,11 +115,10 @@ export default function AccademiaPage() {
                   {/* CTA */}
                   <Link
                     href="/contatti"
-                    className={`block text-center py-3 rounded-full font-semibold transition-all ${
-                      course.highlighted
+                    className={`block text-center py-3 rounded-full font-semibold transition-all ${course.highlighted
                         ? "bg-white text-primary hover:bg-white/90"
                         : "bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20"
-                    }`}
+                      }`}
                   >
                     Richiedi Info
                   </Link>
