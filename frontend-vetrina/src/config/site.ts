@@ -47,7 +47,7 @@ export const siteConfig = {
   // CONTATTI
   // ========================
   address: "Via del Santo 3, 50013 Campi Bisenzio (FI)",
-  phone: "+39 055 790 2300",
+  phone: "+39 055 889 9717",
   email: "info@tcgorinello.it",
   whatsappUrl: "https://wa.me/390557902300",
 
