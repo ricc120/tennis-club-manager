@@ -6,7 +6,7 @@ import { siteConfig } from "@/config/site";
 
 const navLinks = [
   { label: "Il Club", href: "/club" },
-  { label: "Accademia", href: "/accademia" },
+  { label: "Corsi", href: "/accademia" },
   { label: "Strutture", href: "/strutture" },
   { label: "Risultati", href: "/#risultati" },
   { label: "Contatti", href: "/contatti" },

@@ -52,23 +52,17 @@ export default function ClubPage() {
                   di riferimento per appassionati di ogni età e livello.
                 </p>
                 <p>
-                  Oggi il club dispone di {siteConfig.stats.courts} campi tra tennis e padel,
+                  Oggi il club dispone di {siteConfig.stats.courts} campi da tennis,
                   un team di {siteConfig.stats.coaches} professionisti qualificati e una comunità
                   di oltre {siteConfig.stats.members} tesserati. La nostra missione è promuovere
                   lo sport come strumento di crescita personale, aggregazione e benessere.
-                </p>
-                <p>
-                  La nascita della {siteConfig.academyName} ({siteConfig.academyShortName}) ha
-                  segnato un nuovo capitolo, offrendo percorsi agonistici strutturati per i
-                  giovani talenti del territorio, con l&apos;obiettivo di formare atleti completi
-                  dentro e fuori dal campo.
                 </p>
               </div>
               <Link
                 href="/accademia"
                 className="inline-flex items-center gap-2 mt-8 text-primary font-semibold hover:text-primary-light transition-colors"
               >
-                Scopri l&apos;Accademia →
+                Scopri i Nostri Corsi →
               </Link>
             </div>
 

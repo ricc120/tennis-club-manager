@@ -28,7 +28,7 @@ export default function Hero() {
         </h1>
         <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up delay-200">
           {siteConfig.clubSlogan}.
-          {" "}Tennis, Padel e la {siteConfig.academyName} per il tuo gioco migliore.
+          {" "}Corsi per ogni età e livello, dall&apos;avviamento all&apos;agonistica.
         </p>
 
         {/* CTAs */}

@@ -13,7 +13,7 @@ export default function Footer() {
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
               {siteConfig.clubName} — Dal {siteConfig.foundedYear}, {siteConfig.clubSlogan.toLowerCase()}.
-              {" "}Tennis, Padel e la {siteConfig.academyName}.
+              {" "}Corsi per ogni età e livello.
             </p>
           </div>
 
@@ -59,7 +59,7 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <span className="text-white/30 text-xs">
-              Powered by {siteConfig.academyShortName} — {siteConfig.academyName}
+              Powered by {siteConfig.clubShortName}
             </span>
           </div>
         </div>

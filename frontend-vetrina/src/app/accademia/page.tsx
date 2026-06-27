@@ -3,8 +3,8 @@ import Link from "next/link";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `Accademia | ${siteConfig.clubName}`,
-  description: `${siteConfig.academyName} (${siteConfig.academyShortName}) — Corsi di tennis per bambini, adulti e agonisti. Scopri i programmi e le tariffe.`,
+  title: `Corsi | ${siteConfig.clubName}`,
+  description: `Corsi di tennis per bambini, adulti e agonistica presso ${siteConfig.clubName}. Scopri i programmi e le tariffe.`,
 };
 
 export default function AccademiaPage() {
@@ -14,16 +14,16 @@ export default function AccademiaPage() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-gradient-to-b from-dark to-dark/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-accent font-semibold tracking-widest uppercase text-sm mb-3">
-            {siteConfig.academyShortName}
+            {siteConfig.clubShortName}
           </p>
           <h1
             className="text-4xl lg:text-6xl font-bold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            L&apos;Accademia
+            Corsi e Agonistica
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            {siteConfig.academyName} — Programmi di eccellenza per ogni livello,
+            Programmi di allenamento per ogni livello,
             dal minitennis all&apos;agonismo.
           </p>
         </div>
@@ -36,11 +36,11 @@ export default function AccademiaPage() {
             className="text-3xl lg:text-4xl font-bold text-dark mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Il Metodo {siteConfig.academyShortName}
+            Il Nostro Approccio
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            La nostra accademia propone un approccio integrato alla formazione sportiva:
-            tecnica individuale, preparazione atletica, mental coaching e analisi del gioco.
+            Proponiamo un approccio integrato alla formazione sportiva:
+            tecnica individuale, preparazione atletica e analisi del gioco.
             Ogni percorso è calibrato sull&apos;età, il livello e gli obiettivi dell&apos;allievo,
             con il supporto costante di un team di {siteConfig.stats.coaches} professionisti.
           </p>
