@@ -36,10 +36,10 @@ export const siteConfig = {
   region: "Toscana",
 
   // ========================
-  // CORSI (generico, nessuna accademia)
+  // CORSI (generico, no academy branding)
   // ========================
-  /** Nome della sezione corsi */
-  academyName: "Corsi & Agonistica",
+  /** Nome della sezione corsi (generico) */
+  academyName: "I Nostri Corsi",
   /** Acronimo (vuoto = non mostrato) */
   academyShortName: "",
 
@@ -47,9 +47,9 @@ export const siteConfig = {
   // CONTATTI
   // ========================
   address: "Via Indicatorio, 1A, 50058, Signa (FI)",
-  phone: "055 899 7491",
+  phone: "+39 055 899 7491",
   email: "info@ctcollialti.it",
-  whatsappUrl: "https://wa.me/390558997491",
+  whatsappUrl: "https://wa.me/390552314500",
 
   // ========================
   // ORARI
@@ -73,11 +73,11 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "CT Colli Alti — Tennis a Signa | Firenze",
+    title: "CT Colli Alti — Tennis alle porte di Firenze | Signa",
     description:
-      "Circolo Tennis Colli Alti: corsi per ogni età e agonistica a Signa, alle porte di Firenze. Prenota il tuo campo.",
+      "Circolo Tennis Colli Alti: campi attrezzati e corsi per ogni età a Signa, alle porte di Firenze. Prenota il tuo campo.",
     keywords:
-      "tennis, signa, firenze, toscana, corsi tennis, agonistica, Colli Alti",
+      "tennis, signa, firenze, toscana, corsi tennis, Colli Alti",
     ogTitle: "CT Colli Alti — Tennis a Signa",
     ogDescription: "Dal 1992, tennis e sport alle porte di Firenze.",
   },

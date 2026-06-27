@@ -24,7 +24,7 @@ export default function StrutturePage() {
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
             Un ambiente completo per lo sport e il relax: campi, palestra, piscina
-            e un ristorante con vista sul verde.
+            e un'area ristorante per i nostri soci.
           </p>
         </div>
       </section>
