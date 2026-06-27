@@ -27,29 +27,29 @@ export const siteConfig = {
   /** Nome abbreviato (es. per navbar e badge) */
   clubShortName: "CT Colli Alti",
   /** Slogan principale del circolo */
-  clubSlogan: "Tennis tra le colline del Chianti",
+  clubSlogan: "Tennis e sport alle porte di Firenze",
   /** Anno di fondazione */
   foundedYear: 1992,
   /** Città e provincia */
-  location: "Impruneta, Firenze",
+  location: "Signa, Firenze",
   /** Regione (usata nei testi descrittivi) */
   region: "Toscana",
 
   // ========================
-  // CORSI (generico, no academy branding)
+  // CORSI (generico, nessuna accademia)
   // ========================
-  /** Nome della sezione corsi (generico) */
-  academyName: "I Nostri Corsi",
+  /** Nome della sezione corsi */
+  academyName: "Corsi & Agonistica",
   /** Acronimo (vuoto = non mostrato) */
   academyShortName: "",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Via dei Colli 18, 50023 Impruneta (FI)",
-  phone: "+39 055 231 4500",
+  address: "Via Indicatorio, 1A, 50058, Signa (FI)",
+  phone: "055 899 7491",
   email: "info@ctcollialti.it",
-  whatsappUrl: "https://wa.me/390552314500",
+  whatsappUrl: "https://wa.me/390558997491",
 
   // ========================
   // ORARI
@@ -73,13 +73,13 @@ export const siteConfig = {
   // SEO
   // ========================
   seo: {
-    title: "CT Colli Alti — Tennis tra le colline del Chianti | Impruneta",
+    title: "CT Colli Alti — Tennis a Signa | Firenze",
     description:
-      "Circolo Tennis Colli Alti: campi panoramici e corsi per ogni età nel verde delle colline del Chianti a Impruneta. Prenota il tuo campo.",
+      "Circolo Tennis Colli Alti: corsi per ogni età e agonistica a Signa, alle porte di Firenze. Prenota il tuo campo.",
     keywords:
-      "tennis, impruneta, firenze, toscana, chianti, corsi tennis, Colli Alti",
-    ogTitle: "CT Colli Alti — Tennis nel Chianti",
-    ogDescription: "Dal 1992, tennis tra le colline del Chianti.",
+      "tennis, signa, firenze, toscana, corsi tennis, agonistica, Colli Alti",
+    ogTitle: "CT Colli Alti — Tennis a Signa",
+    ogDescription: "Dal 1992, tennis e sport alle porte di Firenze.",
   },
 
   // ========================

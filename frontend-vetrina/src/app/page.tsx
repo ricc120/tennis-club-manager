@@ -24,9 +24,9 @@ const summaryCards = [
     color: "primary",
   },
   {
-    emoji: "🎓",
-    title: "L'Accademia",
-    description: `${siteConfig.academyName} — Percorsi formativi per ogni età e livello, dal minitennis all'agonismo.`,
+    emoji: "🎾",
+    title: "Corsi & Agonistica",
+    description: `Percorsi formativi per ogni età e livello, dall'avviamento al minitennis fino all'agonismo.`,
     href: "/accademia",
     color: "accent",
   },
