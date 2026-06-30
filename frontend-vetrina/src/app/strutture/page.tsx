@@ -65,32 +65,44 @@ export default function StrutturePage() {
 
           {/* CSS Grid — pseudo-masonry con altezze variabili */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {siteConfig.strutture.map((item) => (
-              <div
-                key={item.title}
-                className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${
-                  item.tall ? "sm:row-span-2" : ""
-                }`}
-              >
-                <div className={`relative w-full ${item.tall ? "h-80 sm:h-full" : "h-60"}`}>
-                  <Image
-                    src={item.photo}
-                    alt={item.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <span className="text-xs font-semibold text-primary-light uppercase tracking-wide">
-                      {item.category}
-                    </span>
-                    <h3 className="text-white font-bold text-lg mt-1">{item.title}</h3>
+            {siteConfig.strutture.map((item) => {
+              const Wrapper = ('url' in item && item.url) ? 'a' : 'div';
+              const wrapperProps = ('url' in item && item.url)
+                ? { href: item.url as string, target: '_blank', rel: 'noopener noreferrer' }
+                : {};
+              return (
+                <Wrapper
+                  key={item.title}
+                  {...wrapperProps}
+                  className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${
+                    item.tall ? "sm:row-span-2" : ""
+                  } ${'url' in item && item.url ? "cursor-pointer" : ""}`}
+                >
+                  <div className={`relative w-full ${item.tall ? "h-80 sm:h-full" : "h-60"}`}>
+                    <Image
+                      src={item.photo}
+                      alt={item.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <span className="text-xs font-semibold text-primary-light uppercase tracking-wide">
+                        {item.category}
+                      </span>
+                      <h3 className="text-white font-bold text-lg mt-1">{item.title}</h3>
+                      {'url' in item && item.url && (
+                        <span className="inline-flex items-center gap-1 text-secondary text-xs font-semibold mt-2">
+                          Visita il sito →
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </Wrapper>
+              );
+            })}
           </div>
         </div>
       </section>

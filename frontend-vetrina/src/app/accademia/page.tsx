@@ -130,6 +130,42 @@ export default function AccademiaPage() {
           </div>
         </div>
       </section>
+
+      {/* Banner Accademia — Link esterno */}
+      {siteConfig.academyUrl && (
+        <section className="py-16 lg:py-20 bg-gradient-to-br from-primary-dark via-primary to-primary-light relative overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <span className="text-accent font-bold text-sm tracking-widest uppercase">
+              {siteConfig.academyShortName}
+            </span>
+            <h2
+              className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {siteConfig.academyName}
+            </h2>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
+              Scopri tutti i programmi, i coach e le novità dell&apos;accademia
+              sul sito ufficiale.
+            </p>
+            <a
+              href={siteConfig.academyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold transition-all hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 hover:bg-white/95"
+            >
+              Visita {siteConfig.academyShortName}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+        </section>
+      )}
     </>
   );
 }
