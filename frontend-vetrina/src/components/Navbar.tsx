@@ -40,7 +40,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8 ml-auto">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -50,12 +50,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/contatti"
-            className="bg-primary hover:bg-primary-light text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary/30"
-          >
-            Prenota Ora
-          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -88,13 +82,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/contatti"
-              onClick={() => setMenuOpen(false)}
-              className="block text-center bg-primary hover:bg-primary-light text-white px-5 py-3 rounded-full font-semibold transition-all mt-4"
-            >
-              Prenota Ora
-            </Link>
           </div>
         </div>
       )}
