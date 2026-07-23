@@ -16,17 +16,8 @@ export default function AccademiaPage() {
           Immagine: /images/VISTA_TENNIS.jpg
           ============================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        {/* Background Image */}
-        <Image
-          src="/images/VISTA_TENNIS.jpg"
-          alt="Vista panoramica dei campi da tennis del TC Carmignano"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
         {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-dark/70 to-dark/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-dark to-dark/90" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-accent font-semibold tracking-widest uppercase text-sm mb-3">
@@ -89,7 +80,7 @@ export default function AccademiaPage() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
               <Image
-                src="/images/terrazza_con_giocatori.jpg"
+                src="/images/logo_accademia.png"
                 alt="Terrazza del TC Carmignano con giocatori"
                 width={800}
                 height={600}
@@ -176,11 +167,10 @@ export default function AccademiaPage() {
             {siteConfig.courses.map((course) => (
               <div
                 key={course.name}
-                className={`relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${
-                  course.highlighted
-                    ? "bg-primary text-white shadow-2xl shadow-primary/30 ring-2 ring-primary scale-105"
-                    : "bg-white text-dark shadow-sm hover:shadow-xl border border-gray-200"
-                }`}
+                className={`relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${course.highlighted
+                  ? "bg-primary text-white shadow-2xl shadow-primary/30 ring-2 ring-primary scale-105"
+                  : "bg-white text-dark shadow-sm hover:shadow-xl border border-gray-200"
+                  }`}
               >
                 {/* Badge "Più Popolare" */}
                 {course.highlighted && (
@@ -197,18 +187,16 @@ export default function AccademiaPage() {
                     {course.name}
                   </h3>
                   <p
-                    className={`text-sm mb-4 ${
-                      course.highlighted ? "text-white/70" : "text-gray-500"
-                    }`}
+                    className={`text-sm mb-4 ${course.highlighted ? "text-white/70" : "text-gray-500"
+                      }`}
                   >
-                    {course.age}
+                    {course.subtitle}
                   </p>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="text-4xl font-bold">{course.price}</span>
                     <span
-                      className={`text-sm ${
-                        course.highlighted ? "text-white/60" : "text-gray-400"
-                      }`}
+                      className={`text-sm ${course.highlighted ? "text-white/60" : "text-gray-400"
+                        }`}
                     >
                       /mese
                     </span>
@@ -219,9 +207,8 @@ export default function AccademiaPage() {
                     {course.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm">
                         <span
-                          className={`mt-0.5 ${
-                            course.highlighted ? "text-accent" : "text-primary"
-                          }`}
+                          className={`mt-0.5 ${course.highlighted ? "text-accent" : "text-primary"
+                            }`}
                         >
                           ✓
                         </span>
@@ -239,11 +226,10 @@ export default function AccademiaPage() {
                   {/* CTA */}
                   <Link
                     href="/contatti"
-                    className={`block text-center py-3 rounded-full font-semibold transition-all ${
-                      course.highlighted
-                        ? "bg-white text-primary hover:bg-white/90"
-                        : "bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20"
-                    }`}
+                    className={`block text-center py-3 rounded-full font-semibold transition-all ${course.highlighted
+                      ? "bg-white text-primary hover:bg-white/90"
+                      : "bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20"
+                      }`}
                   >
                     Richiedi Info
                   </Link>

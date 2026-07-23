@@ -18,6 +18,8 @@
  * del club, all'indirizzo, ai recapiti, ecc. Tutto viene da qui.
  */
 
+import { title } from "process";
+
 export const siteConfig = {
   // ========================
   // BRAND
@@ -29,7 +31,7 @@ export const siteConfig = {
   /** Slogan principale del circolo */
   clubSlogan: "Tradizione e innovazione nel cuore della Toscana",
   /** Anno di fondazione */
-  foundedYear: 1985,
+  foundedYear: 2011,
   /** Città e provincia */
   location: "Carmignano, Prato",
   /** Regione (usata nei testi descrittivi) */
@@ -48,7 +50,7 @@ export const siteConfig = {
   // ========================
   // CONTATTI
   // ========================
-  address: "Via dello Sport 42, 59015 Carmignano (PO)",
+  address: "Via Giuseppe Meazza, 2, 59015 Carmignano (PO)",
   phone: "+39 055 XXX XXXX",
   email: "info@tccarmignano.it",
   whatsappUrl: "https://wa.me/39055XXXXXXX",
@@ -81,7 +83,7 @@ export const siteConfig = {
     keywords:
       "tennis, padel, carmignano, prato, toscana, accademia tennis, S.T.A., Stefanini",
     ogTitle: "TC Carmignano — Tennis, Padel & Academy",
-    ogDescription: "Dal 1985, tradizione e innovazione nel cuore della Toscana.",
+    ogDescription: "Dal 2011, tradizione e innovazione nel cuore della Toscana.",
   },
 
   // ========================
@@ -89,17 +91,17 @@ export const siteConfig = {
   // ========================
   images: {
     heroBackground:
-      "https://placehold.co/1920x1080/2C5F2D/FFFFFF?text=Tennis+Club",
+      "/images/VISTA_TENNIS.jpg",
   },
 
   // ========================
   // STRUTTURE (dati per la sezione Campi)
   // ========================
   stats: {
-    years: "40+",
-    courts: "6",
-    members: "500+",
-    coaches: "15+",
+    years: "10+",
+    courts: "4",
+    members: "100+",
+    coaches: "10+",
   },
 
   // ========================
@@ -229,14 +231,14 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
-    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/2C5F2D/FFFFFF?text=Campo+Centrale", tall: true },
+    { title: "Campo Centrale", category: "Tennis", photo: "/images/terrazza_con_giocatori.jpg", tall: true },
     { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
     { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
-    { title: "Clubhouse", category: "Clubhouse", photo: "https://placehold.co/800x600/1A1A2E/FFFFFF?text=Clubhouse", tall: true },
-    { title: "Ristorante", category: "Ristorante", photo: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Ristorante", tall: false, url: "https://cirivobistrot.it/" },
+    { title: "Clubhouse", category: "Clubhouse", photo: "/images/bar_pizzeria.jpg", tall: false },
+    { title: "Ristorante", category: "Ristorante", photo: "/images/ristorante.jpg", tall: true, url: "https://cirivobistrot.it/" },
     { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
-    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/00B4D8/FFFFFF?text=Piscina", tall: true },
-    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/2C5F2D/FFFFFF?text=Terra+Rossa", tall: false },
+    { title: "Campo Sintetico", category: "Tennis", photo: "/images/campo_verde.jpeg", tall: false },
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "/images/2campi.jpg", tall: false },
   ],
 } as const;
 

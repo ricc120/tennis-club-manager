@@ -77,10 +77,6 @@ export default function ClubPage() {
                 height={600}
                 className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-dark/80 to-transparent p-6">
-                <p className="text-white font-bold text-lg">{siteConfig.clubName}</p>
-                <p className="text-white/70 text-sm">{siteConfig.location}</p>
-              </div>
             </div>
           </div>
 

@@ -33,7 +33,7 @@ const summaryCards = [
   {
     emoji: "🏟️",
     title: "Le Strutture",
-    description: `${siteConfig.stats.courts} campi, palestra, piscina e ristorante: tutto ciò che serve per lo sport e il relax.`,
+    description: `${siteConfig.stats.courts} campi, palestra e ristorante: tutto ciò che serve per lo sport e il relax.`,
     href: "/strutture",
     color: "secondary",
   },

@@ -4,7 +4,7 @@ import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: `Strutture | ${siteConfig.clubName}`,
-  description: `Scopri le strutture di ${siteConfig.clubName}: campi in terra rossa, padel, clubhouse, ristorante, palestra e piscina a ${siteConfig.location}.`,
+  description: `Scopri le strutture di ${siteConfig.clubName}: campi in terra rossa, padel, clubhouse, ristorante e palestra a ${siteConfig.location}.`,
 };
 
 export default function StrutturePage() {
@@ -23,7 +23,7 @@ export default function StrutturePage() {
             Le Strutture
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Un ambiente completo per lo sport e il relax: campi, palestra, piscina
+            Un ambiente completo per lo sport e il relax: campi, palestra
             e un ristorante con vista sul verde.
           </p>
         </div>
@@ -74,9 +74,8 @@ export default function StrutturePage() {
                 <Wrapper
                   key={item.title}
                   {...wrapperProps}
-                  className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${
-                    item.tall ? "sm:row-span-2" : ""
-                  } ${'url' in item && item.url ? "cursor-pointer" : ""}`}
+                  className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${item.tall ? "sm:row-span-2" : ""
+                    } ${'url' in item && item.url ? "cursor-pointer" : ""}`}
                 >
                   <div className={`relative w-full ${item.tall ? "h-80 sm:h-full" : "h-60"}`}>
                     <Image
