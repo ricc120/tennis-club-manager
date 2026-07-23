@@ -29,57 +29,53 @@ export default function ClubPage() {
         </div>
       </section>
 
-      {/* Storia — Layout a due colonne */}
+      {/* ============================================================
+          CHI SIAMO — Le Origini e la Passione
+          Contenuto hardcoded fornito dal cliente TC Carmignano.
+          Layout: testo + immagine a due colonne, inverso su seconda riga.
+          ============================================================ */}
       <section className="py-20 lg:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Testo */}
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
+              Le Origini e la Passione
+            </p>
+            <h2
+              className="text-3xl lg:text-4xl font-bold text-dark mb-6"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              La Nostra Storia
+            </h2>
+          </div>
+
+          {/* Riga 1: Testo a sinistra — Immagine vialetto a destra */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
             <div>
-              <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
-                La Nostra Storia
-              </p>
-              <h2
-                className="text-3xl lg:text-4xl font-bold text-dark mb-6"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {siteConfig.stats.years} anni di passione sportiva
-              </h2>
-              <div className="space-y-4 text-gray-600 leading-relaxed">
+              <div className="space-y-5 text-gray-700 leading-relaxed text-base lg:text-lg">
                 <p>
-                  Fondato nel {siteConfig.foundedYear}, {siteConfig.clubName} è nato dalla volontà
-                  di creare uno spazio dove lo sport incontra la comunità. Situato nel cuore di{" "}
-                  {siteConfig.location}, il circolo si è evoluto nel tempo diventando un punto
-                  di riferimento per appassionati di ogni età e livello.
+                  Tutto nasce negli anni &apos;90 dal sogno di due maestri nazionali,{" "}
+                  <strong className="text-dark">Marco e Roberta Stefanini</strong>, uniti
+                  dall&apos;amore per questo sport. Dopo anni di ricerche e ostacoli burocratici,
+                  nel 2008 trovano il luogo perfetto nella bellissima zona panoramica de{" "}
+                  <em>&ldquo;La Serra&rdquo;</em> (tra Poggio a Caiano e Carmignano).
                 </p>
                 <p>
-                  Oggi il club dispone di {siteConfig.stats.courts} campi tra tennis e padel,
-                  un team di {siteConfig.stats.coaches} professionisti qualificati e una comunità
-                  di oltre {siteConfig.stats.members} tesserati. La nostra missione è promuovere
-                  lo sport come strumento di crescita personale, aggregazione e benessere.
-                </p>
-                <p>
-                  La nascita della {siteConfig.academyName} ({siteConfig.academyShortName}) ha
-                  segnato un nuovo capitolo, offrendo percorsi agonistici strutturati per i
-                  giovani talenti del territorio, con l&apos;obiettivo di formare atleti completi
-                  dentro e fuori dal campo.
+                  Nel <strong className="text-dark">2009</strong> posano la prima pietra e nel{" "}
+                  <strong className="text-dark">2011</strong> inaugurano i primi campi affiliandosi
+                  alla FIT. La struttura è stata poi completata nel{" "}
+                  <strong className="text-dark">2017</strong> con l&apos;aggiunta di bar, ristorante
+                  e pizzeria.
                 </p>
               </div>
-              <Link
-                href="/accademia"
-                className="inline-flex items-center gap-2 mt-8 text-primary font-semibold hover:text-primary-light transition-colors"
-              >
-                Scopri l&apos;Accademia →
-              </Link>
             </div>
-
-            {/* Immagine */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
               <Image
-                src="https://placehold.co/800x600/2C5F2D/FFFFFF?text=Il+Circolo"
-                alt={`Vista del ${siteConfig.clubName}`}
+                src="/images/vialetto.jpg"
+                alt="Vialetto di ingresso del Tennis Club Carmignano"
                 width={800}
                 height={600}
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-dark/80 to-transparent p-6">
                 <p className="text-white font-bold text-lg">{siteConfig.clubName}</p>
@@ -87,10 +83,45 @@ export default function ClubPage() {
               </div>
             </div>
           </div>
+
+          {/* Riga 2: Immagine padel/clubhouse a sinistra — Testo a destra */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group order-2 lg:order-1">
+              <Image
+                src="/images/padel2_club_house.jpg"
+                alt="Campi padel e club house del TC Carmignano"
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="space-y-5 text-gray-700 leading-relaxed text-base lg:text-lg">
+                <p>
+                  Oggi il {siteConfig.clubName} vanta il{" "}
+                  <strong className="text-dark">miglior staff tecnico della zona</strong>,
+                  capace di formare giocatori di ogni livello. La scuola tennis conta circa{" "}
+                  <strong className="text-primary">100 iscritti</strong> tra ragazzi e adulti.
+                </p>
+                <p>
+                  L&apos;offerta si è ampliata introducendo campi da{" "}
+                  <strong className="text-dark">Padel</strong>, centri estivi, atletica e tornei
+                  che portano oltre{" "}
+                  <strong className="text-primary">4.000 presenze l&apos;anno</strong>.
+                </p>
+              </div>
+              <Link
+                href="/accademia"
+                className="inline-flex items-center gap-2 mt-8 bg-primary hover:bg-primary-light text-white px-6 py-3 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5"
+              >
+                Scopri l&apos;Accademia →
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Staff — Griglia 3 colonne */}
+      {/* Staff — Griglia 3 colonne (invariata) */}
       <section className="py-20 lg:py-28 bg-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
