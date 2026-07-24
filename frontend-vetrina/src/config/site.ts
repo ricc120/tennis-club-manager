@@ -18,6 +18,8 @@
  * del club, all'indirizzo, ai recapiti, ecc. Tutto viene da qui.
  */
 
+import { title } from "process";
+
 export const siteConfig = {
   // ========================
   // BRAND
@@ -29,7 +31,7 @@ export const siteConfig = {
   /** Slogan principale del circolo */
   clubSlogan: "Tradizione e innovazione nel cuore della Toscana",
   /** Anno di fondazione */
-  foundedYear: 1985,
+  foundedYear: 2011,
   /** Città e provincia */
   location: "Carmignano, Prato",
   /** Regione (usata nei testi descrittivi) */
@@ -42,14 +44,18 @@ export const siteConfig = {
   academyName: "Stefanini Tennis Academy",
   /** Acronimo dell'accademia */
   academyShortName: "S.T.A.",
+  /** Sito web esterno dell'accademia (vuoto = non mostrato) */
+  academyUrl: "https://stefaninitennisacademy.it/",
 
   // ========================
   // CONTATTI
   // ========================
-  address: "Via dello Sport 42, 59015 Carmignano (PO)",
+  address: "Via Giuseppe Meazza, 2, 59015 Carmignano (PO)",
   phone: "+39 055 XXX XXXX",
   email: "info@tccarmignano.it",
   whatsappUrl: "https://wa.me/39055XXXXXXX",
+  /** Link Google Maps per indicazioni stradali */
+  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Via+Giuseppe+Meazza+2+Carmignano+PO",
 
   // ========================
   // ORARI
@@ -64,8 +70,8 @@ export const siteConfig = {
   // SOCIAL (predisposto per il futuro)
   // ========================
   social: {
-    facebook: "",
-    instagram: "",
+    facebook: "https://facebook.com",
+    instagram: "https://instagram.com/tennisclubcarmignano?igsh=OHJhcjRoNHQ5aXk1",
     youtube: "",
   },
 
@@ -79,7 +85,7 @@ export const siteConfig = {
     keywords:
       "tennis, padel, carmignano, prato, toscana, accademia tennis, S.T.A., Stefanini",
     ogTitle: "TC Carmignano — Tennis, Padel & Academy",
-    ogDescription: "Dal 1985, tradizione e innovazione nel cuore della Toscana.",
+    ogDescription: "Dal 2011, tradizione e innovazione nel cuore della Toscana.",
   },
 
   // ========================
@@ -87,17 +93,17 @@ export const siteConfig = {
   // ========================
   images: {
     heroBackground:
-      "https://placehold.co/1920x1080/2C5F2D/FFFFFF?text=Tennis+Club",
+      "/images/VISTA_TENNIS.jpg",
   },
 
   // ========================
   // STRUTTURE (dati per la sezione Campi)
   // ========================
   stats: {
-    years: "40+",
-    courts: "6",
-    members: "500+",
-    coaches: "15+",
+    years: "10+",
+    courts: "4",
+    members: "100+",
+    coaches: "10+",
   },
 
   // ========================
@@ -167,12 +173,10 @@ export const siteConfig = {
   // STAFF (per la pagina /club)
   // ========================
   staff: [
-    { name: "Marco Rossi", role: "Direttore Tecnico", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=MR" },
-    { name: "Elena Bianchi", role: "Maestra Nazionale FIT", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=EB" },
-    { name: "Luca Verdi", role: "Maestro Padel", photo: "https://placehold.co/400x500/00B4D8/FFFFFF?text=LV" },
-    { name: "Giulia Neri", role: "Preparatrice Atletica", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=GN" },
-    { name: "Andrea Conti", role: "Maestro Agonistica", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=AC" },
-    { name: "Sara Martini", role: "Coordinatrice SAT", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=SM" },
+    { name: "Marco Stefanini", role: "Direttore Tecnico", photo: "/images/marco.png" },
+    { name: "Jacopo Stefanini", role: "Maestro Nazionale FIT", photo: "/images/apo.png" },
+    { name: "Luca Peruzzini", role: "Preparatore Atletico", photo: "/images/luca.png" },
+    { name: "Roberta Ardinghi", role: "Maestra Nazionale FIT", photo: "/images/roberta.png" },
   ],
 
   // ========================
@@ -227,14 +231,14 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
-    { title: "Campo Centrale", category: "Tennis", photo: "https://placehold.co/800x600/2C5F2D/FFFFFF?text=Campo+Centrale", tall: true },
+    { title: "Campo Centrale", category: "Tennis", photo: "/images/terrazza_con_giocatori.jpg", tall: false },
     { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
     { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
-    { title: "Clubhouse", category: "Clubhouse", photo: "https://placehold.co/800x600/1A1A2E/FFFFFF?text=Clubhouse", tall: true },
-    { title: "Ristorante", category: "Ristorante", photo: "https://placehold.co/600x400/FF6B35/FFFFFF?text=Ristorante", tall: false },
+    { title: "Clubhouse", category: "Clubhouse", photo: "/images/bar_pizzeria.jpg", tall: false },
+    { title: "Ristorante", category: "Ristorante", photo: "/images/ristorante.jpg", tall: true, url: "https://cirivobistrot.it/" },
     { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
-    { title: "Piscina", category: "Piscina", photo: "https://placehold.co/800x600/00B4D8/FFFFFF?text=Piscina", tall: true },
-    { title: "Campi in Terra Rossa", category: "Tennis", photo: "https://placehold.co/600x400/2C5F2D/FFFFFF?text=Terra+Rossa", tall: false },
+    { title: "Campo Sintetico", category: "Tennis", photo: "/images/campo_verde.jpeg", tall: false },
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "/images/2campi.jpg", tall: false },
   ],
 } as const;
 

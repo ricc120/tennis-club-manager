@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Il Club", href: "/club" },
@@ -24,23 +25,22 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-dark/95 backdrop-blur-md shadow-lg py-3"
-          : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-dark/95 backdrop-blur-md shadow-lg py-3"
+        : "bg-transparent py-5"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-2xl">🎾</span>
+          <Image src="/images/logo_circolo-removebg-preview.png" alt="Logo" width={50} height={50} className="text-2xl" />
           <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary-light transition-colors">
             {siteConfig.clubShortName}
           </span>
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8 ml-auto">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -50,12 +50,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/contatti"
-            className="bg-primary hover:bg-primary-light text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary/30"
-          >
-            Prenota Ora
-          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -88,13 +82,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/contatti"
-              onClick={() => setMenuOpen(false)}
-              className="block text-center bg-primary hover:bg-primary-light text-white px-5 py-3 rounded-full font-semibold transition-all mt-4"
-            >
-              Prenota Ora
-            </Link>
           </div>
         </div>
       )}

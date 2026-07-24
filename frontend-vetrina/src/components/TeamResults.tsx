@@ -86,8 +86,8 @@ function GaraCard({ gara }: { gara: Gara }) {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-            <span className="text-4xl">🎾</span>
+          <div className="absolute inset-0 flex items-center justify-center text-primary/40 bg-primary/5">
+            <i className="bi bi-trophy text-3xl text-gray-400"></i>
           </div>
         )}
       </div>
@@ -164,7 +164,9 @@ function GaraCard({ gara }: { gara: Gara }) {
 function EmptyState() {
   return (
     <div className="text-center py-16">
-      <span className="text-5xl mb-4 block">🏆</span>
+      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white shadow-md border border-gray-100 flex items-center justify-center">
+        <i className="bi bi-trophy-fill text-3xl text-amber-500"></i>
+      </div>
       <h3
         className="text-2xl font-bold text-dark mb-3"
         style={{ fontFamily: "'Playfair Display', serif" }}
