@@ -13,7 +13,6 @@ export default function AccademiaPage() {
     <>
       {/* ============================================================
           HERO — Vista panoramica dei campi come sfondo
-          Immagine: /images/VISTA_TENNIS.jpg
           ============================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Dark overlay for readability */}
@@ -55,7 +54,7 @@ export default function AccademiaPage() {
             </h2>
           </div>
 
-          {/* Riga 1: Testo a sinistra — Immagine terrazza a destra */}
+          {/* Riga 1: Testo a sinistra — Immagine giocatore a destra */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
             <div>
               <div className="space-y-5 text-gray-700 leading-relaxed text-base lg:text-lg">
@@ -80,7 +79,7 @@ export default function AccademiaPage() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
               <Image
-                src="/images/logo_accademia.png"
+                src="/images/jacopo_stefanini.jpg"
                 alt="Terrazza del TC Carmignano con giocatori"
                 width={800}
                 height={600}
@@ -89,59 +88,65 @@ export default function AccademiaPage() {
             </div>
           </div>
 
-          {/* Highlight — Lucrezia Stefanini */}
-          <div className="relative bg-gradient-to-r from-primary-dark via-primary to-primary-light rounded-3xl p-8 lg:p-12 mb-20 overflow-hidden">
-            {/* Decorative */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          {/* Riga 2: Immagine Lucrezia a sinistra — Highlights a destra (zig-zag) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Foto — prima su mobile, sinistra su desktop */}
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
+              <Image
+                src="/images/lucrezia_stefanini.jpg"
+                alt="Lucrezia Stefanini — WTA 99"
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
 
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
-              <div className="lg:col-span-3 text-white">
-                <span className="text-accent font-bold text-sm tracking-widest uppercase">
-                  Talento dell&apos;Academy
-                </span>
-                <h3
-                  className="text-2xl lg:text-3xl font-bold mt-2 mb-4"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  Lucrezia Stefanini
-                </h3>
-                <p className="text-white/80 leading-relaxed text-base lg:text-lg">
-                  Tra i primi talenti dell&apos;Academy spicca{" "}
-                  <strong>Lucrezia Stefanini</strong> (Best ranking{" "}
-                  <span className="text-accent font-bold">99 WTA</span>), giocatrice di livello
-                  mondiale che calca i campi dei tornei del Grande Slam:{" "}
-                  <em>Roland Garros, Wimbledon, US Open, Australian Open</em>.
-                </p>
+            {/* Testo + Highlights */}
+            <div>
+              <span className="text-accent font-bold text-sm tracking-widest uppercase">
+                Talento dell&apos;Academy
+              </span>
+              <h3
+                className="text-2xl lg:text-3xl font-bold text-dark mt-2 mb-4"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Lucrezia Stefanini
+              </h3>
+              <p className="text-gray-700 leading-relaxed text-base lg:text-lg mb-6">
+                Tra i primi talenti dell&apos;Academy, Lucrezia è una giocatrice di
+                livello mondiale che calca i campi dei tornei più prestigiosi.
+              </p>
+
+              {/* Badge ranking */}
+              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-5 py-2 mb-6">
+                <span className="text-accent font-bold text-lg">99</span>
+                <span className="text-gray-600 text-sm font-medium">Best ranking WTA</span>
               </div>
-              <div className="lg:col-span-2 flex justify-center">
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  {[
-                    { value: "99", label: "Best WTA" },
-                    { value: "4", label: "Grand Slam" },
-                    { value: "20", label: "Giovani Atleti" },
-                    { value: "🇮🇹", label: "Tutta Italia" },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10"
-                    >
-                      <p className="text-2xl font-bold text-accent">{stat.value}</p>
-                      <p className="text-white/60 text-xs mt-1">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
+
+              {/* Grand Slam list */}
+              <p className="text-xs font-bold text-400 uppercase tracking-widest mb-3">
+                Tornei del Grande Slam
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { code: "FR", name: "Roland Garros", hover: "hover:bg-[#C4622D]/15 hover:text-[#9B3D15]" },
+                  { code: "GB", name: "Wimbledon", hover: "hover:bg-[#4CAF50]/15 hover:text-[#2E7D32]" },
+                  { code: "US", name: "US Open", hover: "hover:bg-[#4FC3F7]/15 hover:text-[#0277BD]" },
+                  { code: "AU", name: "Australian Open", hover: "hover:bg-[#4FC3F7]/15 hover:text-[#0277BD]" },
+                  { code: "IT", name: "Internazionali di Roma", hover: "hover:bg-[#C4622D]/15 hover:text-[#9B3D15]" },
+                ].map((slam) => (
+                  <span
+                    key={slam.name}
+                    className={`flex items-center gap-2 text-sm text-gray-700 bg-light rounded-lg px-3 py-2 font-medium transition-colors duration-200 cursor-default ${slam.hover}`}
+                  >
+                    <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-gray-200/80 text-gray-700 uppercase shrink-0">
+                      {slam.code}
+                    </span>
+                    <span>{slam.name}</span>
+                  </span>
+                ))}
               </div>
             </div>
-          </div>
-
-          {/* Riga finale — Obiettivo */}
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-gray-700 text-lg leading-relaxed">
-              Oggi l&apos;Academy ospita già{" "}
-              <strong className="text-primary">20 giovani promesse</strong> provenienti da tutta
-              Italia, pronti a tentare la scalata al professionismo.
-            </p>
           </div>
         </div>
       </section>
@@ -240,10 +245,12 @@ export default function AccademiaPage() {
         </div>
       </section>
 
-      {/* Banner Accademia — Link esterno */}
+      {/* ============================================================
+          BANNER CTA — Striscia gradiente full-width + link esterno
+          ============================================================ */}
       {siteConfig.academyUrl && (
         <section className="py-16 lg:py-20 bg-gradient-to-br from-primary-dark via-primary to-primary-light relative overflow-hidden">
-          {/* Decorative elements */}
+          {/* Decorative circles */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
@@ -267,7 +274,7 @@ export default function AccademiaPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold transition-all hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 hover:bg-white/95"
             >
-              Visita {siteConfig.academyShortName}
+              Visita il sito ufficiale
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Il Club", href: "/club" },
@@ -24,16 +25,15 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-dark/95 backdrop-blur-md shadow-lg py-3"
-          : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-dark/95 backdrop-blur-md shadow-lg py-3"
+        : "bg-transparent py-5"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-2xl">🎾</span>
+          <Image src="/images/logo_circolo-removebg-preview.png" alt="Logo" width={50} height={50} className="text-2xl" />
           <span className="text-white font-bold text-lg tracking-wide group-hover:text-primary-light transition-colors">
             {siteConfig.clubShortName}
           </span>

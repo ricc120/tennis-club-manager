@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = {
-  title: `Il Club | ${siteConfig.clubName}`,
-  description: `Scopri la storia, i valori e il team di ${siteConfig.clubName}. Dal ${siteConfig.foundedYear}, un punto di riferimento per il tennis a ${siteConfig.location}.`,
-};
-
 export default function ClubPage() {
+  const [activeModalImage, setActiveModalImage] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
+
   return (
     <>
       {/* Page Header */}
@@ -106,18 +108,12 @@ export default function ClubPage() {
                   <strong className="text-primary">4.000 presenze l&apos;anno</strong>.
                 </p>
               </div>
-              <Link
-                href="/accademia"
-                className="inline-flex items-center gap-2 mt-8 bg-primary hover:bg-primary-light text-white px-6 py-3 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5"
-              >
-                Scopri l&apos;Accademia →
-              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Staff — Griglia 3 colonne (invariata) */}
+      {/* Staff — Griglia con maestri cliccabili */}
       <section className="py-20 lg:py-28 bg-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -136,11 +132,14 @@ export default function ClubPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
             {siteConfig.staff.map((member) => (
               <div
                 key={member.name}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                onClick={() =>
+                  setActiveModalImage({ src: member.photo, alt: member.name })
+                }
               >
                 <div className="relative h-64 overflow-hidden">
                   <Image
@@ -148,8 +147,13 @@ export default function ClubPage() {
                     alt={member.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
                   />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="bg-white/90 text-dark text-xs font-semibold px-3 py-1.5 rounded-full shadow-md">
+                      Visualizza Foto
+                    </span>
+                  </div>
                 </div>
                 <div className="p-6 text-center">
                   <h3 className="text-lg font-bold text-dark">{member.name}</h3>
@@ -157,9 +161,53 @@ export default function ClubPage() {
                 </div>
               </div>
             ))}
+
+            {/* Card "...e molti altri" con Logo Accademia */}
+            <Link
+              href="/accademia"
+              className="group flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-dashed border-primary/30 rounded-2xl p-6 hover:border-primary hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-center min-h-[320px]"
+            >
+              <div className="relative w-20 h-20 mb-4 transition-transform group-hover:scale-110 duration-300">
+                <Image
+                  src="/images/logo_accademia-removebg-preview.png"
+                  alt="Logo Accademia"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <h3
+                className="text-xl font-bold text-dark mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                ...e molti altri
+              </h3>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                Il nostro staff comprende numerosi professionisti pronti
+                a seguirti nel tuo percorso.
+              </p>
+              <span className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-all group-hover:bg-primary-light group-hover:shadow-lg group-hover:shadow-primary/30">
+                Scopri l&apos;Accademia →
+              </span>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* Modal / Lightbox per visualizzare la scheda/foto del maestro */}
+      {activeModalImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fade-in cursor-pointer"
+          onClick={() => setActiveModalImage(null)}
+        >
+          <div className="relative max-h-[88vh] max-w-[92vw] sm:max-w-xl md:max-w-2xl flex items-center justify-center">
+            <img
+              src={activeModalImage.src}
+              alt={activeModalImage.alt}
+              className="max-h-[88vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -54,6 +54,8 @@ export const siteConfig = {
   phone: "+39 055 XXX XXXX",
   email: "info@tccarmignano.it",
   whatsappUrl: "https://wa.me/39055XXXXXXX",
+  /** Link Google Maps per indicazioni stradali */
+  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Via+Giuseppe+Meazza+2+Carmignano+PO",
 
   // ========================
   // ORARI
@@ -68,8 +70,8 @@ export const siteConfig = {
   // SOCIAL (predisposto per il futuro)
   // ========================
   social: {
-    facebook: "",
-    instagram: "",
+    facebook: "https://facebook.com",
+    instagram: "https://instagram.com/tennisclubcarmignano?igsh=OHJhcjRoNHQ5aXk1",
     youtube: "",
   },
 
@@ -171,12 +173,10 @@ export const siteConfig = {
   // STAFF (per la pagina /club)
   // ========================
   staff: [
-    { name: "Marco Rossi", role: "Direttore Tecnico", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=MR" },
-    { name: "Elena Bianchi", role: "Maestra Nazionale FIT", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=EB" },
-    { name: "Luca Verdi", role: "Maestro Padel", photo: "https://placehold.co/400x500/00B4D8/FFFFFF?text=LV" },
-    { name: "Giulia Neri", role: "Preparatrice Atletica", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=GN" },
-    { name: "Andrea Conti", role: "Maestro Agonistica", photo: "https://placehold.co/400x500/2C5F2D/FFFFFF?text=AC" },
-    { name: "Sara Martini", role: "Coordinatrice SAT", photo: "https://placehold.co/400x500/FF6B35/FFFFFF?text=SM" },
+    { name: "Marco Stefanini", role: "Direttore Tecnico", photo: "/images/marco.png" },
+    { name: "Jacopo Stefanini", role: "Maestro Nazionale FIT", photo: "/images/apo.png" },
+    { name: "Luca Peruzzini", role: "Preparatore Atletico", photo: "/images/luca.png" },
+    { name: "Roberta Ardinghi", role: "Maestra Nazionale FIT", photo: "/images/roberta.png" },
   ],
 
   // ========================
@@ -231,7 +231,7 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
-    { title: "Campo Centrale", category: "Tennis", photo: "/images/terrazza_con_giocatori.jpg", tall: true },
+    { title: "Campo Centrale", category: "Tennis", photo: "/images/terrazza_con_giocatori.jpg", tall: false },
     { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
     { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
     { title: "Clubhouse", category: "Clubhouse", photo: "/images/bar_pizzeria.jpg", tall: false },
