@@ -27,7 +27,7 @@ import { createClient } from "next-sanity";
  * Esportata separatamente per poterla riutilizzare in sanity.config.ts.
  */
 export const sanityConfig = {
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "preview-placeholder",
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-01",
 };
@@ -36,7 +36,14 @@ export const sanityConfig = {
  * Verifica se Sanity è configurato con un projectId valido.
  */
 export function isSanityConfigured(): boolean {
-  return sanityConfig.projectId.length > 0;
+  const pid = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  return (
+    typeof pid === "string" &&
+    pid.trim().length > 0 &&
+    pid !== "preview-placeholder" &&
+    pid !== "YOUR_PROJECT_ID_HERE" &&
+    pid !== "your_sanity_project_id_here"
+  );
 }
 
 /**

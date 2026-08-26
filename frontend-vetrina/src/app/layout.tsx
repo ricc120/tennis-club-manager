@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AppLayout from "@/components/AppLayout";
 import { siteConfig } from "@/config/site";
 
 /**
@@ -42,10 +41,8 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         />
       </head>
-      <body className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="h-full bg-dark text-white">
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );

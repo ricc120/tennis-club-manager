@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { siteConfig } from "@/config/site";
 
 export default function Footer() {
@@ -26,14 +27,15 @@ export default function Footer() {
                 { label: "I Nostri Campi", href: "/strutture" },
                 { label: "Tariffe", href: "/accademia" },
                 { label: "Contatti", href: "/contatti" },
+                { label: "Privacy Policy", href: "/privacy" },
               ].map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-white/50 hover:text-secondary text-sm transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -90,11 +92,15 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider + Copyright */}
+        {/* Divider + Copyright + Privacy */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-sm">
-            © {new Date().getFullYear()} {siteConfig.clubName}. Tutti i diritti riservati.
-          </p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-white/40 text-sm">
+            <span>© {new Date().getFullYear()} {siteConfig.clubName}. Tutti i diritti riservati.</span>
+            <span className="hidden sm:inline text-white/20">|</span>
+            <Link href="/privacy" className="hover:text-secondary transition-colors underline-offset-4 hover:underline">
+              Informativa Privacy
+            </Link>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-white/30 text-xs">
               Powered by {siteConfig.academyShortName} — {siteConfig.academyName}
