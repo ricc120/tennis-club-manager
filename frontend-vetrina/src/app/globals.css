@@ -1,132 +1,142 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN SYSTEM — White-Label Template
+   DESIGN SYSTEM — Tuscan Country Club (Component Gallery & 21st.dev)
    
-   CONCETTO: CSS Variables per il White-Labeling
-   
-   I colori del brand sono definiti come CSS custom properties
-   nella pseudo-classe :root. Per cambiare il branding:
-   1. Modifica i valori in :root
-   2. @theme di Tailwind li eredita automaticamente
-   3. Le utility classes (bg-primary, text-accent, ecc.) si aggiornano
-   
-   Questo approccio funziona perché Tailwind v4 usa internamente
-   CSS Variables — non compila i colori in valori statici.
+   Stile: Editoriale, armonioso, organico, prestigioso.
+   Ispirazione: Circoli storici toscani (Match Ball Firenze Country Club).
+   Leggero, responsive, zero hydration mismatch, font nativi Google Next.js.
    ============================================================ */
 
-/* ============================================================
-   :root — Variabili di branding (modificare QUI per nuovo cliente)
-   ============================================================ */
 :root {
-  /* Primary = colore principale del club (Verde Tennis di default) */
-  --brand-primary: #2C5F2D;
-  --brand-primary-light: #4A8B4C;
-  --brand-primary-dark: #1E4220;
-  --brand-primary-50: #f0f7f0;
-  --brand-primary-100: #dceedd;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Secondary = colore secondario (Cyan Padel di default) */
-  --brand-secondary: #00E5FF;
-  --brand-secondary-dark: #00B8D4;
-  --brand-secondary-50: #e0fcff;
+  /* Verde Nobile Toscano (Heritage Green) */
+  --brand-primary: #1B3C1F;
+  --brand-primary-light: #28542D;
+  --brand-primary-dark: #112614;
+  --brand-primary-50: #F0F5F1;
+  --brand-primary-100: #DEE9DF;
 
-  /* Accent = colore di accento (Arancione Academy di default) */
-  --brand-accent: #FF6D00;
-  --brand-accent-light: #FF9E40;
-  --brand-accent-dark: #E65100;
-  --brand-accent-50: #fff3e0;
+  /* Terra Battuta & Argilla dei Campi (Tuscan Clay) */
+  --brand-clay: #C05621;
+  --brand-clay-light: #DD6B20;
+  --brand-clay-dark: #973F14;
+  --brand-clay-50: #FCF5EE;
+  --brand-clay-100: #F7E4D3;
 
-  /* Neutrals */
-  --brand-dark: #1A1A2E;
-  --brand-dark-lighter: #2D2D44;
-  --brand-light: #F8F9FA;
-  --brand-light-darker: #E9ECEF;
+  /* Neutri Caldi & Superfici d'Alabastro */
+  --brand-dark: #182219;
+  --brand-dark-soft: #2E3B30;
+  --brand-muted: #5A695C;
+  --brand-canvas: #FAF9F5;
+  --brand-canvas-alt: #F3EFE6;
+  --brand-surface: #FFFFFF;
+  --brand-border: #E5E0D4;
+  --brand-border-subtle: #EFEBE1;
 }
 
-/* ============================================================
-   @theme — Tailwind v4 Design Tokens
-   
-   Mappa le CSS Variables del brand alle utility classes di Tailwind.
-   bg-primary → var(--brand-primary)
-   text-secondary → var(--brand-secondary)
-   border-accent → var(--brand-accent)
-   ============================================================ */
 @theme {
-  /* Primary (ex "tennis") */
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+
   --color-primary: var(--brand-primary);
   --color-primary-light: var(--brand-primary-light);
   --color-primary-dark: var(--brand-primary-dark);
   --color-primary-50: var(--brand-primary-50);
   --color-primary-100: var(--brand-primary-100);
 
-  /* Secondary (ex "padel") */
-  --color-secondary: var(--brand-secondary);
-  --color-secondary-dark: var(--brand-secondary-dark);
-  --color-secondary-50: var(--brand-secondary-50);
+  --color-clay: var(--brand-clay);
+  --color-clay-light: var(--brand-clay-light);
+  --color-clay-dark: var(--brand-clay-dark);
+  --color-clay-50: var(--brand-clay-50);
+  --color-clay-100: var(--brand-clay-100);
 
-  /* Accent (ex "academy") */
-  --color-accent: var(--brand-accent);
-  --color-accent-light: var(--brand-accent-light);
-  --color-accent-dark: var(--brand-accent-dark);
-  --color-accent-50: var(--brand-accent-50);
-
-  /* Neutrals */
+  --color-canvas: var(--brand-canvas);
+  --color-canvas-alt: var(--brand-canvas-alt);
+  --color-surface: var(--brand-surface);
   --color-dark: var(--brand-dark);
-  --color-dark-lighter: var(--brand-dark-lighter);
-  --color-light: var(--brand-light);
-  --color-light-darker: var(--brand-light-darker);
+  --color-muted: var(--brand-muted);
+  --color-border-warm: var(--brand-border);
 }
 
-/* Google Fonts loaded via <link> in layout.tsx */
-
 /* ============================================================
-   Global Styles
+   Global Typography & Smooth Scrolling
    ============================================================ */
 html {
   scroll-behavior: smooth;
+  background-color: var(--brand-canvas);
+  color: var(--brand-dark);
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--brand-canvas);
   color: var(--brand-dark);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
-  font-family: 'Playfair Display', serif;
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
 }
 
 /* ============================================================
-   Utility Animations
+   Component Gallery / 21st.dev Style Utilities
    ============================================================ */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+
+/* Card con bordo caldo e ombra soffusa naturale */
+.editorial-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 1px 3px rgba(24, 34, 25, 0.04), 0 4px 16px rgba(24, 34, 25, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.editorial-card:hover {
+  border-color: rgba(27, 60, 31, 0.3);
+  box-shadow: 0 12px 30px -6px rgba(27, 60, 31, 0.08), 0 4px 10px -2px rgba(24, 34, 25, 0.03);
+  transform: translateY(-2px);
+}
+
+/* Badge pill di categoria e stato circolo */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--brand-primary-50);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary-100);
+}
+
+.clay-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--brand-clay-50);
+  color: var(--brand-clay);
+  border: 1px solid var(--brand-clay-100);
+}
+
+/* Micro-animazione leggera */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
-/* Stagger delay classes */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }

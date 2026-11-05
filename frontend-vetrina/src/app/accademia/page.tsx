@@ -10,138 +10,142 @@ export const metadata: Metadata = {
 
 export default function AccademiaPage() {
   return (
-    <>
-      {/* ============================================================
-          HERO — Vista panoramica dei campi come sfondo
-          ============================================================ */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark to-dark/90" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-accent font-semibold tracking-widest uppercase text-sm mb-3">
-            {siteConfig.academyShortName}
-          </p>
+    <div className="bg-[#FAF9F5] text-[#182219]">
+      {/* 1. Header */}
+      <section className="pt-36 pb-20 lg:pt-44 lg:pb-24 bg-[#1B3C1F] text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-[#F7E4D3] border border-white/20 text-xs font-semibold uppercase tracking-widest mb-4">
+            {siteConfig.academyShortName} • Scuola Tennis Riconosciuta FITP
+          </span>
           <h1
-            className="text-4xl lg:text-6xl font-bold text-white mb-6"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-4xl sm:text-6xl font-bold text-white mb-6"
+            style={{ fontFamily: "var(--font-serif)" }}
           >
             {siteConfig.academyName}
           </h1>
-          <p className="text-white/80 text-lg lg:text-xl max-w-2xl mx-auto">
-            L&apos;eccellenza del tennis a {siteConfig.location} — Programmi per ogni livello,
-            dal minitennis all&apos;agonismo professionale.
+          <p className="text-[#DEE9DF] text-lg sm:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+            Metodologie moderne, attenzione individuale e preparazione atletica: dal minitennis promozionale fino al circuito professionistico mondiale.
           </p>
         </div>
       </section>
 
-      {/* ============================================================
-          TENNIS ACADEMY — L'Eccellenza
-          Contenuto hardcoded fornito dal cliente TC Carmignano.
-          ============================================================ */}
-      <section className="py-20 lg:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <p className="text-accent font-semibold tracking-widest uppercase text-sm mb-3">
-              L&apos;Eccellenza
-            </p>
-            <h2
-              className="text-3xl lg:text-4xl font-bold text-dark mb-6"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+      {/* 2. Pro Showcase: Jacopo & Lucrezia Stefanini */}
+      <section className="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <span className="clay-pill mb-3">
+            Dalla Toscana ai Grand Slam
+          </span>
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1B3C1F] tracking-tight mb-4"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            Istruttori ed Atleti d&apos;Élite
+          </h2>
+          <p className="text-[#5A695C] text-base">
+            Una scuola fondata sull&apos;esperienza diretta del tennis di vertice.
+          </p>
+        </div>
+
+        {/* Row 1: Jacopo Stefanini */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
+          <div className="space-y-6">
+            <span className="status-pill">
+              Direzione Tecnica Agonistica
+            </span>
+            <h3
+              className="text-2xl sm:text-4xl font-bold text-[#1B3C1F]"
+              style={{ fontFamily: "var(--font-serif)" }}
             >
-              La Tennis Academy
-            </h2>
+              Jacopo Stefanini
+            </h3>
+            <div className="space-y-4 text-[#5A695C] leading-relaxed text-base lg:text-lg">
+              <p>
+                Alla guida dell&apos;accademia c&apos;è <strong className="text-[#182219] font-semibold">Jacopo Stefanini</strong>, maestro ed ex-professionista che in carriera vanta prestigiose vittorie contro giocatori del calibro di{" "}
+                <strong className="text-[#C05621]">Alexander Zverev</strong>,{" "}
+                <strong className="text-[#C05621]">Daniil Medvedev</strong> e{" "}
+                <strong className="text-[#C05621]">Matteo Berrettini</strong>.
+              </p>
+              <p>
+                La filosofia della Stefanini Tennis Academy mira ad offrire una preparazione completa — tecnica, tattica, fisica e mentale — lontano dalle pressioni esasperate e valorizzando la crescita armonica dell&apos;atleta.
+              </p>
+            </div>
           </div>
 
-          {/* Riga 1: Testo a sinistra — Immagine giocatore a destra */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
-            <div>
-              <div className="space-y-5 text-gray-700 leading-relaxed text-base lg:text-lg">
-                <p>
-                  Avendo ospitato atleti professionisti da tutta Italia, il circolo ha fatto un
-                  salto di qualità creando una vera e propria{" "}
-                  <strong className="text-dark">Tennis Academy</strong>.
-                </p>
-                <p>
-                  Alla guida tecnica c&apos;è{" "}
-                  <strong className="text-dark">Jacopo Stefanini</strong> (27 anni), maestro ed
-                  ex-professionista che in carriera vanta vittorie contro giocatori del calibro di{" "}
-                  <strong className="text-accent">Zverev</strong>,{" "}
-                  <strong className="text-accent">Medvedev</strong> e{" "}
-                  <strong className="text-accent">Berrettini</strong>.
-                </p>
-                <p>
-                  L&apos;obiettivo dell&apos;Academy è offrire allenamento di alto livello senza le
-                  pressioni dei circoli tradizionali.
-                </p>
+          <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white group">
+            <div className="relative h-80 sm:h-96 w-full">
+              <Image
+                src="/images/jacopo_stefanini_2.jpg"
+                alt="Jacopo Stefanini sui campi del TC Carmignano"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Lucrezia Stefanini */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white group order-2 lg:order-1">
+            <div className="relative h-80 sm:h-96 w-full">
+              <Image
+                src="/images/lucrezia_stefanini_2.jpg"
+                alt="Lucrezia Stefanini campionessa WTA"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="bg-[#C05621] text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                  WTA Top 100
+                </span>
               </div>
             </div>
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
-              <Image
-                src="/images/jacopo_stefanini.jpg"
-                alt="Terrazza del TC Carmignano con giocatori"
-                width={800}
-                height={600}
-                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
           </div>
 
-          {/* Riga 2: Immagine Lucrezia a sinistra — Highlights a destra (zig-zag) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Foto — prima su mobile, sinistra su desktop */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
-              <Image
-                src="/images/lucrezia_stefanini.jpg"
-                alt="Lucrezia Stefanini — WTA 99"
-                width={800}
-                height={600}
-                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
+          <div className="space-y-6 order-1 lg:order-2">
+            <span className="clay-pill">
+              Orgoglio del Nostro Circolo
+            </span>
+            <h3
+              className="text-2xl sm:text-4xl font-bold text-[#1B3C1F]"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
+              Lucrezia Stefanini
+            </h3>
+            <p className="text-[#5A695C] text-base lg:text-lg leading-relaxed">
+              Cresciuta fin da bambina sui campi in terra rossa di Carmignano, Lucrezia è oggi una delle tenniste di punta del circuito maggiore WTA mondiale, protagonista nei tabelloni principali dei quattro tornei più prestigiosi al mondo.
+            </p>
 
-            {/* Testo + Highlights */}
-            <div>
-              <span className="text-accent font-bold text-sm tracking-widest uppercase">
-                Talento dell&apos;Academy
+            {/* Ranking Pill */}
+            <div className="inline-flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#E5E0D4] shadow-xs">
+              <span className="text-3xl font-extrabold text-[#C05621]" style={{ fontFamily: "var(--font-serif)" }}>
+                #99
               </span>
-              <h3
-                className="text-2xl lg:text-3xl font-bold text-dark mt-2 mb-4"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                Lucrezia Stefanini
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-base lg:text-lg mb-6">
-                Tra i primi talenti dell&apos;Academy, Lucrezia è una giocatrice di
-                livello mondiale che calca i campi dei tornei più prestigiosi.
-              </p>
-
-              {/* Badge ranking */}
-              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-5 py-2 mb-6">
-                <span className="text-accent font-bold text-lg">99</span>
-                <span className="text-gray-600 text-sm font-medium">Best ranking WTA</span>
+              <div>
+                <p className="text-xs uppercase font-bold text-[#5A695C]">Best Ranking Mondiale</p>
+                <p className="text-sm font-semibold text-[#182219]">Classifica Ufficiale WTA Tour</p>
               </div>
+            </div>
 
-              {/* Grand Slam list */}
-              <p className="text-xs font-bold text-400 uppercase tracking-widest mb-3">
-                Tornei del Grande Slam
+            {/* Slam badges */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#5A695C] mb-3">
+                Tornei del Grande Slam disputati
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {[
-                  { code: "FR", name: "Roland Garros", hover: "hover:bg-[#C4622D]/15 hover:text-[#9B3D15]" },
-                  { code: "GB", name: "Wimbledon", hover: "hover:bg-[#4CAF50]/15 hover:text-[#2E7D32]" },
-                  { code: "US", name: "US Open", hover: "hover:bg-[#4FC3F7]/15 hover:text-[#0277BD]" },
-                  { code: "AU", name: "Australian Open", hover: "hover:bg-[#4FC3F7]/15 hover:text-[#0277BD]" },
-                  { code: "IT", name: "Internazionali di Roma", hover: "hover:bg-[#C4622D]/15 hover:text-[#9B3D15]" },
+                  { name: "Wimbledon", flag: "🇬🇧", tag: "bg-[#F0F5F1] text-[#1B3C1F] border-[#DEE9DF]" },
+                  { name: "Roland Garros", flag: "🇫🇷", tag: "bg-[#FCF5EE] text-[#C05621] border-[#F7E4D3]" },
+                  { name: "US Open", flag: "🇺🇸", tag: "bg-[#EEF4FF] text-[#1E40AF] border-[#DBEAFE]" },
+                  { name: "Australian Open", flag: "🇦🇺", tag: "bg-[#ECFDF5] text-[#065F46] border-[#D1FAE5]" },
+                  { name: "Roma WTA", flag: "🇮🇹", tag: "bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]" },
                 ].map((slam) => (
                   <span
                     key={slam.name}
-                    className={`flex items-center gap-2 text-sm text-gray-700 bg-light rounded-lg px-3 py-2 font-medium transition-colors duration-200 cursor-default ${slam.hover}`}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold ${slam.tag}`}
                   >
-                    <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-gray-200/80 text-gray-700 uppercase shrink-0">
-                      {slam.code}
-                    </span>
+                    <span>{slam.flag}</span>
                     <span>{slam.name}</span>
                   </span>
                 ))}
@@ -151,137 +155,107 @@ export default function AccademiaPage() {
         </div>
       </section>
 
-      {/* ============================================================
-          CORSI & TARIFFE — Pricing Cards (invariato da siteConfig)
-          ============================================================ */}
-      <section className="py-20 lg:py-28 bg-light">
+      {/* 3. CORSI & TARIFFE — Editorial Cards */}
+      <section className="py-20 lg:py-28 bg-[#F3EFE6] border-t border-[#E5E0D4]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <p className="text-primary font-semibold tracking-widest uppercase text-sm mb-3">
-              Corsi &amp; Tariffe
-            </p>
+            <span className="status-pill mb-3">
+              I Corsi
+            </span>
             <h2
-              className="text-3xl lg:text-4xl font-bold text-dark mb-6"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-3xl sm:text-4xl font-bold text-[#1B3C1F] tracking-tight mb-4"
+              style={{ fontFamily: "var(--font-serif)" }}
             >
-              Scegli il Tuo Percorso
+              Percorsi Formativi e Tariffe
             </h2>
+            <p className="text-[#5A695C] text-base">
+              Programmi su misura per ogni fascia d&apos;età e livello di gioco.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
             {siteConfig.courses.map((course) => (
               <div
                 key={course.name}
-                className={`relative rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${course.highlighted
-                  ? "bg-primary text-white shadow-2xl shadow-primary/30 ring-2 ring-primary scale-105"
-                  : "bg-white text-dark shadow-sm hover:shadow-xl border border-gray-200"
+                className={`editorial-card rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 ${course.highlighted
+                  ? "border-2 border-[#1B3C1F] shadow-xl relative -translate-y-2 bg-white"
+                  : "bg-white"
                   }`}
               >
-                {/* Badge "Più Popolare" */}
-                {course.highlighted && (
-                  <div className="absolute top-0 right-0 bg-accent text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
-                    Più Popolare
-                  </div>
-                )}
-
-                <div className="p-8">
+                <div>
+                  {course.highlighted && (
+                    <div className="mb-4">
+                      <span className="bg-[#1B3C1F] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Più Richiesto
+                      </span>
+                    </div>
+                  )}
                   <h3
-                    className="text-xl font-bold mb-2"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-2xl font-bold text-[#1B3C1F] mb-1"
+                    style={{ fontFamily: "var(--font-serif)" }}
                   >
                     {course.name}
                   </h3>
-                  <p
-                    className={`text-sm mb-4 ${course.highlighted ? "text-white/70" : "text-gray-500"
-                      }`}
-                  >
-                    {course.subtitle}
-                  </p>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-bold">{course.price}</span>
-                    <span
-                      className={`text-sm ${course.highlighted ? "text-white/60" : "text-gray-400"
-                        }`}
-                    >
-                      /mese
-                    </span>
+                  <p className="text-[#5A695C] text-sm mb-6">{course.subtitle}</p>
+
+                  <div className="flex items-baseline gap-1 mb-8 pb-6 border-b border-[#E5E0D4]">
+                    <span className="text-4xl font-extrabold text-[#182219]">{course.price}</span>
+                    <span className="text-sm text-[#5A695C]">{course.period}</span>
                   </div>
 
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3.5 mb-8">
                     {course.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm">
-                        <span
-                          className={`mt-0.5 ${course.highlighted ? "text-accent" : "text-primary"
-                            }`}
-                        >
-                          ✓
-                        </span>
-                        <span
-                          className={
-                            course.highlighted ? "text-white/80" : "text-gray-600"
-                          }
-                        >
-                          {feature}
-                        </span>
+                      <li key={feature} className="flex items-start gap-3 text-sm text-[#182219]">
+                        <span className="text-[#1B3C1F] font-bold mt-0.5">✓</span>
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
-
-                  {/* CTA */}
-                  <Link
-                    href="/contatti"
-                    className={`block text-center py-3 rounded-full font-semibold transition-all ${course.highlighted
-                      ? "bg-white text-primary hover:bg-white/90"
-                      : "bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20"
-                      }`}
-                  >
-                    Richiedi Info
-                  </Link>
                 </div>
+
+                <Link
+                  href="/contatti"
+                  className={`w-full inline-flex items-center justify-center py-3.5 px-6 rounded-xl font-semibold text-sm transition-all ${course.highlighted
+                    ? "bg-[#1B3C1F] hover:bg-[#112614] text-white shadow-md hover:shadow-lg"
+                    : "bg-[#F0F5F1] hover:bg-[#DEE9DF] text-[#1B3C1F]"
+                    }`}
+                >
+                  Richiedi Informazioni o Prova
+                </Link>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ============================================================
-          BANNER CTA — Striscia gradiente full-width + link esterno
-          ============================================================ */}
+      {/* 4. Official Academy External Link Banner */}
       {siteConfig.academyUrl && (
-        <section className="py-16 lg:py-20 bg-gradient-to-br from-primary-dark via-primary to-primary-light relative overflow-hidden">
-          {/* Decorative circles */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <span className="text-accent font-bold text-sm tracking-widest uppercase">
-              {siteConfig.academyShortName}
+        <section className="py-20 bg-[#1B3C1F] text-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#F7E4D3] block mb-3">
+              Sito Ufficiale Academy
             </span>
             <h2
-              className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-3xl sm:text-4xl font-bold mb-4"
+              style={{ fontFamily: "var(--font-serif)" }}
             >
-              {siteConfig.academyName}
+              Scopri Tutti i Programmi Agonistici
             </h2>
-            <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
-              Scopri tutti i programmi, i coach e le novità dell&apos;accademia
-              sul sito ufficiale.
+            <p className="text-[#DEE9DF] text-base sm:text-lg max-w-2xl mx-auto mb-8 font-light">
+              Per il calendario tornei FITP, il ranking degli atleti e gli aggiornamenti della Stefanini Tennis Academy.
             </p>
             <a
               href={siteConfig.academyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold transition-all hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 hover:bg-white/95"
+              className="inline-flex items-center gap-2 rounded-full bg-white text-[#1B3C1F] px-8 py-4 text-base font-semibold shadow-lg hover:bg-white/95 hover:scale-[1.02] transition-all"
             >
-              Visita il sito ufficiale
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
+              <span>Visita stefaninitennisacademy.it</span>
+              <span>→</span>
             </a>
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 }

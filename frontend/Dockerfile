@@ -23,6 +23,7 @@
 
 # STAGE 1: Installa le dipendenze
 # --------------------------------
+# TODO: change version of node to 24-alpine-slim   
 FROM node:22-alpine AS deps
 
 WORKDIR /app

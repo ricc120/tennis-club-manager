@@ -18,7 +18,6 @@
  * del club, all'indirizzo, ai recapiti, ecc. Tutto viene da qui.
  */
 
-import { title } from "process";
 
 export const siteConfig = {
   // ========================
@@ -231,14 +230,13 @@ export const siteConfig = {
   // STRUTTURE (per la pagina /strutture)
   // ========================
   strutture: [
+    { title: "Campi in Terra Rossa", category: "Tennis", photo: "/images/2campi.jpg", tall: true },
     { title: "Campo Centrale", category: "Tennis", photo: "/images/terrazza_con_giocatori.jpg", tall: false },
+    { title: "Ristorante Cirivò", category: "Ristorante", photo: "/images/ristorante.jpg", tall: true, url: "https://cirivobistrot.it/" },
+    { title: "Clubhouse e Bar", category: "Clubhouse", photo: "/images/bar_pizzeria.jpg", tall: false },
     { title: "Campo Padel 1", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+1", tall: false },
     { title: "Campo Padel 2", category: "Padel", photo: "https://placehold.co/600x400/00B4D8/FFFFFF?text=Padel+2", tall: false },
-    { title: "Clubhouse", category: "Clubhouse", photo: "/images/bar_pizzeria.jpg", tall: false },
-    { title: "Ristorante", category: "Ristorante", photo: "/images/ristorante.jpg", tall: true, url: "https://cirivobistrot.it/" },
-    { title: "Palestra", category: "Fitness", photo: "https://placehold.co/600x400/1A1A2E/FFFFFF?text=Palestra", tall: false },
     { title: "Campo Sintetico", category: "Tennis", photo: "/images/campo_verde.jpeg", tall: false },
-    { title: "Campi in Terra Rossa", category: "Tennis", photo: "/images/2campi.jpg", tall: false },
   ],
 } as const;
 

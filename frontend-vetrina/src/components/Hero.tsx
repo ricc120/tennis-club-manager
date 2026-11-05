@@ -1,58 +1,157 @@
-import { siteConfig } from "@/config/site";
+import Image from "next/image";
 import Link from "next/link";
+import { siteConfig } from "@/config/site";
 
 export default function Hero() {
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('${siteConfig.images.heroBackground}')`,
-        }}
-      />
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark/80" />
+    <section className="relative pt-28 sm:pt-36 pb-16 lg:pt-40 lg:pb-18 overflow-hidden border-b border-[#E5E0D4] bg-gradient-to-b from-[#FAF9F5] via-[#FAF9F5] to-[#F3EFE6]">
+      {/* Delicate background ambient aura - natural warm daylight */}
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#E8EFE9]/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-0 left-10 w-[400px] h-[400px] bg-[#F7E4D3]/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <p className="text-secondary font-medium tracking-[0.3em] uppercase text-sm mb-4 animate-fade-in">
-          Dal {siteConfig.foundedYear} — {siteConfig.location}
-        </p>
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up">
-          {siteConfig.clubName.split(" ").slice(0, -1).join(" ")}
-          <br />
-          <span className="text-primary-light">
-            {siteConfig.clubName.split(" ").slice(-1)}
-          </span>
-        </h1>
-        <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up delay-200">
-          {siteConfig.clubSlogan}.
-          {" "}Tennis, Padel e la {siteConfig.academyName} per il tuo gioco migliore.
-        </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left Column: Editorial & Brand Narrative */}
+          <div className="lg:col-span-7 space-y-7">
+            {/* Live Club Status Beacon */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E0D4] shadow-xs text-xs font-medium text-[#182219]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+              </span>
+              <span className="font-semibold text-[#1B3C1F]">Circolo Aperto</span>
+              <span className="text-[#5A695C]">•</span>
+              <span className="text-[#5A695C]">Oggi {siteConfig.hours.weekday.time}</span>
+            </div>
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
-          <Link
-            href="/club"
-            className="bg-primary hover:bg-primary-light text-white px-8 py-4 rounded-full text-lg font-semibold transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
-          >
-            Scopri il Club
-          </Link>
-          <Link
-            href="/accademia"
-            className="border-2 border-white/30 hover:border-secondary text-white hover:text-secondary px-8 py-4 rounded-full text-lg font-semibold transition-all hover:-translate-y-0.5"
-          >
-            Vedi Tariffe
-          </Link>
+            {/* Main Headline */}
+            <h1
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#1B3C1F] tracking-tight leading-[1.08]"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
+              L&apos;Arte del Tennis, <br />
+              <span className="italic font-normal text-[#C05621]">
+                nel cuore della Toscana
+              </span>
+            </h1>
+
+            {/* Subheading */}
+            <p className="text-base sm:text-lg text-[#5A695C] max-w-2xl leading-relaxed font-normal">
+              Dal {siteConfig.foundedYear}, un&apos;oasi sportiva di prestigio a {siteConfig.location}.
+              Quattro campi immersi nel paesaggio collinare, l&apos;eccellenza agonistica della{" "}
+              <strong className="text-[#182219] font-semibold">{siteConfig.academyName}</strong>{" "}
+              e un&apos;accogliente clubhouse per vivere il vero spirito del club.
+            </p>
+
+            {/* Action CTAs */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link
+                href="/contatti"
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-[#1B3C1F] hover:bg-[#112614] text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              >
+                <span>Prenota un Campo</span>
+                <span className="text-stone-300">→</span>
+              </Link>
+
+              <Link
+                href="/accademia"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-[#FAF9F5] text-[#1B3C1F] text-sm font-semibold border border-[#E5E0D4] transition-all duration-200 hover:border-[#1B3C1F]/40 shadow-xs"
+              >
+                <span>Stefanini Tennis Academy</span>
+              </Link>
+            </div>
+
+            {/* Key Metrics Strip (Clean Component Gallery Style) */}
+            <div className="pt-6 border-t border-[#E5E0D4] grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <div>
+                <span
+                  className="block text-2xl sm:text-3xl font-bold text-[#1B3C1F]"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  {siteConfig.stats.courts} Campi
+                </span>
+                <span className="text-xs text-[#5A695C] font-medium block mt-0.5">
+                  Terra rossa e padel
+                </span>
+              </div>
+
+              <div>
+                <span
+                  className="block text-2xl sm:text-3xl font-bold text-[#C05621]"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  {siteConfig.stats.members}
+                </span>
+                <span className="text-xs text-[#5A695C] font-medium block mt-0.5">
+                  Soci e allievi attivi
+                </span>
+              </div>
+
+              <div>
+                <span
+                  className="block text-2xl sm:text-3xl font-bold text-[#1B3C1F]"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  WTA 99
+                </span>
+                <span className="text-xs text-[#5A695C] font-medium block mt-0.5">
+                  Best ranking accademia
+                </span>
+              </div>
+
+              <div>
+                <span
+                  className="block text-2xl sm:text-3xl font-bold text-[#C05621]"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  4.000+
+                </span>
+                <span className="text-xs text-[#5A695C] font-medium block mt-0.5">
+                  Presenze annuali
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Visual Editorial Composition */}
+          <div className="lg:col-span-5 relative">
+            {/* Primary Framed Panorama */}
+            <div className="relative rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-white">
+              <div className="relative h-80 sm:h-[30rem] w-full">
+                <Image
+                  src={siteConfig.images.heroBackground}
+                  alt="Vista panoramica Tennis Club Carmignano"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  className="object-cover object-[37%]"
+                />
+                {/* Subtle soft gradient at base of image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating Badge in Image Frame */}
+              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-white/80 shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-[#C05621] block">
+                      Impianto Ufficiale FITP
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-[#182219]">
+                      La Serra • Carmignano (PO)
+                    </span>
+                  </div>
+                  <Link
+                    href="/strutture"
+                    className="text-xs font-semibold text-[#1B3C1F] hover:text-[#C05621] transition-colors"
+                  >
+                    Guarda i campi →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
       </div>
     </section>
   );

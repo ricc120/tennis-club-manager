@@ -25,7 +25,7 @@
  *   urlFor(gara.fotoCopertina).width(800).quality(80).format("webp").url()
  */
 
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 import { sanityConfig } from "./client";
 
 /**
@@ -33,7 +33,7 @@ import { sanityConfig } from "./client";
  * Non usa il client direttamente per evitare la lazy initialization —
  * il builder ha bisogno solo di projectId e dataset, non del client completo.
  */
-const builder = imageUrlBuilder({
+const builder = createImageUrlBuilder({
   projectId: sanityConfig.projectId,
   dataset: sanityConfig.dataset,
 });
