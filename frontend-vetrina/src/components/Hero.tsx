@@ -4,7 +4,7 @@ import { siteConfig } from "@/config/site";
 
 export default function Hero() {
   return (
-    <section className="relative pt-28 sm:pt-36 pb-16 lg:pt-40 lg:pb-18 overflow-hidden border-b border-[#E5E0D4] bg-gradient-to-b from-[#FAF9F5] via-[#FAF9F5] to-[#F3EFE6]">
+    <section className="relative pt-24 sm:pt-30 pb-16 lg:pt-30 lg:pb-18 overflow-hidden border-b border-[#E5E0D4] bg-gradient-to-b from-[#FAF9F5] via-[#FAF9F5] to-[#F3EFE6]">
       {/* Delicate background ambient aura - natural warm daylight */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#E8EFE9]/40 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="absolute bottom-0 left-10 w-[400px] h-[400px] bg-[#F7E4D3]/30 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -24,16 +24,29 @@ export default function Hero() {
               <span className="text-[#5A695C]">Oggi {siteConfig.hours.weekday.time}</span>
             </div>
 
-            {/* Main Headline */}
-            <h1
-              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#1B3C1F] tracking-tight leading-[1.08]"
-              style={{ fontFamily: "var(--font-serif)" }}
-            >
-              L&apos;Arte del Tennis, <br />
-              <span className="italic font-normal text-[#C05621]">
-                nel cuore della Toscana
-              </span>
-            </h1>
+            {/* Brand Header — Solo testo */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase font-bold tracking-widest text-[#C05621]">
+                  Circolo Storico • Dal {siteConfig.foundedYear}
+                </span>
+                <span className="text-[#5A695C]">•</span>
+                <span className="text-xs sm:text-sm text-[#5A695C] font-medium">
+                  {siteConfig.location}
+                </span>
+              </div>
+
+              {/* Main Headline — Nome del circolo */}
+              <h1
+                className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#1B3C1F] tracking-tight leading-[1.08]"
+                style={{ fontFamily: "var(--font-serif)" }}
+              >
+                {siteConfig.clubName.split(" ").slice(0, 2).join(" ")} <br />
+                <span className="italic font-normal text-[#C05621]">
+                  {siteConfig.clubName.split(" ").slice(2).join(" ")}
+                </span>
+              </h1>
+            </div>
 
             {/* Subheading */}
             <p className="text-base sm:text-lg text-[#5A695C] max-w-2xl leading-relaxed font-normal">
@@ -128,6 +141,16 @@ export default function Hero() {
                 />
                 {/* Subtle soft gradient at base of image */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              </div>
+
+              {/* Logo del circolo in sovraimpressione sull'immagine */}
+              <div className="absolute top-4 right-4 z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/90 backdrop-blur-md p-1.5 shadow-md border border-white/80">
+                <Image
+                  src="/images/logo_circolo-removebg-preview.png"
+                  alt={`Stemma ${siteConfig.clubName}`}
+                  fill
+                  className="object-contain p-1"
+                />
               </div>
 
               {/* Floating Badge in Image Frame */}
